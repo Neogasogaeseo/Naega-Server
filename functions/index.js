@@ -1,5 +1,5 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./neogasogaeseo-9aaf5-firebase-adminsdk-evzi9-7b94c0f3cb.json');
+const serviceAccount = require('./neogasogaeseo-9aaf5-firebase-adminsdk-a8999-935facc592.json');
 const dotenv = require('dotenv');
 
 dotenv.config();
