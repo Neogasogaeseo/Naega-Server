@@ -44,7 +44,8 @@
 
 ## Daily Flow
 
-    ![너소서 초기 세팅 정리 002](https://user-images.githubusercontent.com/49263163/148995217-b2c6c098-d3c4-46ff-9323-dbb746939100.jpeg)
+![너소서 초기 세팅 정리 002](https://user-images.githubusercontent.com/49263163/148995217-b2c6c098-d3c4-46ff-9323-dbb746939100.jpeg)
+
 ![너소서 초기 세팅 정리 003](https://user-images.githubusercontent.com/49263163/148995228-53621d13-4069-4f13-adc7-774e9a75d3b3.jpeg)
 ![너소서 초기 세팅 정리 004](https://user-images.githubusercontent.com/49263163/148995231-421b7b34-1aeb-4e79-b970-ffd4c8a25f4d.jpeg)
 ![너소서 초기 세팅 정리 005](https://user-images.githubusercontent.com/49263163/148995239-dd0d1ae4-0350-4459-bd2d-7b958c785ab5.jpeg)
