@@ -27,7 +27,7 @@
 |                                             |        |            |
 | :-----------------------------------------: | :----: | :--------: |
 |                   최영재                    | 허유정 | 주어진사랑 |
-| [realwhyjay](https://github.com/realwhyjay) |        |            |
+| [realwhyjay](https://github.com/realwhyjay) |     [hujumee](https://github.com/hujumee)   |       [ozzing](https://github.com/ozzing)     |
 
 </div>
 
