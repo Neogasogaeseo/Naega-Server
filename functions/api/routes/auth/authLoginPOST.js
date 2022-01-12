@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
   const { provider, authenticationCode } = req.body;
   let socialToken;
   let kakao_profile;
+  let authUser;
   let client;
   if (!authenticationCode) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
@@ -49,21 +50,20 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect();
-    const authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == code
-    const refreshToken = socialToken.data.refresh_token;
-    console.log(refreshToken);
-    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
-    if (user) {
-      const accesstoken = jwtHandlers.sign(user);
-      return res.status(statusCode.OK).send(
-        util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
-          user,
-          accesstoken,
-        }),
-      );
-    } else {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER));
+    authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == auth code
+    if (authUser == undefined) {
+      const accesstoken = socialToken.data.access_token;
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken }));
     }
+    const refreshToken = socialToken.data.refresh_token;
+    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
+    const accesstoken = jwtHandlers.sign(user);
+    return res.status(statusCode.OK).send(
+      util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
+        user,
+        accesstoken,
+      }),
+    );
   } catch (error) {
   } finally {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
