@@ -14,9 +14,7 @@ const options = {
 const sign = (user) => {
   const payload = {
     id: user.id,
-    // email: user.email,
     name: user.name || null,
-    // firebaseId: user.firebaseId,
   };
 
   const result = jwt.sign(payload, secretKey, options);
