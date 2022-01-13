@@ -14,14 +14,10 @@ const options = {
 const sign = (user) => {
   const payload = {
     id: user.id,
-    email: user.email,
     name: user.name || null,
-    idFirebase: user.idFirebase,
   };
 
-  const result = {
-    accesstoken: jwt.sign(payload, secretKey, options),
-  };
+  const result = jwt.sign(payload, secretKey, options);
   return result;
 };
 
