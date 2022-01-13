@@ -6,8 +6,6 @@ const db = require('../../../db/db');
 const { issueDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const {} = req.params;
-  const {} = req.query;
   const { userId } = req.body;
 
   if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
