@@ -56,12 +56,14 @@ module.exports = async (req, res) => {
     if (authUser == undefined) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
-    const refreshToken = socialToken.data.refresh_token;
-    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
-    const accesstoken = jwtHandlers.sign(user);
+    //^_^// const refreshToken = socialToken.data.refresh_token;
+    //^_^// const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
+    //^_^// const accesstoken = jwtHandlers.sign(user);
+    const accesstoken = jwtHandlers.sign(authUser);
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
-        user,
+        //^_^//     user,
+        authUser,
         accesstoken,
       }),
     );
