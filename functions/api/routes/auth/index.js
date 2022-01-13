@@ -2,6 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 router.use('/login', require('./authLoginPOST'));
-router.use('/signup', require('./authSignUpPOST'));
+router.use('/register', require('./authRegisterPOST'));
 
 module.exports = router;
