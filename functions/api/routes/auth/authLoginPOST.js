@@ -37,6 +37,8 @@ module.exports = async (req, res) => {
     return res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.WRONG_AUTH));
   }
 
+  console.log(socialToken.data);
+
   try {
     kakao_profile = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
@@ -52,8 +54,7 @@ module.exports = async (req, res) => {
     client = await db.connect();
     authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == auth code
     if (authUser == undefined) {
-      const accesstoken = socialToken.data.access_token;
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
     const refreshToken = socialToken.data.refresh_token;
     const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
