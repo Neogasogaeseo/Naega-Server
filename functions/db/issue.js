@@ -13,6 +13,7 @@ const getAllIssueByUserId = async (client, userId) => {
     JOIN "user" u
     ON i.user_id = u.id
     WHERE i.user_id = $1
+    ORDER BY i.updated_at DESC
     `,
     [userId],
   );
