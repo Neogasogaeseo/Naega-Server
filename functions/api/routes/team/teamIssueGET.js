@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   const { userId } = req.body;
 
   if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
   let client;
 
   try {
@@ -26,7 +27,7 @@ module.exports = async (req, res) => {
       const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, userId, issue.id);
       resultList.push({
         categoryName: categoryName,
-        createdAt: createdAt,
+        createdAt: createdAt.getFullYear() + '-' + createdAt.getMonth() + 1 + '-' + createdAt.getDate(),
         content: content,
         feedbackPersonList: myFeedbackPersonList,
         teamName: issue.teamName,
