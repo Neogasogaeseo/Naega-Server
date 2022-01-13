@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
         code: authenticationCode,
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_KEY,
-        redirect_uri: 'http://127.0.0.1:5000/neogasogaeseo-9aaf5/asia-northeast3/api/auth/kakao/callback',
+        redirect_uri: process.env.KAKAO_URI,
         client_secret: process.env.KAKAO_SECRET,
       }),
     });
@@ -56,14 +56,12 @@ module.exports = async (req, res) => {
     if (authUser == undefined) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
-    //^_^// const refreshToken = socialToken.data.refresh_token;
-    //^_^// const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
-    //^_^// const accesstoken = jwtHandlers.sign(user);
-    const accesstoken = jwtHandlers.sign(authUser);
+    const refreshToken = socialToken.data.refresh_token;
+    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
+    const accesstoken = jwtHandlers.sign(user);
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
-        //^_^//     user,
-        authUser,
+        user,
         accesstoken,
       }),
     );
