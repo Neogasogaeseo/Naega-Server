@@ -1,7 +1,29 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+//^_^// 아직 최신순 정렬 안됨
 const getIssueIdRecentListByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT i.id
+    FROM "issue" i, (SELECT issue_id
+            FROM "feedback"
+            WHERE is_deleted = false
+            AND tagged_user_id = $1
+            ORDER BY updated_at DESC
+            ) as f
+      WHERE f.issue_id = i.id
+      AND i.is_deleted = false
+      GROUP BY i.id
+    `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+//^_^// 아직 최신순 정렬 안됨
+const getIssueIdRecentListByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     `
     SELECT i.id
@@ -9,12 +31,12 @@ const getIssueIdRecentListByUserId = async (client, userId) => {
             FROM "feedback" f
             WHERE f.is_deleted = false
             ORDER BY f.created_at DESC) f
-      WHERE user_id = $1 
+      WHERE i.team_id = $1 
       AND f.issue_id = i.id
       AND i.is_deleted = false
       GROUP BY i.id
     `,
-    [userId],
+    [teamId],
   );
 
   return convertSnakeToCamel.keysToCamel(rows);
@@ -40,19 +62,19 @@ const getIssueByIssueId = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getAllFeedbackPersonList = async (client, userId, issueId) => {
+const getAllFeedbackPersonList = async (client, issueId) => {
   const { rows } = await client.query(
     `
         SELECT u.name, u.image
         FROM "user" u JOIN "feedback" f
-        ON u.id = f.user_id
-        WHERE f.tagged_user_id = $1
-        AND f.issue_id = $2
+        ON u.id = f.tagged_user_id
+        WHERE f.issue_id = $1
         AND f.is_deleted = false
+        GROUP BY u.id 
         `,
-    [userId, issueId],
+    [issueId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getIssueIdRecentListByUserId, getIssueByIssueId, getAllFeedbackPersonList };
+module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList };

@@ -6,8 +6,9 @@ const db = require('../../../db/db');
 const { issueDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { id: userId } = req.user;
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const { teamId } = req.body;
+
+  if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -15,7 +16,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     let resultList = [];
-    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByUserId(client, userId);
+    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamId(client, teamId);
     for (const issue of myIssueIdRecentList) {
       const myIssue = await issueDB.getIssueByIssueId(client, issue.id);
       const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, issue.id);
@@ -29,7 +30,6 @@ module.exports = async (req, res) => {
         userName: myIssue.userName,
       });
     }
-
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, resultList));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
