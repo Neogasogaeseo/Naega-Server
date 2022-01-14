@@ -23,13 +23,17 @@ module.exports = async (req, res) => {
     console.log("alreadyKeyword",alreadyKeyword);
 
     if (alreadyKeyword) {
-      return res.status(statusCode.OK).send(util.fail(statusCode.OK, responseMessage.ALREADY_KEYWORD));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
     }
 
-    const newKeyword = await keywordDB.addKeyword(client,name,user.id);
+    const colorId = Math.floor(Math.random() * 10)
+    const newKeyword = await keywordDB.addKeyword(client,name,user.id,colorId);
     console.log("newKeyword : ", newKeyword);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, newKeyword));
+    const returnedKeyword = await keywordDB.checkKeyword(client,name);
+    console.log("returnedKeyword : ",returnedKeyword);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

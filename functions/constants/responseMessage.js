@@ -31,6 +31,7 @@ module.exports = {
 
   // keyword
   ALREADY_KEYWORD : '이미 존재하는 키워드입니다',
+  ADD_KEYWORD_SUCCESS : '키워드 생성 성공',
 
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
 };
