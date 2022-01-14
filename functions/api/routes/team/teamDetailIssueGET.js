@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const lodash = require('lodash');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
@@ -11,21 +12,21 @@ const extractValues = (arr, key) => {
 };
 
 module.exports = async (req, res) => {
-  const { id: userId } = req.user;
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const { teamId } = req.body;
+
+  if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByUserId(client, userId);
+    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamId(client, teamId);
     const idList = extractValues(myIssueIdRecentList, 'id');
 
     let myIssue = await issueDB.getIssueByIssueId(client, idList);
     for (const issue of myIssue) {
       issue.createdAt = issue.createdAt.getFullYear() + '-' + issue.createdAt.getMonth() + 1 + '-' + issue.createdAt.getDate();
-
     }
 
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
@@ -43,7 +44,7 @@ module.exports = async (req, res) => {
     feedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     const resultList = Array.from(map.values());
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_MY_ISSUE_SUCCESS, resultList));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_SUCCESS, resultList));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

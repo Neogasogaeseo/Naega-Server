@@ -3,21 +3,29 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { memberDB } = require('../../../db');
+const { teamDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { id: userId } = req.user;
+  const { teamId } = req.body;
 
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const myTeamList = await memberDB.getAllTeamByUserId(client, userId);
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_TEAM_SUCCESS, myTeamList));
+    const team = await teamDB.getTeamById(client, teamId);
+    const member = await teamDB.getMemberByTeamId(client, teamId);
+    console.log(member);
+    const data = {
+      teamImage: team.image,
+      teamName: team.name,
+      teamDescription: team.description,
+      memberCount: member.length,
+      memberList: member,
+    };
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
