@@ -30,12 +30,14 @@ module.exports = async (req, res) => {
     const hostMemberId = hostUserId;
     const hostMemberData = await teamDB.addHostMember(client, teamId, hostMemberId);
 
+    //^_^// 그 외 member row값 POST
+    const 
     const memberData = await teamDB.addMember(client, teamId, userIdList);
 
     const resultData = {
       team: teamData,
       hostMember: hostMemberData,
-      member: [memberData]
+      member: memberData
     }
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_TEAM, resultData));
