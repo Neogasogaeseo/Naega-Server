@@ -30,4 +30,10 @@ module.exports = {
   DELETE_POST: '게시글 삭제 성공',
 
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
+
+  // 팀원소개서
+  READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',
+  READ_MY_ISSUE_SUCCESS: '나와 관련된 이슈 조회 성공',
+  READ_TEAM_SUCCESS: '팀 조회 성공',
+  READ_TEAM_ISSUE_SUCCESS: '팀 이슈 조회 성공',
 };
