@@ -3,44 +3,37 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const {keywordDB} = require('../../../db');
-
+const { keywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const user = req.user
-  const {name} = req.body
+  const user = req.user;
+  const { name } = req.body;
 
-  console.log("user : ", user.id)
+  console.log('user : ', user.id);
 
   if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   let client;
-  
-  
+
   try {
     client = await db.connect(req);
 
-    const alreadyKeyword = await keywordDB.checkKeyword(client,name);
-    console.log("alreadyKeyword",alreadyKeyword);
+    const alreadyKeyword = await keywordDB.checkKeyword(client, name);
+    console.log('alreadyKeyword', alreadyKeyword);
 
     if (alreadyKeyword) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
     }
 
-    const colorId = Math.floor(Math.random() * 10)
-    const newKeyword = await keywordDB.addKeyword(client,name,user.id,colorId);
-    console.log("newKeyword : ", newKeyword);
-
-    const returnedKeyword = await keywordDB.checkKeyword(client,name);
-    console.log("returnedKeyword : ",returnedKeyword);
+    const colorId = Math.floor(Math.random() * 10);
+    const newKeyword = await keywordDB.addKeyword(client, name, user.id, colorId);
+    const returnedKeyword = await keywordDB.checkKeyword(client, name);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
-    
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
-    
+
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
-    
   } finally {
     client.release();
   }
