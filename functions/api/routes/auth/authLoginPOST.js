@@ -28,7 +28,11 @@ module.exports = async (req, res) => {
         code: authenticationCode,
         grant_type: 'authorization_code',
         client_id: process.env.KAKAO_KEY,
+<<<<<<< HEAD
         redirect_uri: 'http://127.0.0.1:5000/neogasogaeseo-9aaf5/asia-northeast3/api/auth/kakao/callback',
+=======
+        redirect_uri: process.env.KAKAO_URI,
+>>>>>>> a03c670f1b0dc5ec4dc35ef29023eec9a3a68e65
         client_secret: process.env.KAKAO_SECRET,
       }),
     });
@@ -62,7 +66,11 @@ module.exports = async (req, res) => {
     const accesstoken = jwtHandlers.sign(authUser);
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
+<<<<<<< HEAD
         //^_^//     user,
+=======
+        //^_^// user,
+>>>>>>> a03c670f1b0dc5ec4dc35ef29023eec9a3a68e65
         authUser,
         accesstoken,
       }),
