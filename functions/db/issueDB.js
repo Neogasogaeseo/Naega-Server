@@ -53,26 +53,28 @@ const getIssueByIssueId = async (client, issueId) => {
     ON i.team_id = t.id
     JOIN "user" u
     ON i.user_id = u.id
-    WHERE i.id = $1
+    WHERE i.id in (${issueId.join(',')})
     AND i.is_deleted = false
     `,
-    [issueId],
   );
 
-  return convertSnakeToCamel.keysToCamel(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const getAllFeedbackPersonList = async (client, issueId) => {
   const { rows } = await client.query(
     `
-        SELECT u.name, u.image
+        SELECT f.issue_id as id, uu.name, uu.image
+        FROM feedback "f",
+        (SELECT u.id, u.name, u.image
         FROM "user" u JOIN "feedback" f
         ON u.id = f.tagged_user_id
-        WHERE f.issue_id = $1
+        WHERE f.issue_id in (${issueId.join(',')})
         AND f.is_deleted = false
-        GROUP BY u.id 
+        GROUP BY u.id) uu
+        WHERE uu.id=f.tagged_user_id
+        AND f.issue_id in (${issueId.join(',')})
         `,
-    [issueId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
