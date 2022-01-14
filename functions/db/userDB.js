@@ -70,7 +70,8 @@ const getUserById = async (client, userId) => {
 const getUserListByProfileId = async (client, profileId) => {
   const { rows } = await client.query (
     /*sql*/`
-    SELECT * FROM "user" u
+    SELECT u.id, u.profile_id, u.name, u.image
+    FROM "user" u
     WHERE profile_id = $1
       AND is_deleted = FALSE
     `,
