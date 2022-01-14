@@ -67,4 +67,18 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById };
+const getUserListByProfileId = async (client, profileId) => {
+  const { rows } = await client.query (
+    /*sql*/`
+    SELECT * FROM "user" u
+    WHERE profile_id = $1
+      AND is_deleted = FALSE
+    `,
+
+    [profileId],
+  );
+  if(!rows) {return null}
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId };

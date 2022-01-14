@@ -4,5 +4,6 @@ const router = express.Router();
 
 router.post('/keyword',checkUser, require('./keywordCreatePOST'));
 
+router.get('/search', require('./userSearchGET'));
 
 module.exports = router;
