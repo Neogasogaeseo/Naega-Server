@@ -7,7 +7,7 @@ const secretKey = process.env.JWT_SECRET;
 const options = {
   algorithm: 'HS256',
   expiresIn: '30d',
-  issuer: 'WYB',
+  issuer: 'Neogasogaeseo',
 };
 
 // id, email, name, idFirebase가 담긴 JWT를 발급합니다.

@@ -55,4 +55,16 @@ const updateRefreshTokenById = async (client, id, refreshToken) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addUser, getUserByAuthenticationCode, updateRefreshTokenById };
+const getUserById = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM "user" u
+      WHERE id = $1
+        AND is_deleted = FALSE
+      `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById };
