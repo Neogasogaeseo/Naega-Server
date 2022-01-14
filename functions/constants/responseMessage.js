@@ -42,5 +42,8 @@ module.exports = {
   READ_TEAM_SUCCESS: '팀 조회 성공',
   READ_TEAM_ISSUE_SUCCESS: '팀 이슈 조회 성공',
 
+  // 팀 이슈
+  READ_ALL_CATEGORY_SUCCESS: '이슈 카테고리 조회 성공',
+
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
 };

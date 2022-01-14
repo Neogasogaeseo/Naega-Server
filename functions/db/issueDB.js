@@ -79,5 +79,21 @@ const getAllFeedbackPersonList = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList };
+const getIssueCategoryList = async (client) => {
+  const { rows } = await client.query(
+    /*sql*/`
+    SELECT *
+    FROM category
+  `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+/**오늘의 한마디..
+const addIssue = async (client) => {
+
+}
+*/
+
+module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList, getIssueCategoryList };
 
