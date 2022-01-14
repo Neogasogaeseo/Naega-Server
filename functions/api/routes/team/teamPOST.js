@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const teamData = await teamDB.addTeam(client);
+    const teamData = await teamDB.addTeam(client, name, image, description);
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_TEAM, teamData));
     
