@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { checkUser } = require('../../../middlewares/auth');
 
-router.post('/', require('./teamPOST'));
+router.post('/', checkUser, require('./teamPOST'));
 
 
 // router.get('/', checkUser, require('./teamGET'));

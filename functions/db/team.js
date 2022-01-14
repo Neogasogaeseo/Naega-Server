@@ -23,21 +23,23 @@ const addHostMember = async (client, teamId, userId) => {
         VALUES 
         ($1, $2, true, true)
         RETURNING *
-        `
-    )
-}
+        `,
 
-const addMember = async (client, teamId, userId) => {
+        [teamId, userId],
+    );
+    return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addMember = async (client, teamId, userIdList) => {
+    const valuesQuery = (userIdList.map(x=>`(${teamId}, ${x})`)).join(', ')
     const { rows } = await client.query(
         `
         INSERT INTO member
         (team_id, user_id)
         VALUES 
-        ($1, $2)
+        ${valuesQuery}
         RETURNING *
         `,
-
-        [teamId, userId]
     );
     return convertSnakeToCamel.keysToCamel(rows);
 };

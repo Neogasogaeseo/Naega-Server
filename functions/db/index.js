@@ -1,7 +1,6 @@
 module.exports = {
-  userDB: require('./user'),
+  userDB: require('./userDB'),
   teamDB: require('./team'),
-  userDB: require('./user'),
   // memberDB: require('./member'),
   // issueDB: require('./issue'),
 };
