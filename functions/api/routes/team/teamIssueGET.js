@@ -15,20 +15,19 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     let resultList = [];
-    const myIssueList = await issueDB.getAllIssueByUserId(client, userId);
-
-    for (const issue of myIssueList) {
-      const categoryName = issue.categoryName;
-      const createdAt = issue.createdAt;
-      const content = issue.content;
+    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByUserId(client, userId);
+    for (const issue of myIssueIdRecentList) {
+      const myIssue = await issueDB.getIssueByIssueId(client, issue.id);
       const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, userId, issue.id);
+      console.log(myFeedbackPersonList);
+      const createdAt = myIssue.createdAt;
       resultList.push({
-        categoryName: categoryName,
+        categoryName: myIssue.categoryName,
         createdAt: createdAt.getFullYear() + '-' + createdAt.getMonth() + 1 + '-' + createdAt.getDate(),
-        content: content,
+        content: myIssue.content,
         feedbackPersonList: myFeedbackPersonList,
-        teamName: issue.teamName,
-        userName: issue.userName,
+        teamName: myIssue.teamName,
+        userName: myIssue.userName,
       });
     }
 

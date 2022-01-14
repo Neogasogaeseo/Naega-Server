@@ -8,7 +8,8 @@ const getAllTeamByUserId = async (client, userId) => {
     FROM "team" t, (SELECT team_id
         FROM "member" m
         WHERE user_id = $1 and is_confirmed = true) m
-    WHERE t.id = m.team_id;
+    WHERE t.id = m.team_id
+    AND t.is_deleted = false;
     `,
     [userId],
   );
