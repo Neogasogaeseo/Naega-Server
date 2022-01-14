@@ -29,6 +29,10 @@ module.exports = {
   UPDATE_POST: '게시글 수정 성공',
   DELETE_POST: '게시글 삭제 성공',
 
+  // keyword
+  ALREADY_KEYWORD : '이미 존재하는 키워드입니다',
+  ADD_KEYWORD_SUCCESS : '키워드 생성 성공',
+
   // 팀 정보
   READ_TEAM: '팀 정보 조회 성공',
   READ_ALL_TEAM: '모든 팀 정보 조회 성공',
