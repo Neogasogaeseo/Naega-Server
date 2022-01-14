@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByUserId(client, userId);
     for (const issue of myIssueIdRecentList) {
       const myIssue = await issueDB.getIssueByIssueId(client, issue.id);
-      const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, userId, issue.id);
+      const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, issue.id);
       const createdAt = myIssue.createdAt;
       resultList.push({
         categoryName: myIssue.categoryName,
