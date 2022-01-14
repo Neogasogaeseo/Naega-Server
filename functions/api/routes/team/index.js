@@ -5,7 +5,7 @@ const { checkUser } = require('../../../middlewares/auth');
 router.post('/', checkUser, require('./teamPOST'));
 
 
-// router.get('/', checkUser, require('./teamGET'));
-// router.get('/issue', checkUser, require('./teamIssueGET'));
+router.get('/', checkUser, require('./teamGET'));
+router.get('/issue', checkUser, require('./teamIssueGET'));
 
 module.exports = router;
