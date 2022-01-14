@@ -29,5 +29,8 @@ module.exports = {
   UPDATE_POST: '게시글 수정 성공',
   DELETE_POST: '게시글 삭제 성공',
 
+  // keyword
+  ALREADY_KEYWORD : '이미 존재하는 키워드입니다',
+
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
 };
