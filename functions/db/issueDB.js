@@ -80,3 +80,4 @@ const getAllFeedbackPersonList = async (client, issueId) => {
 };
 
 module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList };
+

@@ -25,6 +25,7 @@ module.exports = async (req, res) => {
     let myIssue = await issueDB.getIssueByIssueId(client, idList);
     for (const issue of myIssue) {
       issue.createdAt = issue.createdAt.getFullYear() + '-' + issue.createdAt.getMonth() + 1 + '-' + issue.createdAt.getDate();
+
     }
 
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);

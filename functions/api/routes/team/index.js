@@ -1,6 +1,9 @@
 const express = require('express');
-const { checkUser } = require('../../../middlewares/auth');
 const router = express.Router();
+const { checkUser } = require('../../../middlewares/auth');
+
+router.post('/', checkUser, require('./teamPOST'));
+
 
 router.get('/', checkUser, require('./teamGET'));
 router.get('/issue', checkUser, require('./teamIssueGET'));
