@@ -9,6 +9,6 @@ router.get('/issue', checkUser, require('./teamIssueGET'));
 router.get('/detail', checkUser, require('./teamDetailGET'));
 router.get('/detail/issue', checkUser, require('./teamDetailIssueGET'));
 
-router.get('/member', checkUser, require('./teamMemberListGET'));
+router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
 
 module.exports = router;
