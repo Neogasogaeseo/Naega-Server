@@ -54,4 +54,8 @@ module.exports = {
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
 
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
+
+  // 너가소개서
+  READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
+  READ_ALL_FORM_RECENT_SUCCESS: '전체 폼 최신순 조회 성공',
 };
