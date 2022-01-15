@@ -43,5 +43,8 @@ module.exports = {
   READ_TEAM_SUCCESS: '팀 조회 성공',
   READ_TEAM_ISSUE_SUCCESS: '팀 이슈 조회 성공',
 
+  // 피드백
+  ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
+
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
 };

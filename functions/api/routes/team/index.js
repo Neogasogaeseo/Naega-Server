@@ -10,5 +10,6 @@ router.get('/detail', checkUser, require('./teamDetailGET'));
 router.get('/detail/issue', checkUser, require('./teamDetailIssueGET'));
 
 router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
+router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
 
 module.exports = router;
