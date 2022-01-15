@@ -1,15 +1,16 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
-const checkKeyword = async (client, keyword) => {
+const checkKeyword = async (client, keyword, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
         SELECT k.name, color.code FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.name = $1
+        AND k.user_id = $2
         AND is_deleted = FALSE
         `,
-    [keyword],
+    [keyword, userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -18,7 +19,7 @@ const addKeyword = async (client, name, userId, colorId) => {
   const { rows } = await client.query(
     /*sql*/ `
         INSERT INTO keyword
-        (name, user_id,color_id)
+        ("name", user_id, color_id)
         VALUES
         ($1, $2, $3)
         `,
