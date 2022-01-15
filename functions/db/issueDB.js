@@ -79,5 +79,31 @@ const getAllFeedbackPersonList = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList };
+const getIssueCategoryList = async (client) => {
+  const { rows } = await client.query(
+    /*sql*/`
+    SELECT *
+    FROM category
+  `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const addIssue = async (client, userId, teamId, categoryId, content, image) => {
+  const { rows } = await client.query (
+    /*sql*/`
+    INSERT INTO issue
+    (team_id, user_id, category_id, content, "image")
+    VALUES
+    ($1, $2, $3, $4, $5)
+    RETURNING *
+    `,
+
+    [teamId, userId, categoryId, content, image],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+}
+
+
+module.exports = { getIssueIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getAllFeedbackPersonList, getIssueCategoryList, addIssue };
 
