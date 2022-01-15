@@ -41,7 +41,12 @@ module.exports = {
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',
   READ_MY_ISSUE_SUCCESS: '나와 관련된 이슈 조회 성공',
   READ_TEAM_SUCCESS: '팀 조회 성공',
+
+  // 팀원소개서 이슈
   READ_TEAM_ISSUE_SUCCESS: '팀 이슈 조회 성공',
+  READ_ALL_CATEGORY_SUCCESS: '이슈 카테고리 조회 성공',
+  POST_TEAM_ISSUE: '팀 이슈 등록 성공',
+  NO_TEAM_ISSUE_CONTENT: '이슈 컨텐트 값이 없습니다',
 
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
 };
