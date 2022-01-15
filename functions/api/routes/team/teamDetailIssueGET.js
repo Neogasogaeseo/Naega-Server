@@ -21,14 +21,18 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamId(client, teamId);
     const idList = extractValues(myIssueIdRecentList, 'id');
 
+    //^_^// issue id로 issue 정보 가져오기 완료
     let myIssue = await issueDB.getIssueByIssueId(client, idList);
     for (const issue of myIssue) {
       issue.createdAt = issue.createdAt.getFullYear() + '-' + issue.createdAt.getMonth() + 1 + '-' + issue.createdAt.getDate();
     }
+    const myTeam = await issueDB.getTeamByIssueId(client, idList);
 
+    //^_^// feedback 당한 사람 가져오기 완료
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
@@ -39,9 +43,11 @@ module.exports = async (req, res) => {
       return result;
     }, []);
 
+    //^_^// 합치기 완료
     const map = new Map();
-    myIssue.forEach((item) => map.set(item.id, item));
-    feedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    feedbackList.forEach((item) => map.set(item.id, item));
+    myIssue.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    myTeam.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     const resultList = Array.from(map.values());
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_SUCCESS, resultList));
