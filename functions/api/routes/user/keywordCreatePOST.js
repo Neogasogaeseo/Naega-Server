@@ -7,7 +7,7 @@ const { keywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
-  const { name } = req.body;
+  const { name, userId } = req.body;
 
   if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   let client;
@@ -15,16 +15,26 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name);
-    console.log('alreadyKeyword', alreadyKeyword);
+    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
 
     if (alreadyKeyword) {
+      alreadyKeyword.colorCode = alreadyKeyword.code;
+      delete alreadyKeyword.code;
+
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
     }
 
     const colorId = Math.floor(Math.random() * 10);
-    const newKeyword = await keywordDB.addKeyword(client, name, user.id, colorId);
-    const returnedKeyword = await keywordDB.checkKeyword(client, name);
+    const newKeyword = await keywordDB.addKeyword(client, name, userId, colorId);
+
+    console.log('newKeyword :', newKeyword);
+
+    const returnedKeyword = await keywordDB.checkKeyword(client, name, userId);
+    returnedKeyword.colorCode = returnedKeyword.code;
+    delete returnedKeyword.code;
+
+    console.log('returnedKeyword :', returnedKeyword);
+    ``;
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
   } catch (error) {

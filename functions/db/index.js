@@ -4,4 +4,6 @@ module.exports = {
   memberDB: require('./memberDB'),
   issueDB: require('./issueDB'),
   teamDB: require('./teamDB'),
+  feedbackDB: require('./feedbackDB'),
+  linkFeedbacKeywordDB: require('./linkFeedbacKeywordDB'),
 };
