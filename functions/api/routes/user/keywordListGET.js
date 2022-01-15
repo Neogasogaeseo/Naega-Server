@@ -7,26 +7,18 @@ const { keywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
-  const { name } = req.body;
+  const { offset, limit } = req.query;
 
   if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
   let client;
 
   try {
     client = await db.connect(req);
 
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name);
-    console.log('alreadyKeyword', alreadyKeyword);
-
-    if (alreadyKeyword) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
-    }
-
-    const colorId = Math.floor(Math.random() * 10);
-    const newKeyword = await keywordDB.addKeyword(client, name, user.id, colorId);
-    const returnedKeyword = await keywordDB.checkKeyword(client, name);
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
+    const getKeyword = await keywordDB.getKeywordList(client, user.id, offset, limit);
+    const data = { name: user.name, keyword: getKeyword };
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_KEYWORD_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

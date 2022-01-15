@@ -11,4 +11,6 @@ router.get('/detail', checkUser, require('./teamDetailGET'));
 router.get('/detail/issue', checkUser, require('./teamDetailIssueGET'));
 router.get('/issue/category', require('./teamIssueCategoryGET'));
 
+router.get('/member', checkUser, require('./teamMemberListGET'));
+
 module.exports = router;
