@@ -8,8 +8,7 @@ const { memberDB } = require('../../../db');
 module.exports = async (req, res) => {
   const user = req.user;
   const { teamId } = req.params;
-  console.log('req.param :', req.params);
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!user || !teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -17,7 +16,6 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const getTeamMember = await memberDB.getAllTeamMemberByTeamId(client, teamId);
-    console.log('getTeamMember :', getTeamMember);
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_TEAM_MEMBER, getTeamMember));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
