@@ -8,10 +8,10 @@ const { feedbackDB, linkFeedbacKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
-  const { issueId, taggedUserId, content, keywordId } = req.body;
+  const { issueId, taggedUserId, content, keywordIds } = req.body;
 
   if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  if (!issueId || !taggedUserId || !content || !keywordId) {
+  if (!issueId || !taggedUserId || !content || !keywordIds) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
   let client;
@@ -19,12 +19,13 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const addFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
-    console.log('addFeedback :', addFeedback);
+    const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
+    console.log('addFeedback :', newFeedback);
 
-    // const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client,);
+    const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client, newFeedback.id, keywordIds);
+    console.log('addLinkFeedbackKeyword :', addLinkFeedbackKeyword);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_FEEDBACK_SUCCESS, addFeedback));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_FEEDBACK_SUCCESS, newFeedback));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
