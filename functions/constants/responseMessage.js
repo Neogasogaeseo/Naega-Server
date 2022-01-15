@@ -17,6 +17,8 @@ module.exports = {
   // 프로필 조회
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
   READ_USER_SUCCESS: '유저 조회 성공',
+  READ_USER_LIST_SUCCESS: '유저 검색 결과 조회 성공',
+  NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
