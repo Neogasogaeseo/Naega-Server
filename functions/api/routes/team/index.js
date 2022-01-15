@@ -4,6 +4,7 @@ const { checkUser } = require('../../../middlewares/auth');
 
 router.post('/', checkUser, require('./teamPOST'));
 
+router.put('/edit', checkUser, require('./teamPUT'));
 
 router.get('/', checkUser, require('./teamGET'));
 router.get('/issue', checkUser, require('./teamIssueGET'));

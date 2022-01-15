@@ -74,5 +74,34 @@ const addMember = async (client, teamId, userIdList) => {
     return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId };
+const checkMemberTeam = async (client, userId, teamId) => {
+  const { rows } = await client.query (
+    /*sql*/`
+    SELECT m.team_id, m.user_id    
+    FROM "member" m
+    WHERE m.user_id = $1
+      AND m.team_id = $2
+      AND is_deleted = false
+    `,
+
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateTeam = async (client, teamId, teamName, description, image) => {
+  const { rows } = await client.query (
+    `
+    UPDATE team t
+    SET name = $1, description = $2, image = $3
+    WHERE id = $4
+    RETURNING *
+    `,
+
+    [teamName, description, image, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId, checkMemberTeam, updateTeam,  };
 
