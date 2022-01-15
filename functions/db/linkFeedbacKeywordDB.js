@@ -3,6 +3,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const addLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
   const valuesQuery = keywordIds.map((x) => `(${feedbackId}, ${x})`).join(',');
+  console.log('valuesQuery : ', valuesQuery);
   let rows = { rows: null };
   if (keywordIds.length > 0) {
     rows = await client.query(/*sql*/ `
