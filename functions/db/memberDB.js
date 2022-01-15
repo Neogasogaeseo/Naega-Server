@@ -17,4 +17,17 @@ const getAllTeamByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllTeamByUserId };
+const addMemberToTeam = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    INSERT INTO "member"
+    (user_id, team_id, is_confirmed)
+    VALUES
+    ($1, $2, true)
+    `,
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllTeamByUserId, addMemberToTeam };
