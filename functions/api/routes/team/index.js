@@ -7,7 +7,7 @@ router.post('/issue', checkUser, require('./teamIssuePOST'));
 
 router.get('/', checkUser, require('./teamGET'));
 router.get('/issue', checkUser, require('./teamIssueGET'));
-router.get('/detail', checkUser, require('./teamDetailGET'));
+router.get('/:teamId', checkUser, require('./teamDetailGET'));
 router.get('/detail/issue', checkUser, require('./teamDetailIssueGET'));
 router.get('/invite', checkUser, require('./teamInviteGET'));
 router.post('/invite', checkUser, require('./teamInvitePOST'));
