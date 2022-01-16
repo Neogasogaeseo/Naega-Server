@@ -16,7 +16,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const checkUser = await memberDB.checkMemberTeam(client, userId, teamId);
+    const checkUser = await memberDB.checkMemberHost(client, userId, teamId);
     if (!checkUser) {
       //^_^// is_host가 false인 경우 수정하지 못하도록 함
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));

@@ -66,7 +66,7 @@ const addMember = async (client, teamId, userIdList) => {
 };
 
 //^_^// 해당 멤버가 팀의 host인지 확인하는 과정
-const checkMemberTeam = async (client, userId, teamId) => {
+const checkMemberHost = async (client, userId, teamId) => {
   const { rows } = await client.query (
     `
     SELECT m.team_id, m.user_id    
@@ -83,4 +83,4 @@ const checkMemberTeam = async (client, userId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllTeamByUserId,addMemberToTeam, getAllTeamMemberByTeamId, addMember, checkMemberTeam, };
+module.exports = { getAllTeamByUserId,addMemberToTeam, getAllTeamMemberByTeamId, addMember, checkMemberHost, };
