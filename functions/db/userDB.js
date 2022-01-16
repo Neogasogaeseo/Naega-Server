@@ -67,13 +67,28 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileId = async (client, profileId) => {
+const getUserListByProfileId = async (client, profileId, teamId) => {
+
+  const { rows: existMemberRows } = await client.query (
+    `
+    SELECT u.profile_id
+    FROM "user" u JOIN member
+      ON u.id = member.user_id
+    WHERE member.team_id = ${teamId}
+    `
+  );
+  console.log(existMemberRows);
+  
+  const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
+  console.log(profileIdSet);
+
   const { rows } = await client.query (
-    /*sql*/`
+    `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
     WHERE profile_id = $1
       AND is_deleted = FALSE
+      AND u.profile_id NOT IN ${profileIdSet}
     `,
 
     [profileId],
