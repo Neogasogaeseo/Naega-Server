@@ -59,4 +59,5 @@ module.exports = {
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
   READ_ALL_FORM_RECENT_SUCCESS: '전체 폼 최신순 조회 성공',
   FORM_CREATE_SUCCESS: '폼 생성 성공',
+  READ_RELATIONSHIP_SUCCESS: '관계 조회 성공',
 };
