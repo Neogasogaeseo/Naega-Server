@@ -1,17 +1,29 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
-const addUser = async (client, profileId, name, authenticationCode, refreshToken, provider) => {
+const checkUserProfileId = async (client, profileId) => {
+  const { rows } = await client.query(
+    `
+      SELECT * FROM "user"
+      WHERE profile_id = $1
+      AND is_deleted = false
+    `,
+    [profileId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addUser = async (client, profileId, name, authenticationCode, provider) => {
   const { rows } = await client.query(
     `
         INSERT INTO "user"
-        (profile_id, name, authentication_code, refresh_token, provider)
+        (profile_id, name, authentication_code, provider)
         VALUES
-        ($1, $2, $3, $4, $5)
+        ($1, $2, $3, $4)
         RETURNING *
         `,
 
-    [profileId, name, authenticationCode, refreshToken, provider],
+    [profileId, name, authenticationCode, provider],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -68,23 +80,22 @@ const getUserById = async (client, userId) => {
 };
 
 const getUserListByProfileId = async (client, profileId, teamId) => {
-
   //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
-  const { rows: existMemberRows } = await client.query (
+  const { rows: existMemberRows } = await client.query(
     `
     SELECT u.profile_id
     FROM "user" u JOIN member
       ON u.id = member.user_id
     WHERE member.team_id = ${teamId}
-    `
+    `,
   );
   console.log(existMemberRows);
-  
+
   const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
   console.log(profileIdSet);
 
   //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
@@ -95,8 +106,10 @@ const getUserListByProfileId = async (client, profileId, teamId) => {
 
     [profileId],
   );
-  if(!rows) {return null};
+  if (!rows) {
+    return null;
+  }
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId };
+module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId };

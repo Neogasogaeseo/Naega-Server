@@ -7,10 +7,10 @@ const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 
 module.exports = async (req, res) => {
-  const { profileId, name, img, provider, accesstoken, refreshtoken } = req.body;
+  const { profileId, name, image, provider, accesstoken, refreshtoken } = req.body;
   let client;
   let kakao_profile = '';
-  if (!accesstoken && !refreshtoken) {
+  if (!profileId || !name || !image || !provider || !accesstoken || !refreshtoken) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -26,12 +26,20 @@ module.exports = async (req, res) => {
   }
   try {
     client = await db.connect();
-    const user = await userDB.addUser(client, profileId, name, kakao_profile.data.id, refreshtoken, provider); // refresh token 으로
-    const accesstoken = jwtHandlers.sign(user);
+    const check = await userDB.checkUserProfileId(client, profileId);
+    if (check) {
+      client.release();
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
+    }
+
+    const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider);
+    const { accessToken, refreshToken } = jwtHandlers.sign(tempUser);
+    const user = await userDB.updateRefreshTokenById(client, tempUser.id, refreshToken);
+
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.CREATED_USER, {
         user,
-        accesstoken,
+        accesstoken: accessToken,
       }),
     );
   } catch (error) {
