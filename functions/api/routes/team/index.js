@@ -9,6 +9,7 @@ router.get('/', checkUser, require('./teamGET'));
 router.get('/issue', checkUser, require('./teamIssueGET'));
 router.get('/detail/:teamId', checkUser, require('./teamDetailGET'));
 router.get('/detail/:teamId/issue', checkUser, require('./teamDetailIssueGET'));
+router.get('/detail/:teamId/issue/my', checkUser, require('./teamDetailMyIssueGET'));
 router.get('/invite', checkUser, require('./teamInviteGET'));
 router.put('/invite/accept', checkUser, require('./teamInviteAcceptPUT'));
 router.put('/invite/reject', checkUser, require('./teamInviteRejectPUT'));
