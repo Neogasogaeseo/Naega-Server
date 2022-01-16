@@ -17,13 +17,28 @@ const getAllTeamByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const addMemberToTeam = async (client, userId, teamId) => {
+const updateMemberAccept = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
-    INSERT INTO "member"
-    (user_id, team_id, is_confirmed)
-    VALUES
-    ($1, $2, true)
+    UPDATE member
+    SET is_confirmed = true
+    WHERE user_id = $1
+    AND team_id = $2
+    RETURNING *
+    `,
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateMemberReject = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_deleted = true
+    WHERE user_id = $1
+    AND team_id = $2
+    RETURNING *
     `,
     [userId, teamId],
   );
@@ -46,4 +61,4 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllTeamByUserId,addMemberToTeam, getAllTeamMemberByTeamId };
+module.exports = { getAllTeamByUserId, updateMemberAccept, updateMemberReject, getAllTeamMemberByTeamId };

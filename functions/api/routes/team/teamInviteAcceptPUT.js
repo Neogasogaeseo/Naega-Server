@@ -16,8 +16,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const member = await memberDB.addMemberToTeam(client, userId, teamId);
-
+    const member = await memberDB.updateMemberAccept(client, userId, teamId);
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, member));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
