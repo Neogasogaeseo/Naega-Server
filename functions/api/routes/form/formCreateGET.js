@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { encrypt } = require('../../../middlewares/uriComponent');
+const { encrypt, decrypt } = require('../../../middlewares/crypto');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
