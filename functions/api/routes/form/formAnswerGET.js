@@ -4,8 +4,9 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { answerDB, formDB } = require('../../../db');
-const { encrypt, decrypt } = require('../../../middlewares/crypto');
+const { answerDB, formDB, userDB } = require('../../../db');
+const { decrypt } = require('../../../middlewares/crypto');
+const _ = require('lodash');
 
 
 module.exports = async (req, res) => {
@@ -17,6 +18,8 @@ module.exports = async (req, res) => {
   const hash = { iv : iv, q: q};
   const { userId, formId } = decrypt(hash);
 
+  console.log(userId, formId);
+
   let client;
  
   try {
@@ -25,10 +28,15 @@ module.exports = async (req, res) => {
     const relationshipList = await answerDB.getRelationship(client);
 
     const formData = await formDB.getForm(client, userId, formId);
+    console.log(formData);
 
+    const userDataList = await userDB.getUserById(client, userId);
+    const userData = _.pick(userDataList, ['id', 'name']);
+    
     const resultData = {
-      realtionship: relationshipList,
-      formData: formData
+      relationship: relationshipList,
+      form: formData,
+      user: userData
     };
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultData ));
