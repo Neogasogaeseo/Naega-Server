@@ -7,10 +7,11 @@ const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 
 module.exports = async (req, res) => {
-  const { profileId, name, image, provider, accesstoken, refreshtoken } = req.body;
+  const { profileId, name, provider, accesstoken, refreshtoken } = req.body;
+  const imageUrls = req.imageUrls;
   let client;
   let kakao_profile = '';
-  if (!profileId || !name || !image || !provider || !accesstoken || !refreshtoken) {
+  if (!profileId || !name || !imageUrls || !provider || !accesstoken || !refreshtoken) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -32,7 +33,7 @@ module.exports = async (req, res) => {
       return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
     }
 
-    const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider);
+    const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider, imageUrls);
     const { accessToken, refreshToken } = jwtHandlers.sign(tempUser);
     const user = await userDB.updateRefreshTokenById(client, tempUser.id, refreshToken);
 

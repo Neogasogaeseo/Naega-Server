@@ -13,17 +13,17 @@ const checkUserProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addUser = async (client, profileId, name, authenticationCode, provider) => {
+const addUser = async (client, profileId, name, authenticationCode, provider, image) => {
   const { rows } = await client.query(
     `
         INSERT INTO "user"
-        (profile_id, name, authentication_code, provider)
+        (profile_id, name, authentication_code, provider, image)
         VALUES
-        ($1, $2, $3, $4)
+        ($1, $2, $3, $4, $5)
         RETURNING *
         `,
 
-    [profileId, name, authenticationCode, provider],
+    [profileId, name, authenticationCode, provider, image],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
