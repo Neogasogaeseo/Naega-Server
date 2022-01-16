@@ -34,7 +34,6 @@ module.exports = async (req, res) => {
     delete returnedKeyword.code;
 
     console.log('returnedKeyword :', returnedKeyword);
-    ``;
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
   } catch (error) {
