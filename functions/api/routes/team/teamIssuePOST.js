@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { issueDB } = require('../../../db')
+const { issueDB, memberDB } = require('../../../db')
 
 module.exports = async (req, res) => {
 
@@ -19,6 +19,12 @@ module.exports = async (req, res) => {
   
   try {
     client = await db.connect(req);
+
+    const checkMemberList = await memberDB.checkMemberTeam(client, teamId, userId);
+    if(!checkMemberList) {
+      //^_^// 유저가 해당 팀의 팀원이 아닐 경우 error 리턴
+      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_MEMBER));
+    }
 
     const issueData = await issueDB.addIssue(client, teamId, userId, categoryId, content, image);
     

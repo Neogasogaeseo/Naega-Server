@@ -38,6 +38,7 @@ module.exports = {
   READ_ALL_TEAM_MEMBER: '모든 팀원 정보 조회 성공',
   POST_MEMBER: '팀원 등록 성공',
   NO_MEMBER: '존재하지 않는 팀원입니다',
+  NO_AUTH_MEMBER: '수정 권한이 없습니다',
 
   // 팀원소개서
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',
@@ -52,6 +53,10 @@ module.exports = {
 
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
-
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
+
+  // 너가소개서
+  READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
+  READ_ALL_FORM_RECENT_SUCCESS: '전체 폼 최신순 조회 성공',
+  FORM_CREATE_SUCCESS: '폼 생성 성공',
 };

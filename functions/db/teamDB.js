@@ -4,7 +4,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const getTeamById = async (client, teamId) => {
   const { rows } = await client.query(
     `
-    SELECT t.image, t.name, t.description 
+    SELECT t.id, t.image, t.name, t.description 
     FROM "team" t
     WHERE t.id = $1
     AND t.is_deleted = false
@@ -18,7 +18,7 @@ const getTeamById = async (client, teamId) => {
 const getMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     `
-      SELECT u.image, u.name
+      SELECT u.id, u.image, u.name
       FROM "member" m JOIN "user" u
       ON m.user_id = u.id
       WHERE m.team_id = $1
@@ -60,18 +60,37 @@ const addHostMember = async (client, teamId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addMember = async (client, teamId, userIdList) => {
-  const valuesQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
-  const { rows } = await client.query(
+const updateTeam = async (client, teamId, teamName, description, image) => {
+  const { rows } = await client.query (
     `
-        INSERT INTO member
-        (team_id, user_id)
-        VALUES 
-        ${valuesQuery}
-        RETURNING *
-        `,
+    UPDATE team t
+    SET name = $1, description = $2, image = $3, updated_at = now()
+    WHERE id = $4
+    RETURNING *
+    `,
+
+    [teamName, description, image, teamId],
   );
-  return convertSnakeToCamel.keysToCamel(rows);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId };
+
+const getNewTeamByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.image, t.name, t.description 
+    FROM "team" t
+    JOIN "member" m
+    ON t.id = m.team_id
+    WHERE m.user_id = $1
+    AND t.is_deleted = false
+    AND m.is_confirmed = false
+    ORDER BY m.updated_at ASC
+    `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId};
+
