@@ -19,12 +19,6 @@ module.exports = async (req, res) => {
 
     const getKeyword = await keywordDB.getKeywordList(client, userId, offset, limit);
 
-    // ^_^// 객체의 키값인 code를 colorCode로 바꾸어주는 작업
-    Object.keys(getKeyword).forEach(function (key) {
-      getKeyword[key].colorCode = getKeyword[key].code;
-      delete getKeyword[key].code;
-    });
-
     const getUser = await userDB.getUserById(client, userId);
 
     const data = { name: getUser.name, keyword: getKeyword };
