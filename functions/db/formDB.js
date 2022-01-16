@@ -37,4 +37,17 @@ const getAllFormPopular = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular };
+const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.form_id as id, l.is_deleted
+    FROM "link_user_form" l
+    WHERE l.user_id = $1
+    AND l.form_id in (${formIdList.join(',')})
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId };
