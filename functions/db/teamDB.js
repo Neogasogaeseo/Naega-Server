@@ -74,4 +74,22 @@ const addMember = async (client, teamId, userIdList) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId };
+const getNewTeamByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.image, t.name, t.description 
+    FROM "team" t
+    JOIN "member" m
+    ON t.id = m.team_id
+    WHERE m.user_id = $1
+    AND t.is_deleted = false
+    AND m.is_confirmed = false
+    ORDER BY m.updated_at ASC
+    `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId, getNewTeamByUserId };
