@@ -32,6 +32,23 @@ const getIssueIdRecentListByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getIssueIdRecentListByTeamIdAndUserId = async (client, teamId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT i.id
+    FROM "issue" i 
+    WHERE i.team_id = $1 
+    AND i.user_id = $2
+    AND i.is_deleted = false
+    ORDER BY i.updated_at DESC
+    `,
+
+    [teamId, userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getIssueByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
@@ -65,7 +82,7 @@ const getTeamByIssueId = async (client, issueId) => {
 const getAllFeedbackPersonList = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT f.issue_id as id, uu.name, uu.image
+    SELECT f.issue_id as id, uu.id as user_id, uu.name, uu.image
     FROM feedback "f",
     (SELECT u.id, u.name, u.image
     FROM "user" u JOIN "feedback" f
@@ -102,4 +119,13 @@ const addIssue = async (client, userId, teamId, categoryId, content, image) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getFeedbackIdRecentListByUserId, getIssueIdRecentListByTeamId, getIssueByIssueId, getTeamByIssueId, getAllFeedbackPersonList, getIssueCategoryList, addIssue };
+module.exports = {
+  getFeedbackIdRecentListByUserId,
+  getIssueIdRecentListByTeamId,
+  getIssueIdRecentListByTeamIdAndUserId,
+  getIssueByIssueId,
+  getTeamByIssueId,
+  getAllFeedbackPersonList,
+  getIssueCategoryList,
+  addIssue,
+};

@@ -6,18 +6,15 @@ const db = require('../../../db/db');
 const { teamDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { teamId } = req.body;
-
-  if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-
+  const { id: userId } = req.user;
   let client;
 
   try {
     client = await db.connect(req);
 
-    const { name: teamName } = await teamDB.getTeamById(client, teamId);
+    const team = await teamDB.getNewTeamByUserId(client, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM, { teamId, teamName }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM, team));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
