@@ -8,16 +8,16 @@ const { encrypt, decrypt } = require('../../../middlewares/crypto');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const { teamId } = req.body;
+  const { formId } = req.body;
 
-  if (!userId || !teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!userId || !formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const data = await encrypt(userId, teamId);
+    const data = await encrypt(userId, formId);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
   } catch (error) {
