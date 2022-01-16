@@ -60,19 +60,20 @@ const addHostMember = async (client, teamId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addMember = async (client, teamId, userIdList) => {
-  const valuesQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
-  const { rows } = await client.query(
+const updateTeam = async (client, teamId, teamName, description, image) => {
+  const { rows } = await client.query (
     `
-        INSERT INTO member
-        (team_id, user_id)
-        VALUES 
-        ${valuesQuery}
-        RETURNING *
-        `,
+    UPDATE team t
+    SET name = $1, description = $2, image = $3, updated_at = now()
+    WHERE id = $4
+    RETURNING *
+    `,
+
+    [teamName, description, image, teamId],
   );
-  return convertSnakeToCamel.keysToCamel(rows);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
+
 
 const getNewTeamByUserId = async (client, userId) => {
   const { rows } = await client.query(
@@ -91,5 +92,5 @@ const getNewTeamByUserId = async (client, userId) => {
 
   return convertSnakeToCamel.keysToCamel(rows);
 };
+module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId};
 
-module.exports = { addTeam, addHostMember, addMember, getTeamById, getMemberByTeamId, getNewTeamByUserId };

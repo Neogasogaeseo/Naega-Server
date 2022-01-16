@@ -7,7 +7,7 @@ const { userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-  const { profileId } = req.query
+  const { profileId, teamId } = req.query
   
   if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const userSearchList = await userDB.getUserListByProfileId(client, profileId);
+    const userSearchList = await userDB.getUserListByProfileId(client, profileId, teamId);
 
     if (userSearchList.length === 0) {
         return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST, []));

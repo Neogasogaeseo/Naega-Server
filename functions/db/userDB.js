@@ -67,18 +67,35 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileId = async (client, profileId) => {
+const getUserListByProfileId = async (client, profileId, teamId) => {
+
+  //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
+  const { rows: existMemberRows } = await client.query (
+    `
+    SELECT u.profile_id
+    FROM "user" u JOIN member
+      ON u.id = member.user_id
+    WHERE member.team_id = ${teamId}
+    `
+  );
+  console.log(existMemberRows);
+  
+  const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
+  console.log(profileIdSet);
+
+  //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
   const { rows } = await client.query (
-    /*sql*/`
+    `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
     WHERE profile_id = $1
       AND is_deleted = FALSE
+      AND u.profile_id NOT IN ${profileIdSet}
     `,
 
     [profileId],
   );
-  if(!rows) {return null}
+  if(!rows) {return null};
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
