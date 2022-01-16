@@ -5,13 +5,17 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { answerDB, formDB } = require('../../../db');
+const { encrypt, decrypt } = require('../../../middlewares/crypto');
+
 
 module.exports = async (req, res) => {
 
-  const { formId } = req.params;
+  const { iv, q } = req.query;
 
-  if (!formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!iv || !q) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
+  const hash = { iv : iv, q: q};
+  const { userId, formId } = decrypt(hash);
 
   let client;
  
@@ -20,9 +24,14 @@ module.exports = async (req, res) => {
 
     const relationshipList = await answerDB.getRelationship(client);
 
+    const formData = await formDB.getForm(client, userId, formId);
+
+    const resultData = {
+      realtionship: relationshipList,
+      formData: formData
+    };
     
-    
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_RELATIONSHIP_SUCCESS, relationshipList ));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultData ));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
