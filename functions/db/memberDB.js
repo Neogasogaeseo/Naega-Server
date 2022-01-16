@@ -10,7 +10,8 @@ const getAllTeamByUserId = async (client, userId) => {
         WHERE user_id = $1 and is_confirmed = true
         AND is_deleted = false) m
     WHERE t.id = m.team_id
-    AND t.is_deleted = false;
+    AND t.is_deleted = false
+    ORDER BY t.updated_at DESC
     `,
     [userId],
   );
