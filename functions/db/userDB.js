@@ -69,6 +69,7 @@ const getUserById = async (client, userId) => {
 
 const getUserListByProfileId = async (client, profileId, teamId) => {
 
+  //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
   const { rows: existMemberRows } = await client.query (
     `
     SELECT u.profile_id
@@ -82,6 +83,7 @@ const getUserListByProfileId = async (client, profileId, teamId) => {
   const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
   console.log(profileIdSet);
 
+  //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
   const { rows } = await client.query (
     `
     SELECT u.id, u.profile_id, u.name, u.image
@@ -93,7 +95,7 @@ const getUserListByProfileId = async (client, profileId, teamId) => {
 
     [profileId],
   );
-  if(!rows) {return null}
+  if(!rows) {return null};
   return convertSnakeToCamel.keysToCamel(rows);
 };
 

@@ -61,17 +61,21 @@ const addHostMember = async (client, teamId, userId) => {
 };
 
 const addMember = async (client, teamId, userIdList) => {
-  const valuesQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
-  const { rows } = await client.query(
+  if(!userIdList) {
+    return [];
+  };
+
+  const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
+  const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
         (team_id, user_id)
         VALUES 
-        ${valuesQuery}
+        ${valuesInsertQuery}
         RETURNING *
         `,
   );
-  return convertSnakeToCamel.keysToCamel(rows);
+  return convertSnakeToCamel.keysToCamel(resultRows);
 };
 
 const checkMemberTeam = async (client, userId, teamId) => {
@@ -81,6 +85,7 @@ const checkMemberTeam = async (client, userId, teamId) => {
     FROM "member" m
     WHERE m.user_id = $1
       AND m.team_id = $2
+      AND is_host = true
       AND is_deleted = false
     `,
 
@@ -93,7 +98,7 @@ const updateTeam = async (client, teamId, teamName, description, image) => {
   const { rows } = await client.query (
     `
     UPDATE team t
-    SET name = $1, description = $2, image = $3
+    SET name = $1, description = $2, image = $3, updated_at = now()
     WHERE id = $4
     RETURNING *
     `,
