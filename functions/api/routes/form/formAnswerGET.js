@@ -27,11 +27,12 @@ module.exports = async (req, res) => {
 
     const relationshipList = await answerDB.getRelationship(client);
 
-    const formData = await formDB.getForm(client, userId, formId);
-    console.log(formData);
-
     const userDataList = await userDB.getUserById(client, userId);
+    if(!userDataList) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER))};
     const userData = _.pick(userDataList, ['id', 'name']);
+
+    const formData = await formDB.getForm(client, userId, formId);
+    if(!formData) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_FORM))};
     
     const resultData = {
       relationship: relationshipList,
