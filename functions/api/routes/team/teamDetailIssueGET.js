@@ -23,6 +23,10 @@ module.exports = async (req, res) => {
 
     //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamId(client, teamId);
+    if (myIssueIdRecentList.length === 0) {
+      client.release();
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_TEAM_ISSUE_CONTENT));
+    }
     const idList = extractValues(myIssueIdRecentList, 'id');
 
     //^_^// issue id로 issue 정보 가져오기 완료
