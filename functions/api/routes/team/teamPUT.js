@@ -7,7 +7,7 @@ const { teamDB } = require('../../../db')
 
 module.exports = async (req, res) => {
 
-  const {teamId, teamName, image, description, addedUserIdList} = req.body
+  const {teamId, teamName, image, description, addedUserIdList} = req.body;
   const { id: userId } = req.user;
   
   let client;
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
     };
 
     const teamData = await teamDB.updateTeam(client, teamId, teamName, description, image);
-
+    
     const memberData = await teamDB.addMember(client, teamId, addedUserIdList);
 
     resultData = {
