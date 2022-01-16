@@ -46,4 +46,21 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllTeamByUserId,addMemberToTeam, getAllTeamMemberByTeamId };
+//^_^// 유저가 해당 팀의 멤버인지 확인하는 쿼리
+const checkMemberTeam = async (client, userId, teamId) => {
+  const { rows } = await client.query (
+    `
+    SELECT m.team_id, m.user_id    
+    FROM "member" m
+    WHERE m.user_id = $1
+      AND m.team_id = $2
+      AND is_deleted = false
+    `,
+
+    [userId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllTeamByUserId,addMemberToTeam, getAllTeamMemberByTeamId, checkMemberTeam };
