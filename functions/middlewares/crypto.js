@@ -4,10 +4,10 @@ const algorithm = 'aes-256-ctr';
 const secretKey = process.env.CRYPTO_KEY;
 const iv = crypto.randomBytes(16);
 
-const encrypt = (userId, teamId) => {
+const encrypt = (userId, formId) => {
   const json = {
     userId,
-    teamId,
+    formId,
   };
   const text = JSON.stringify(json);
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
