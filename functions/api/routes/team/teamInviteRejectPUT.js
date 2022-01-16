@@ -4,6 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { memberDB } = require('../../../db');
+const { teamDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
@@ -17,7 +18,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const member = await memberDB.updateMemberReject(client, userId, teamId);
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, member));
+    const team = await memberDB.getAllTeamByUserId(client, userId);
+    const invitedTeam = await teamDB.getNewTeamByUserId(client, userId);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team, invitedTeam }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

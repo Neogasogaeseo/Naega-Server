@@ -7,7 +7,8 @@ const getAllTeamByUserId = async (client, userId) => {
     SELECT t.id, t.name, t.image
     FROM "team" t, (SELECT team_id
         FROM "member" m
-        WHERE user_id = $1 and is_confirmed = true) m
+        WHERE user_id = $1 and is_confirmed = true
+        AND is_deleted = false) m
     WHERE t.id = m.team_id
     AND t.is_deleted = false;
     `,
