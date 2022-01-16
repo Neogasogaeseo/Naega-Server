@@ -50,4 +50,21 @@ const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId };
+const getForm = async (client, userId, formId) => {
+  const { rows } = await client.query (
+    `
+    SELECT l.user_id, l.form_id, f.title, f.subtitle, f.light_icon_image
+    FROM link_user_form l 
+    JOIN form f ON l.form_id = f.id
+    WHERE l.user_id = $1
+      AND l.form_id = $2
+      AND l.is_deleted = false
+      AND f.is_deleted = false
+    `,
+
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getForm, };
