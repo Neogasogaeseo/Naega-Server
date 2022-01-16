@@ -6,4 +6,5 @@ module.exports = {
   teamDB: require('./teamDB'),
   feedbackDB: require('./feedbackDB'),
   linkFeedbacKeywordDB: require('./linkFeedbacKeywordDB'),
+  formDB: require('./formDB'),
 };

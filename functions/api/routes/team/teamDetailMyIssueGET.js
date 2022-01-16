@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const lodash = require('lodash');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
@@ -12,7 +13,9 @@ const extractValues = (arr, key) => {
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const { teamId } = req.params;
+
+  if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -20,15 +23,12 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     //^_^// issueId 최신순 정렬 완료
-    const myIssueIdRecentList = await issueDB.getFeedbackIdRecentListByUserId(client, userId);
+    const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamIdAndUserId(client, teamId, userId);
     if (myIssueIdRecentList.length === 0) {
       client.release();
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_TEAM_ISSUE_CONTENT));
     }
-    const idUnique = myIssueIdRecentList.filter((issue, index, arr) => {
-      return arr.findIndex((item) => item.issueId === issue.issueId) === index;
-    });
-    const idList = extractValues(idUnique, 'issueId');
+    const idList = extractValues(myIssueIdRecentList, 'id');
 
     //^_^// issue id로 issue 정보 가져오기 완료
     let myIssue = await issueDB.getIssueByIssueId(client, idList);
@@ -55,7 +55,7 @@ module.exports = async (req, res) => {
     myTeam.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     const resultList = Array.from(map.values());
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_MY_ISSUE_SUCCESS, resultList));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_SUCCESS, resultList));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

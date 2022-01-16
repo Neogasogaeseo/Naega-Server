@@ -3,10 +3,12 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
+const { memberDB } = require('../../../db');
 const { teamDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { teamId } = req.params;
+  const { id: userId } = req.user;
+  const { teamId } = req.body;
 
   if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -15,13 +17,11 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const team = await teamDB.getTeamById(client, teamId);
-    const member = await teamDB.getMemberByTeamId(client, teamId);
-    const data = {
-      team,
-      member,
-    };
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_SUCCESS, data));
+    const member = await memberDB.updateMemberReject(client, userId, teamId);
+    const team = await memberDB.getAllTeamByUserId(client, userId);
+    const invitedTeam = await teamDB.getNewTeamByUserId(client, userId);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team, invitedTeam }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
