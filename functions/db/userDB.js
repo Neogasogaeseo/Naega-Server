@@ -112,4 +112,16 @@ const getUserListByProfileId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId };
+const getUserByAccessToken = async (client, userId) => {
+  const { rows } = await client.query (
+    `
+    SELECT id, profile_id, name, image
+    FROM "user"
+    WHERE id = ${userId}
+      AND is_deleted = false
+    `
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId, getUserByAccessToken, };
