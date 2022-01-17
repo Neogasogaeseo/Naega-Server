@@ -21,6 +21,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const userData = await userDB.getUserByAccessToken(client, user.id);
+    if (!userData) {return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));}
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, userData));
     
