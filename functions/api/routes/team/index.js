@@ -19,10 +19,6 @@ router.get('/issue/category', require('./teamIssueCategoryGET'));
 router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
 router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
 
-<<<<<<< HEAD
 router.get('/issue/:issueId', checkUser, require('./teamIssueDetailFeedbackGET'));
-=======
-router.get('/', checkUser, require('./teamIssueDetailFeedbackGET'));
->>>>>>> 08cfa28e4cee748a5e68d6bf896ad4f8c8fc9200
 
 module.exports = router;
