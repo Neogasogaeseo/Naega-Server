@@ -61,7 +61,7 @@ const addHostMember = async (client, teamId, userId) => {
 };
 
 const updateTeam = async (client, teamId, teamName, description, image) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     UPDATE team t
     SET name = $1, description = $2, image = $3, updated_at = now()
@@ -74,7 +74,6 @@ const updateTeam = async (client, teamId, teamName, description, image) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-
 const getNewTeamByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
@@ -85,6 +84,7 @@ const getNewTeamByUserId = async (client, userId) => {
     WHERE m.user_id = $1
     AND t.is_deleted = false
     AND m.is_confirmed = false
+    AND m.is_deleted = false
     ORDER BY m.updated_at ASC
     `,
     [userId],
@@ -92,5 +92,4 @@ const getNewTeamByUserId = async (client, userId) => {
 
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId};
-
+module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId };
