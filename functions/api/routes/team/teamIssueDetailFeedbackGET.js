@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
     console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
+    // ^_^// 추출한 feedbakcs
     const feedbacksTofind = feedbacks.reduce((acc, x) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
