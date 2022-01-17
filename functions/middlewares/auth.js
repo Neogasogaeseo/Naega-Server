@@ -40,7 +40,7 @@ const checkUser = async (req, res, next) => {
         needNewRefreshToken = true;
       }
     }
-    userId = decodedRefreshToken.id;
+
     if (!userId) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
     let user = await userDB.getUserById(client, userId);
