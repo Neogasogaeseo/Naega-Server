@@ -13,6 +13,9 @@ module.exports = {
   MISS_MATCH_PW: '비밀번호가 맞지 않습니다.',
   WRONG_TOKEN: '잘못된 토큰입니다.',
   WRONG_AUTH: '잘못된 인가 코드입니다.',
+  TOKEN_EXPIRED: '만료된 토큰입니다.',
+  TOKEN_INVALID: '잘못된 토큰입니다.',
+  DUPLICATE_USER_PROFILE_ID: '*중복된 아이디입니다.',
 
   // 프로필 조회
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
