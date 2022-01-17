@@ -2,7 +2,7 @@ const crypto = require('crypto');
 
 const algorithm = 'aes-256-ctr';
 const secretKey = process.env.CRYPTO_KEY;
-const iv = crypto.randomBytes(16);
+const iv = Buffer.from(process.env.CRYPTO_IV);
 
 const encrypt = (userId, formId) => {
   const json = {

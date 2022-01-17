@@ -19,15 +19,13 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    console.log(formId);
     const data = await encrypt(userId, formId);
-
-    const user = await formDB.getFormByUserIdAndFormId(client, userId, formId);
-    if (user) {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_FAIL));
+    const linkUserForm = await formDB.getFormByUserIdAndFormId(client, userId, formId);
+    if (linkUserForm) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.FORM_CREATE_FAIL));
     } else {
       const form = await formDB.addForm(client, userId, formId);
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
     }
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
