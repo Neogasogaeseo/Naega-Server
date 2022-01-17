@@ -54,4 +54,19 @@ const keywordCountUpdate = async (client, keywordIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getTeamKeywordList = async (client, userId, limit) => {
+  //^_^// 링크 테이블과의 조인 방법 다시 고민해봐야함
+  const { rows } = await client.query(
+    /*sql*/ `
+        SELECT k.id, k.name, color.code FROM keyword k
+        JOIN color ON k.color_id = color.id
+        WHERE k.user_id = $1
+        AND is_deleted = FALSE
+        LIMIT $2
+        `,
+    [userId, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate };
