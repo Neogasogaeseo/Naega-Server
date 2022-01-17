@@ -4,6 +4,7 @@ const arrayHandler = require('../../../lib/arrayHandler');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
+const dayjs = require('dayjs');
 const { userDB, feedbackDB, keywordDB, linkFeedbacKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
@@ -18,6 +19,9 @@ module.exports = async (req, res) => {
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
     const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
+    for (const feedback of feedbacks) {
+      feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
+    }
     console.log('feedbacks : ', feedbacks);
 
     // ^_^// 가져온 feedbacks들의 id만 추출
