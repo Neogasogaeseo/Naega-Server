@@ -17,9 +17,10 @@ const addFeedback = async (client, issueId, userid, taggedUserId, content) => {
 
 const getFeedbacks = async (client, issueId) => {
   const { rows } = await client.query(/*sql*/ `
-    SELECT *
-    FROM feedback
+    SELECT f.id, f.issue_id, f.user_id, f.tagged_user_id, f.content, f.is_pinned
+    FROM feedback f 
     WHERE issue_id = ${issueId}
+    AND is_deleted = false
     `);
   return convertSnakeToCamel.keysToCamel(rows);
 };

@@ -28,17 +28,23 @@ module.exports = async (req, res) => {
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
     console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
-    const test = linkFeedbackKeywords.reduce((acc, x) => {
-      if (!acc[x.feedbackId]) {
-        return (acc[x.feedbackId] = { ...feedbacks.find((x) => feedbacks.id === x.feedbackId), keywords: [x] });
-      }
-      return acc[x.feedbackId].keywords.push(x);
+    const feedbacksTofind = feedbacks.reduce((acc, x) => {
+      acc[x.id] = { ...x, keywords: [] };
+      return acc;
     }, {});
+    console.log(feedbacksTofind);
 
-    console.log('test : ', test);
-    const test2 = Object.entries(test).map(([feedbackId, data]) => ({ feedbackId, ...data }));
+    linkFeedbackKeywords.map((o) => {
+      feedbacksTofind[o.feedbackId].keywords.push(o);
 
-    console.log(test2);
+      return o;
+    });
+    console.log(feedbacksTofind);
+
+    const issueDetailFeedback = Object.entries(feedbacksTofind).map(([feedbackId, data]) => ({ ...data }));
+    console.log('issueDetailFeedback', issueDetailFeedback);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ISSUE_FEEDBACK_SUCCESS, issueDetailFeedback));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
