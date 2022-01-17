@@ -62,9 +62,32 @@ const getForm = async (client, userId, formId) => {
       AND f.is_deleted = false
     `,
 
+const getFormByUserIdAndFormId = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.id
+    FROM "link_user_form" l
+    WHERE l.user_id = $1
+    AND l.form_id = $2
+    AND l.is_deleted = false
+    `,
     [userId, formId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getForm, };
+const addForm = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+        INSERT INTO "link_user_form"
+        (user_id, form_id)
+        VALUES
+        ($1, $2)
+        RETURNING *
+        `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm };

@@ -5,10 +5,12 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { encrypt, decrypt } = require('../../../middlewares/crypto');
+const { formDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const { formId } = req.body;
+  let { formId } = req.params;
+  formId = Number(formId);
 
   if (!userId || !formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -17,9 +19,16 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    console.log(formId);
     const data = await encrypt(userId, formId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
+    const user = await formDB.getFormByUserIdAndFormId(client, userId, formId);
+    if (user) {
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_FAIL));
+    } else {
+      const form = await formDB.addForm(client, userId, formId);
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
+    }
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
