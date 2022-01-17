@@ -4,21 +4,38 @@ const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../constants/jwt');
 
 // JWT를 발급/인증할 떄 필요한 secretKey를 설정합니다. 값은 .env로부터 불러옵니다.
 const secretKey = process.env.JWT_SECRET;
-const options = {
+const accessK = {
+  algorithm: 'HS256',
+  expiresIn: '7d',
+  issuer: 'Neogasogaeseo',
+};
+const refreshK = {
   algorithm: 'HS256',
   expiresIn: '30d',
   issuer: 'Neogasogaeseo',
 };
 
-// id, email, name, idFirebase가 담긴 JWT를 발급합니다.
+// id, name 담긴 JWT를 발급합니다.
 const sign = (user) => {
   const payload = {
     id: user.id,
     name: user.name || null,
   };
 
-  const result = jwt.sign(payload, secretKey, options);
-  return result;
+  const accessToken = jwt.sign(payload, secretKey, accessK);
+
+  return accessToken;
+};
+
+const refresh = (user) => {
+  const payload = {
+    id: user.id,
+    name: user.name || null,
+  };
+
+  const refreshToken = jwt.sign(payload, secretKey, refreshK);
+
+  return refreshToken;
 };
 
 // JWT를 해독하고, 해독한 JWT가 우리가 만든 JWT가 맞는지 확인합니다 (인증).
@@ -47,5 +64,6 @@ const verify = (token) => {
 
 module.exports = {
   sign,
+  refresh,
   verify,
 };

@@ -5,7 +5,6 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
-const { request } = require('express');
 const qs = require('qs');
 
 module.exports = async (req, res) => {
@@ -37,8 +36,6 @@ module.exports = async (req, res) => {
     return res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.WRONG_AUTH));
   }
 
-  console.log(socialToken.data);
-
   try {
     kakao_profile = await axios.get('https://kapi.kakao.com/v2/user/me', {
       headers: {
@@ -53,17 +50,16 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect();
     authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == auth code
-    if (authUser == undefined) {
+    if (!authUser) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
-    //^_^// const refreshToken = socialToken.data.refresh_token;
-    //^_^// const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
-    //^_^// const accesstoken = jwtHandlers.sign(user);
     const accesstoken = jwtHandlers.sign(authUser);
+    const refreshtoken = jwtHandlers.refresh(authUser);
+    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshtoken);
+
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
-        //^_^// user,
-        authUser,
+        user,
         accesstoken,
       }),
     );

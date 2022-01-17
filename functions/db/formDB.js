@@ -50,4 +50,48 @@ const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId };
+const getForm = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.id, f.title, f.subtitle, f.light_icon_image
+    FROM link_user_form l 
+    JOIN form f ON l.form_id = f.id
+    WHERE l.user_id = $1
+      AND l.form_id = $2
+      AND l.is_deleted = false
+      AND f.is_deleted = false
+    `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const getFormByUserIdAndFormId = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.id
+    FROM "link_user_form" l
+    WHERE l.user_id = $1
+    AND l.form_id = $2
+    AND l.is_deleted = false
+    `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addForm = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+        INSERT INTO "link_user_form"
+        (user_id, form_id)
+        VALUES
+        ($1, $2)
+        RETURNING *
+        `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm };

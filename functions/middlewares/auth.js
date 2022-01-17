@@ -8,25 +8,54 @@ const { userDB } = require('../db');
 const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../constants/jwt');
 
 const checkUser = async (req, res, next) => {
-  const { accesstoken } = req.headers;
+  const { accesstoken, refreshtoken } = req.headers;
 
   if (!accesstoken) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.TOKEN_EMPTY));
 
   let client;
   try {
     client = await db.connect(req);
+    let userId;
+    let needNewAccessToken = false;
+    let needNewRefreshToken = false;
+    let decodedRefreshToken = '';
 
-    const decodedToken = jwtHandlers.verify(accesstoken);
+    const decodedAccessToken = jwtHandlers.verify(accesstoken);
+    if (refreshtoken) {
+      decodedRefreshToken = jwtHandlers.verify(refreshtoken);
+    }
+    if (decodedAccessToken === TOKEN_INVALID && decodedRefreshToken === TOKEN_INVALID)
+      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
-    if (decodedToken === TOKEN_EXPIRED) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_EXPIRED));
-    if (decodedToken === TOKEN_INVALID) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
-
-    const userId = decodedToken.id;
+    if (decodedAccessToken === TOKEN_EXPIRED) {
+      if (decodedRefreshToken === TOKEN_EXPIRED) {
+        return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_EXPIRED));
+      } else if (decodedRefreshToken !== TOKEN_EXPIRED) {
+        userId = decodedRefreshToken.id;
+        needNewAccessToken = true;
+      }
+    } else {
+      userId = decodedAccessToken.id;
+      if (decodedRefreshToken === TOKEN_EXPIRED) {
+        needNewRefreshToken = true;
+      }
+    }
+    userId = decodedRefreshToken.id;
     if (!userId) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.TOKEN_INVALID));
 
-    const user = await userDB.getUserById(client, userId);
+    let user = await userDB.getUserById(client, userId);
 
     if (!user) return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_USER));
+
+    if (needNewAccessToken) {
+      const { newAccessToken } = jwtHandlers.sign(user);
+      user = { ...user, newAccessToken };
+    }
+
+    if (needNewRefreshToken) {
+      const { newRefreshToken } = jwtHandlers.refresh(user);
+      const refreshtoken = await userDB.updateRefreshTokenById(client, userId, newRefreshToken);
+    }
 
     req.user = user;
     next();
