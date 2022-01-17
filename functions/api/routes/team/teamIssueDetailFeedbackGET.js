@@ -1,35 +1,41 @@
 const functions = require('firebase-functions');
 const util = require('../../../lib/util');
+const arrayHandler = require('../../../lib/arrayHandler');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB, feedbackDB, keywordDB, linkFeedbacKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { profileId } = req.query;
+  const { issueId } = req.params;
 
-  if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!issueId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
-    const extractValues = (arr, key) => {
-      if (!Array.isArray(arr)) return [arr[key] || null];
-      return [...new Set(arr.map((o) => o[key]).filter(Boolean))];
-    };
     client = await db.connect(req);
-    const issueId = 2;
+
+    // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
     const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
-    const feedbackIds = extractValues(feedbacks, 'id');
+    console.log('feedbacks : ', feedbacks);
+
+    // ^_^// 가져온 feedbacks들의 id만 추출
+    const feedbackIds = arrayHandler.extractValues(feedbacks, 'id');
+    console.log('feedbackIds : ', feedbackIds);
+
+    // ^_^// 추출한 feedbacks들로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
+    console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
     const test = linkFeedbackKeywords.reduce((acc, x) => {
       if (!acc[x.feedbackId]) {
-        acc[x.feedbackId] = { ...feedbacks.find((x) => feedbacks.id === x.feedbackId), keywords: [] };
+        return (acc[x.feedbackId] = { ...feedbacks.find((x) => feedbacks.id === x.feedbackId), keywords: [x] });
       }
-      acc[x.feedbackId].keywords.push(x);
+      return acc[x.feedbackId].keywords.push(x);
     }, {});
 
+    console.log('test : ', test);
     const test2 = Object.entries(test).map(([feedbackId, data]) => ({ feedbackId, ...data }));
 
     console.log(test2);

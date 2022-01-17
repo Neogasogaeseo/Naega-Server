@@ -17,10 +17,10 @@ const addFeedback = async (client, issueId, userid, taggedUserId, content) => {
 
 const getFeedbacks = async (client, issueId) => {
   const { rows } = await client.query(/*sql*/ `
-    SELECT feedback.*
+    SELECT *
     FROM feedback
     WHERE issue_id = ${issueId}
     `);
-  return convertSnakeToCamel.keysToCamel(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 module.exports = { addFeedback, getFeedbacks };

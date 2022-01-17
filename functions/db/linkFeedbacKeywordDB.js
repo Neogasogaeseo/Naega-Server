@@ -17,10 +17,11 @@ const addLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
 };
 const getKeywords = async (client, feedbackIds) => {
   const { rows } = await client.query(/*sql*/ `
-        SELECT keyword.*,color.*,link_feedback_keyword.* FROM link_feedback_keyword
+        SELECT keyword.id,keyword.name,color.code as colorCode, link_feedback_keyword.keyword_id, link_feedback_keyword.feedback_id  
+        FROM link_feedback_keyword
         JOIN keyword ON keyword.id = link_feedback_keyword.keyword_id
-        JOIN color ON k.color_id = color.id
-        WHERE link_feedback_keyword.id IN (${feedbackIds.join()})
+        JOIN color ON keyword.color_id = color.id
+        WHERE link_feedback_keyword.feedback_id IN (${feedbackIds.join()})
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
