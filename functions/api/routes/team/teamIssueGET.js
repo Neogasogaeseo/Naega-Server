@@ -1,4 +1,5 @@
 const functions = require('firebase-functions');
+const dayjs = require('dayjs');
 const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
@@ -31,9 +32,9 @@ module.exports = async (req, res) => {
     const idList = extractValues(idUnique, 'issueId');
 
     //^_^// issue id로 issue 정보 가져오기 완료
-    let myIssue = await issueDB.getIssueByIssueId(client, idList);
+    const myIssue = await issueDB.getIssueByIssueId(client, idList);
     for (const issue of myIssue) {
-      issue.createdAt = issue.createdAt.getFullYear() + '-' + issue.createdAt.getMonth() + 1 + '-' + issue.createdAt.getDate();
+      issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
     const myTeam = await issueDB.getTeamByIssueId(client, idList);
 
