@@ -19,6 +19,7 @@ module.exports = async (req, res) => {
     const member = await teamDB.getMemberByTeamId(client, teamId);
     const data = {
       team,
+      memberCount: member.length,
       member,
     };
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_SUCCESS, data));
