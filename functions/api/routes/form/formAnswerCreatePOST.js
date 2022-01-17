@@ -4,18 +4,21 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { answerDB } = require('../../../db');
+const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-    let client;
- 
+  const {  } = req.body;
+    
+  let client;
+  
+  
   try {
     client = await db.connect(req);
 
-    const relationshipList = await answerDB.getRelationship(client);
+    const DB데이터 = await 파일이름DB.쿼리문이름(client);
     
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_RELATIONSHIP_SUCCESS, relationshipList ));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
