@@ -34,7 +34,8 @@ module.exports = async (req, res) => {
     }
 
     const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider, imageUrls);
-    const { accessToken, refreshToken } = jwtHandlers.sign(tempUser);
+    const accessToken = jwtHandlers.sign(tempUser);
+    const refreshToken = jwtHandlers.refresh(tempUser);
     const user = await userDB.updateRefreshTokenById(client, tempUser.id, refreshToken);
 
     return res.status(statusCode.OK).send(

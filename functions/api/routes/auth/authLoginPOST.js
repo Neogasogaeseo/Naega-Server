@@ -5,7 +5,6 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
-const { request } = require('express');
 const qs = require('qs');
 
 module.exports = async (req, res) => {
@@ -51,17 +50,17 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect();
     authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == auth code
-    console.log(authUser);
     if (!authUser) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
-    const { accessToken, refreshToken } = jwtHandlers.sign(authUser);
-    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshToken);
+    const accesstoken = jwtHandlers.sign(authUser);
+    const refreshtoken = jwtHandlers.refresh(authUser);
+    const user = await userDB.updateRefreshTokenById(client, authUser.id, refreshtoken);
 
     return res.status(statusCode.OK).send(
       util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, {
         user,
-        accesstoken: accessToken,
+        accesstoken,
       }),
     );
   } catch (error) {
