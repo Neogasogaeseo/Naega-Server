@@ -11,7 +11,7 @@ module.exports = async (req, res) => {
   const imageUrls = req.imageUrls;
   let client;
   let kakao_profile = '';
-  if (!profileId || !name || !imageUrls || !provider || !accesstoken || !refreshtoken) {
+  if (!profileId || !name || !provider || !accesstoken || !refreshtoken) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
