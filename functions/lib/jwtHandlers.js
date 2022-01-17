@@ -6,7 +6,7 @@ const { TOKEN_INVALID, TOKEN_EXPIRED } = require('../constants/jwt');
 const secretKey = process.env.JWT_SECRET;
 const accessK = {
   algorithm: 'HS256',
-  expiresIn: '3d',
+  expiresIn: '7d',
   issuer: 'Neogasogaeseo',
 };
 const refreshK = {
