@@ -51,7 +51,7 @@ const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
 };
 
 const getForm = async (client, userId, formId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT l.id, f.title, f.subtitle, f.light_icon_image
     FROM link_user_form l 
@@ -61,6 +61,10 @@ const getForm = async (client, userId, formId) => {
       AND l.is_deleted = false
       AND f.is_deleted = false
     `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
 
 const getFormByUserIdAndFormId = async (client, userId, formId) => {
   const { rows } = await client.query(
