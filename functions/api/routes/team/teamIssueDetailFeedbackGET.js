@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
     }, {});
-    console.log(feedbacksTofind);
+    console.log('feedbacksTofind', feedbacksTofind);
 
     linkFeedbackKeywords.map((o) => {
       feedbacksTofind[o.feedbackId].keywords.push(o);
