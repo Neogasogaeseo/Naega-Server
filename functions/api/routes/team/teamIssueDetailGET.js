@@ -4,21 +4,20 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
+const { issueDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
-  const {} = req.params;
-  const {} = req.query;
-  const {} = req.body;
+  const { issueId } = req.params;
 
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!issueId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await 파일이름DB.쿼리문이름(client);
+    const DB데이터 = await issueDB.쿼리문이름(client);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
   } catch (error) {
