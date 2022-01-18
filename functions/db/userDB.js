@@ -79,7 +79,7 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileId = async (client, profileId, teamId) => {
+const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
   //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
   const { rows: existMemberRows } = await client.query(
     `
@@ -112,4 +112,16 @@ const getUserListByProfileId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileId };
+const getUserListByOnlyProfileId = async (client, profileId) => {
+  const { rows } = await client.query (
+    `
+    SELECT id, profile_id, name, image
+    FROM "user"
+    WHERE profile_id = ${profileId}
+      AND is_deleted = FALSE
+    `
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, };

@@ -17,9 +17,14 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const userSearchList = await userDB.getUserListByProfileId(client, profileId, teamId);
+    let userSearchList;
+    if (!teamId) {
+      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId);
+    } else {
+      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, teamId);
+    };
 
-    if (userSearchList.length === 0) {
+    if (!userSearchList) {
         return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST, []));
     } else {
         res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_LIST_SUCCESS, userSearchList));
