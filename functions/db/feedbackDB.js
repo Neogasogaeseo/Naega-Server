@@ -34,7 +34,7 @@ const toggleIsPinnedFeedback = async (client, feedbackId) => {
   SET is_pinned = NOT is_pinned, updated_at = now()
   WHERE id = ${feedbackId}
   AND is_deleted = false
-  RETURNING *
+  RETURNING feedback.id, feedback.is_pinned
   `,
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
