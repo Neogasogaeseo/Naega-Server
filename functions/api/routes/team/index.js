@@ -19,4 +19,8 @@ router.get('/issue/category', require('./teamIssueCategoryGET'));
 router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
 router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
 
+router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
+router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
+router.put('/feedback/:feedbackId/pin', checkUser, require('./teamIssueDetailFeedbackPinPUT'));
+
 module.exports = router;
