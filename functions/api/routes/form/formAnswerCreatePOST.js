@@ -4,39 +4,31 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { encrypt, decrypt } = require('../../../middlewares/crypto');
-const { formDB } = require('../../../db');
+const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { id: userId } = req.user;
-  let { formId } = req.params;
-  formId = Number(formId);
 
-  if (!userId || !formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-
+  const {  } = req.body;
+    
   let client;
-
+  
+  
   try {
     client = await db.connect(req);
 
-    console.log(formId);
-    const data = await encrypt(userId, formId);
-
-    const user = await formDB.getFormByUserIdAndFormId(client, userId, formId);
-    if (user) {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_FAIL));
-    } else {
-      const form = await formDB.addForm(client, userId, formId);
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FORM_CREATE_SUCCESS, data));
-    }
+    const DB데이터 = await 파일이름DB.쿼리문이름(client);
+    
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
-
+    
     const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
-    ${JSON.stringify(error)}`;
+ ${JSON.stringify(error)}`;
     slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
+    
   } finally {
     client.release();
   }

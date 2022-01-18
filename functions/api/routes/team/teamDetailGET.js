@@ -4,6 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { teamDB } = require('../../../db');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 module.exports = async (req, res) => {
   const { teamId } = req.params;
@@ -17,6 +18,7 @@ module.exports = async (req, res) => {
 
     const team = await teamDB.getTeamById(client, teamId);
     const member = await teamDB.getMemberByTeamId(client, teamId);
+    member.forEach((item) => (item.image = resizeImage(item.image)));
     const data = {
       team,
       memberCount: member.length,
