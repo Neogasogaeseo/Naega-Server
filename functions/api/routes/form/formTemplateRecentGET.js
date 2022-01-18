@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { formDB } = require('../../../db');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -19,6 +20,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const form = await formDB.getAllFormRecent(client);
+    form.forEach((item) => (item.lightIconImage = resizeImage(item.lightIconImage)));
     const formIdList = extractValues(form, 'id');
     const isCreated = await formDB.getFormIsCreatedByUserId(client, formIdList, userId);
     const map = new Map();

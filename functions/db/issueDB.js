@@ -37,8 +37,10 @@ const getIssueIdRecentListByTeamIdAndUserId = async (client, teamId, userId) => 
     `
     SELECT i.id
     FROM "issue" i 
-    WHERE i.team_id = $1 
-    AND i.user_id = $2
+    JOIN "feedback" f
+    ON i.id = f.issue_id 
+    WHERE i.team_id = $1
+    AND f.tagged_user_id = $2
     AND i.is_deleted = false
     ORDER BY i.updated_at DESC
     `,
@@ -52,7 +54,7 @@ const getIssueIdRecentListByTeamIdAndUserId = async (client, teamId, userId) => 
 const getIssueByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT i.id, c.name as category_name, i.created_at, i.content
+    SELECT i.id, i.image, c.name as category_name, i.created_at, i.content
     FROM "issue" i JOIN "category" c
     ON i.category_id = c.id
     WHERE i.id in (${issueId.join(',')})
@@ -66,7 +68,8 @@ const getIssueByIssueId = async (client, issueId) => {
 const getTeamByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT i.id, t.name as teamName, u.name as userName
+    SELECT i.id, t.id as team_id, t.name as team_name, t.image as team_image,
+    u.name as user_name
     FROM "issue" i JOIN "team" t
     ON i.team_id = t.id    
     JOIN "user" u
