@@ -26,4 +26,18 @@ const getFeedbacks = async (client, issueId) => {
     `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addFeedback, getFeedbacks };
+
+const toggleIsPinnedFeedback = async (client, feedbackId) => {
+  const { rows } = await client.query(
+    `
+  UPDATE feedback
+  SET is_pinned = NOT is_pinned, updated_at = now()
+  WHERE id = ${feedbackId}
+  AND is_deleted = false
+  RETURNING *
+  `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addFeedback, getFeedbacks, toggleIsPinnedFeedback };
