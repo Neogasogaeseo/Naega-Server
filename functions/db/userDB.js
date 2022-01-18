@@ -112,13 +112,14 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getUserListByOnlyProfileId = async (client, profileId) => {
+const getUserListByOnlyProfileId = async (client, profileId, userId) => {
   const { rows } = await client.query (
     `
     SELECT id, profile_id, name, image
     FROM "user"
     WHERE profile_id = ${profileId}
       AND is_deleted = FALSE
+      AND id NOT ${userId}
     `
   );
   return convertSnakeToCamel.keysToCamel(rows);
