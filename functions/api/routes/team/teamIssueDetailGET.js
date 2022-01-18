@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { issueDB } = require('../../../db');
+const { issueDB, teamDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -17,9 +17,13 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await issueDB.쿼리문이름(client);
+    const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
+    console.log('getIssueDetail :', getIssueDetail);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    const getTeamForIssueDetail = await teamDB.getTeamForIssueDetailByIssueId(client, issueId);
+    console.log('getTeamForIssueDetail :', getTeamForIssueDetail);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, getIssueDetail));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

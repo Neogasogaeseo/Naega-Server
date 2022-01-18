@@ -92,4 +92,20 @@ const getNewTeamByUserId = async (client, userId) => {
 
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId };
+
+const getTeamForIssueDetailByIssueId = async (client, issueId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.image, t.name, u.name as host
+    FROM "team" t 
+    JOIN issue i
+    ON i.team_id = t.id
+    JOIN "user" u ON i.user_id = u.id
+    WHERE i.id = ${issueId}
+    AND i.is_deleted = false
+    `,
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+module.exports = { addTeam, addHostMember, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamForIssueDetailByIssueId };
