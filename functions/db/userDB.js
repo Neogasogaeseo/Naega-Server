@@ -113,11 +113,11 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
 };
 
 const getUserListByOnlyProfileId = async (client, profileId, userId) => {
-  const { rows } = await client.query (
+    const { rows } = await client.query (
     `
     SELECT id, profile_id, name, image
     FROM "user"
-    WHERE profile_id = ${profileId}
+      WHERE profile_id = ${profileId}
       AND is_deleted = FALSE
       AND id NOT ${userId}
     `
@@ -125,4 +125,17 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, };
+
+const getUserByAccessToken = async (client, userId) => {
+  const { rows } = await client.query (
+    `
+    SELECT id, profile_id, name, image
+    FROM "user"
+    WHERE id = ${userId}
+      AND is_deleted = false
+    `
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, getUserByAccessToken};

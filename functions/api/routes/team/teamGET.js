@@ -4,6 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { memberDB } = require('../../../db');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
@@ -16,6 +17,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const myTeamList = await memberDB.getAllTeamByUserId(client, userId);
+    myTeamList.forEach((item) => (item.image = resizeImage(item.image)));
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_TEAM_SUCCESS, myTeamList));
   } catch (error) {
