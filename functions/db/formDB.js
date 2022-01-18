@@ -24,14 +24,14 @@ const getAllFormPopular = async (client) => {
     f.is_new, f.is_banner, f.light_icon_image,
     c.code as color_code
     FROM "form" f
-    JOIN (SELECT form_id, COUNT(*) cnt
+    LEFT JOIN (SELECT form_id, COUNT(*) cnt
       FROM "link_user_form"
       GROUP BY form_id) l
     ON f.id = l.form_id
     JOIN "color" c
     ON c.id = f.color_id
     WHERE f.is_deleted = false
-    ORDER BY l.cnt DESC
+    ORDER BY l.cnt DESC NULLS LAST
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
