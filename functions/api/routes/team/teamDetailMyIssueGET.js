@@ -5,6 +5,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { issueDB } = require('../../../db');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -36,9 +37,11 @@ module.exports = async (req, res) => {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
     const myTeam = await issueDB.getTeamByIssueId(client, idList);
+    myTeam.forEach((item) => (item.teamImage = resizeImage(item.teamImage)));
 
     //^_^// feedback 당한 사람 가져오기 완료
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
+    myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
     });
