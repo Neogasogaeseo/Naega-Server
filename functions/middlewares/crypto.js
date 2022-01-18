@@ -13,15 +13,12 @@ const encrypt = (userId, formId) => {
   const cipher = crypto.createCipheriv(algorithm, secretKey, iv);
   const encrypted = Buffer.concat([cipher.update(text), cipher.final()]);
 
-  return {
-    iv: iv.toString('hex'),
-    q: encrypted.toString('hex'),
-  };
+  return encrypted.toString('hex');
 };
 
 const decrypt = (hash) => {
-  const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(hash.iv, 'hex'));
-  const string = Buffer.concat([decipher.update(Buffer.from(hash.q, 'hex')), decipher.final()]);
+  const decipher = crypto.createDecipheriv(algorithm, secretKey, Buffer.from(iv, 'hex'));
+  const string = Buffer.concat([decipher.update(Buffer.from(hash, 'hex')), decipher.final()]);
   const decrypted = JSON.parse(string.toString());
   return decrypted;
 };
