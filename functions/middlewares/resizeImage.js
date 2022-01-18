@@ -1,4 +1,7 @@
 const resizeImage = (image) => {
+  if (!image) {
+    return image;
+  }
   const splited = image.split('/o/');
   let url = splited[1].split('.');
   url[0] += '_200x200';

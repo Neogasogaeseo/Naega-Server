@@ -54,7 +54,7 @@ const getIssueIdRecentListByTeamIdAndUserId = async (client, teamId, userId) => 
 const getIssueByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT i.id, c.name as category_name, i.created_at, i.content
+    SELECT i.id, i.image, c.name as category_name, i.created_at, i.content
     FROM "issue" i JOIN "category" c
     ON i.category_id = c.id
     WHERE i.id in (${issueId.join(',')})
