@@ -63,6 +63,21 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const addHostMember = async (client, teamId, userId) => {
+  const { rows } = await client.query(
+    `
+        INSERT INTO member
+        (team_id, user_id, is_confirmed, is_host)
+        VALUES 
+        ($1, $2, true, true)
+        RETURNING *
+        `,
+
+    [teamId, userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 //^_^// 팀에 멤버를 추가하는 쿼리
 const addMember = async (client, teamId, userIdList) => {
   if (!userIdList) {
@@ -100,4 +115,4 @@ const checkMemberHost = async (client, userId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllTeamByUserId, getAllTeamMemberByTeamId, addMember, checkMemberHost, updateMemberAccept, updateMemberReject };
+module.exports = { getAllTeamByUserId, getAllTeamMemberByTeamId, addMember, checkMemberHost, updateMemberAccept, updateMemberReject, addHostMember, };
