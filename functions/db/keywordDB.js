@@ -74,4 +74,17 @@ const getKeywordByAnswerId = async (client, answerIdList) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getKeywordByAnswerId };
+const getTopKeyword = async (client, userId) => {
+  const { rows } = await client.query(/*sql*/ `
+        SELECT k.id, k.name, color.code as colorCode 
+        FROM keyword k
+        JOIN color ON k.color_id = color.id
+        WHERE k.user_id = ${userId}
+        AND is_deleted = FALSE
+        ORDER BY k.count DESC
+        LIMIT 5 OFFSET 0 
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getKeywordByAnswerId, getTopKeyword };
