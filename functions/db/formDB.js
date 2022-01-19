@@ -124,4 +124,20 @@ const getFormByFormId = async (client, formId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm, getFormBanner, getFormByFormId };
+const getFormByFormIdList = async (client, formIdList, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT f.id, f.title, f.dark_icon_image, f.created_at
+    FROM "form" f
+    JOIN "link_user_form" l
+    ON l.form_id = f.id
+    WHERE f.is_deleted = false
+    AND l.user_id = $1
+    AND f.id in (${formIdList.join(',')})
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm, getFormBanner, getFormByFormId, getFormByFormIdList };

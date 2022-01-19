@@ -54,4 +54,24 @@ const keywordCountUpdate = async (client, keywordIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate };
+const getKeywordByAnswerId = async (client, answerIdList) => {
+  const { rows } = await client.query(
+    `
+    SELECT u.form_id as id, k.id as keyword_id, k.name, c.code as color_code
+    FROM "link_answer_keyword" l
+    JOIN "keyword" k
+    ON l.keyword_id = k.id
+    JOIN "color" c
+    ON k.color_id = c.id
+    JOIN "answer" a
+    ON l.answer_id = a.id
+    JOIN "link_user_form" u
+    ON a.link_user_form_id = u.id
+    WHERE l.is_deleted = false
+    AND l.answer_id in (${answerIdList.join(',')})
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getKeywordByAnswerId };
