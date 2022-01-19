@@ -22,11 +22,9 @@ module.exports = async (req, res) => {
     // ^_^// 이슈 디테일 가져오기
     const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
     getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
-    console.log('getIssueDetail :', getIssueDetail);
 
     // ^_^// 해당 이슈 팀 정보 가져오기
     const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
-    console.log('getTeamForIssueDetail :', getTeamForIssueDetail);
 
     //^_^// feedback taged된 사람 가져오기
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, [issueId]);
@@ -35,7 +33,6 @@ module.exports = async (req, res) => {
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
     });
-    console.log('feedbackUnique :', feedbackUnique);
 
     const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
 
