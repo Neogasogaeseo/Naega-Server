@@ -4,6 +4,8 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
+const dayjs = require('dayjs');
+const { formDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -16,7 +18,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await 파일이름DB.쿼리문이름(client);
+    const DB데이터 = await formDB.쿼리문이름(client, formId);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
   } catch (error) {
