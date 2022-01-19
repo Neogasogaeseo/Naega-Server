@@ -114,11 +114,10 @@ const getFormBanner = async (client) => {
 const getFormDetail = async (client, formId, userId) => {
   const { rows } = await client.query(
     `
-    SELECT f.title, f.subtitle, f.dark_icon_image, l.created_at
+    SELECT f.id, f.title, f.subtitle, f.dark_icon_image, l.created_at
     FROM "form" f
-    JOIN link_user_form l ON l.form_id = f.id AND l.user_id = ${userId}
+    JOIN link_user_form l ON l.form_id = f.id AND l.user_id = ${userId} AND l.is_deleted = false
     WHERE f.id = ${formId}
-    f.is_deleted = false
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
