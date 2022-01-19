@@ -9,4 +9,7 @@ router.post('/answer', require('./formAnswerCreatePOST'));
 router.get('/banner', checkUser, require('./formBannerGET'));
 router.post('/create', checkUser, require('./formCreatePOST'));
 
+router.get('/detail/:formId', checkUser, require('./formDetailGET'));
+router.get('/detail/:formId/answer', checkUser, require('./formDetailAnswerGET'));
+
 module.exports = router;
