@@ -5,7 +5,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const dayjs = require('dayjs');
-const { userDB, feedbackDB, keywordDB, linkFeedbacKeywordDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { issueId } = req.params;
