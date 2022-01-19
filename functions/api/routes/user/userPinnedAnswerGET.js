@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const pinnedAnswerData = await answerDB.getPinnedAnswerByProfileId(client, profileId);
-    if (!pinnedAnswerData) return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_PINNED_ANSWER));
+    if (pinnedAnswerData.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_PINNED_ANSWER));
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_PINNED_ANSWER_SUCCESS, pinnedAnswerData));
     
