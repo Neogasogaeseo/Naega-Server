@@ -18,9 +18,10 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await formDB.쿼리문이름(client, formId);
+    const formDetail = await formDB.getFormDetail(client, formId, user.id);
+    console.log('formDetail :', formDetail);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_DETAIL_SUCCESS, formDetail));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
