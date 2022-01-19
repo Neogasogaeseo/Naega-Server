@@ -19,13 +19,14 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-
+    // ^_^// 폼 디테일 조회
     const formDetail = await formDB.getFormDetail(client, formId, user.id);
     formDetail.createdAt = dayjs(formDetail.createdAt).format('YYYY-MM-DD');
-    console.log('formDetail :', formDetail);
 
+    // ^_^// 링크 복사용 해쉬
     const q = await encrypt(user.id, formId);
 
+    // ^_^// count 내림차순 keyword 조회
     const topKeyword = await keywordDB.getTopKeyword(client, user.id);
 
     const data = { ...formDetail, q, keyword: topKeyword };

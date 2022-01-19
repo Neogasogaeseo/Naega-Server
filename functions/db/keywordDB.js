@@ -56,7 +56,8 @@ const keywordCountUpdate = async (client, keywordIds) => {
 
 const getTopKeyword = async (client, userId) => {
   const { rows } = await client.query(/*sql*/ `
-        SELECT k.id, k.name, color.code as colorCode FROM keyword k
+        SELECT k.id, k.name, color.code as colorCode 
+        FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.user_id = ${userId}
         AND is_deleted = FALSE
