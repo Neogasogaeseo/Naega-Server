@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { teamDB } = require('../../../db');
+const { teamDB, memberDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { teamName, image, description, userIdList } = req.body;
@@ -27,10 +27,10 @@ module.exports = async (req, res) => {
 
     //^_^// 팀을 생성하는 유저의 id만 is_confirmed, is_host true로 POST
     const hostMemberId = hostUserId;
-    const hostMemberData = await teamDB.addHostMember(client, teamId, hostMemberId);
+    const hostMemberData = await memberDB.addHostMember(client, teamId, hostMemberId);
 
     //^_^// 그 외 member row값 POST
-    const memberData = await teamDB.addMember(client, teamId, userIdList);
+    const memberData = await memberDB.addMember(client, teamId, userIdList);
 
     const resultData = {
       team: teamData,
