@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { issueDB, teamDB } = require('../../../db');
+const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -18,12 +19,14 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
+    getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
     console.log('getIssueDetail :', getIssueDetail);
 
-    const getTeamForIssueDetail = await teamDB.getTeamForIssueDetailByIssueId(client, issueId);
+    const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
     console.log('getTeamForIssueDetail :', getTeamForIssueDetail);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, getIssueDetail));
+    const data = { ...getIssueDetail, team: getTeamForIssueDetail };
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
