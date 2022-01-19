@@ -98,6 +98,23 @@ const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
   );
   if (!keywordRows) return [];
   return convertSnakeToCamel.keysToCamel(keywordRows);
-}
+};
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, };
+const getKeywordListByAnswerId = async (client, answerIdList) => {
+  const answerIdQuery = "(" + answerIdList.map(o => o).join(', ') + ')';
+  const { rows: keywordRows } = await client.query (
+    `
+    SELECT l.answer_id, k.name, k.color_id, color.code as color_code
+    FROM keyword k
+    JOIN link_answer_keyword l ON l.keyword_id = k.id
+    JOIN color ON color.id = k.color_id
+    WHERE l.answer_id IN ${answerIdQuery}
+      AND l.is_deleted = false
+      AND k.is_deleted = false
+    `
+  );
+  if (!keywordRows) return [];
+  return convertSnakeToCamel.keysToCamel(keywordRows);
+};
+
+module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, getKeywordListByAnswerId, };
