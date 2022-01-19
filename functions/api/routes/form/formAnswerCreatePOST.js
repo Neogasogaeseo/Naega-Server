@@ -8,7 +8,8 @@ const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-  const {  } = req.body;
+  const { userId, formId, name, relationshipId, content, keywordList } = req.body;
+  if (!userId || !formId || !name || !relationshipId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     
   let client;
   
@@ -16,9 +17,24 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await 파일이름DB.쿼리문이름(client);
+    const answerData = await answerDB.addAnswer(client, userId, formId, name, relationshipId, content);
+    if (answerData === null) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_FORM));
+
+    const { id: answerId } = answerData;
     
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    let keywordData;
+    if (!keywordList) {
+      keywordData = [];
+    }else {
+      keywordData = await linkAnswerKeywordDB.addLinkAnswerKeyword(client, answerId, keywordList);
+    };
+
+    const resultData = {
+      answer: answerData,
+      keyword: keywordData
+    };
+    
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ANSWER_CREATE_SUCCESS, resultData));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
