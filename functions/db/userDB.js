@@ -99,7 +99,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
-    WHERE profile_id = $1
+    WHERE profile_id ILIKE '%' || $1 || '%'
       AND is_deleted = FALSE
       AND u.profile_id NOT IN ${profileIdSet}
     `,
@@ -117,7 +117,7 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
-    WHERE profile_id = $1
+    WHERE profile_id ILIKE '%' || $1 || '%'
       AND id != $2
       AND is_deleted = FALSE
     `,
