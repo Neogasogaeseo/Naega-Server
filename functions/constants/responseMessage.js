@@ -67,4 +67,5 @@ module.exports = {
   FORM_CREATE_SUCCESS: '폼 생성 성공',
   READ_FORM_SUCCESS: '폼 정보 조회 성공',
   FORM_CREATE_FAIL: '이미 존재하는 폼입니다',
+  READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
 };
