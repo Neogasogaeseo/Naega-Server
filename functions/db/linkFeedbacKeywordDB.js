@@ -17,7 +17,7 @@ const addLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
 };
 const getKeywords = async (client, feedbackIds) => {
   const { rows } = await client.query(/*sql*/ `
-        SELECT keyword.id,keyword.name,color.code as colorCode, link_feedback_keyword.keyword_id, link_feedback_keyword.feedback_id  
+        SELECT keyword.id,keyword.name,color.code as colorCode, link_feedback_keyword.feedback_id  
         FROM link_feedback_keyword
         JOIN keyword ON keyword.id = link_feedback_keyword.keyword_id
         JOIN color ON keyword.color_id = color.id
