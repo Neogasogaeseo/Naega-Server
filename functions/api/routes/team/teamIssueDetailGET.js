@@ -37,14 +37,7 @@ module.exports = async (req, res) => {
     });
     console.log('feedbackUnique :', feedbackUnique);
 
-    const feedbackList = feedbackUnique.reduce((result, feedback) => {
-      const a = result.find(({ id }) => id === feedback.id);
-      a ? a.feedback.push(feedback) : result.push({ id: feedback.id, feedback: [feedback] });
-      return result;
-    }, []);
-    console.log('feedbackList :', feedbackList);
-
-    const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedback: myFeedbackPersonList };
+    const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
