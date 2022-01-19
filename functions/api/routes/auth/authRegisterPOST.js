@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
     const check = await userDB.checkUserProfileId(client, profileId);
     if (check) {
       client.release();
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
+      return res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.DUPLICATE_USER_PROFILE_ID));
     }
 
     const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider, imageUrls);
