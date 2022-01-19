@@ -111,4 +111,17 @@ const getFormBanner = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm, getFormBanner };
+const getFormByFormId = async (client, formId) => {
+  const { rows } = await client.query(
+    `
+    SELECT f.id
+    FROM "form" f
+    WHERE f.is_deleted = false
+    AND f.id = $1
+    `,
+    [formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getAllFormRecent, getAllFormPopular, getFormIsCreatedByUserId, getFormByUserIdAndFormId, addForm, getForm, getFormBanner, getFormByFormId };
