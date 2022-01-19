@@ -9,8 +9,7 @@ const { formDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  let { formId } = req.params;
-  formId = Number(formId);
+  const { formId } = req.body;
 
   if (!userId || !formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
