@@ -4,23 +4,38 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
+const { issueDB, teamDB } = require('../../../db');
+const dayjs = require('dayjs');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 module.exports = async (req, res) => {
   const user = req.user;
-  const {} = req.params;
-  const {} = req.query;
-  const {} = req.body;
+  const { issueId } = req.params;
 
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!issueId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await 파일이름DB.쿼리문이름(client);
+    // ^_^// 이슈 디테일 가져오기
+    const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
+    getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    // ^_^// 해당 이슈 팀 정보 가져오기
+    const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
+
+    //^_^// feedback taged된 사람 가져오기
+    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, [issueId]);
+    myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
+
+    const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
+      return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
+    });
+
+    const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
