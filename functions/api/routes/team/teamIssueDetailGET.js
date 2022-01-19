@@ -35,7 +35,6 @@ module.exports = async (req, res) => {
     });
 
     const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
-
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
