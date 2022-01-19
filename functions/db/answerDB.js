@@ -47,10 +47,11 @@ const addAnswer = async (client, userId, formId, name, relationshipId, content) 
 const getPinnedAnswerByProfileId = async (client, profileId) => {
     const { rows } = await client.query (
         `
-        SELECT *
+        SELECT l.user_id, u.profile_id, a.id, r.name as relationship_name, a.name, a.content, a.created_at, a.is_pinned
         FROM answer a
         JOIN link_user_form l ON a.link_user_form_id = l.id
         JOIN "user" u ON l.user_id = u.id
+        JOIN relationship r ON a.relationship_id = r.id
         WHERE u.profile_id = $1
             AND a.is_pinned = true
             AND a.is_deleted = false

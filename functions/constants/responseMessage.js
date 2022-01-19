@@ -72,4 +72,5 @@ module.exports = {
   NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
   READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
   READ_ALL_PINNED_ANSWER_SUCCESS: '북마크된 답변 조회 성공',
+  NO_PINNED_ANSWER: '북마크된 답변이 없습니다',
 };
