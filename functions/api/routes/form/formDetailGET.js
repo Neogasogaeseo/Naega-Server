@@ -5,7 +5,8 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const dayjs = require('dayjs');
-const { formDB } = require('../../../db');
+const { formDB, keywordDB } = require('../../../db');
+const { encrypt, decrypt } = require('../../../middlewares/crypto');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -20,9 +21,16 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const formDetail = await formDB.getFormDetail(client, formId, user.id);
+    formDetail.createdAt = dayjs(formDetail.createdAt).format('YYYY-MM-DD');
     console.log('formDetail :', formDetail);
 
-    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_DETAIL_SUCCESS, formDetail));
+    const q = await encrypt(user.id, formId);
+
+    const topKeyword = await keywordDB.getTopKeyword(client, user.id);
+
+    const data = { ...formDetail, q, keyword: topKeyword };
+
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
