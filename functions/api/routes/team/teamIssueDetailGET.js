@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { issueDB, teamDB } = require('../../../db');
 const dayjs = require('dayjs');
+const resizeImage = require('../../../middlewares/resizeImage');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -18,14 +19,33 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    // ^_^// 이슈 디테일 가져오기
     const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
     getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
     console.log('getIssueDetail :', getIssueDetail);
 
+    // ^_^// 해당 이슈 팀 정보 가져오기
     const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
     console.log('getTeamForIssueDetail :', getTeamForIssueDetail);
 
-    const data = { ...getIssueDetail, team: getTeamForIssueDetail };
+    //^_^// feedback taged된 사람 가져오기
+    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, [issueId]);
+    myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
+
+    const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
+      return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
+    });
+    console.log('feedbackUnique :', feedbackUnique);
+
+    const feedbackList = feedbackUnique.reduce((result, feedback) => {
+      const a = result.find(({ id }) => id === feedback.id);
+      a ? a.feedback.push(feedback) : result.push({ id: feedback.id, feedback: [feedback] });
+      return result;
+    }, []);
+    console.log('feedbackList :', feedbackList);
+
+    const data = { ...getIssueDetail, team: getTeamForIssueDetail, feedback: myFeedbackPersonList };
+
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
