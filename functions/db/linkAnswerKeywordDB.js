@@ -2,7 +2,7 @@ const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const addLinkAnswerKeyword = async (client, answerId, keywordList) => {
-    const valuesQeury = keywordList.map( x => `(${answerId}, ${x}`).join(', ').toString()
+    const valuesQeury = keywordList.map( x => `(${answerId}, ${x})`).join(', ').toString()
 
     const { rows } = await client.query (
     `
@@ -10,6 +10,7 @@ const addLinkAnswerKeyword = async (client, answerId, keywordList) => {
     (answer_id, keyword_id)
     VALUES
     ${valuesQeury}
+    RETURNING *
     `,
     );
     return convertSnakeToCamel.keysToCamel(rows);

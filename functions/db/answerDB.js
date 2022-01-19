@@ -24,9 +24,9 @@ const addAnswer = async (client, userId, formId, name, relationshipId, content) 
 
         [formId, userId],
     );
-    if (linkRows === undefined) return null;
+    if (linkRows.length === 0) return null;
+
     const linkUserFormId = linkRows[0].id;
-    console.log(linkRows);
 
     //^_^// answer테이블에 insert하기
     const { rows } = await client.query (
