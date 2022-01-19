@@ -97,4 +97,4 @@ const getTeamListByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId };
+module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, };

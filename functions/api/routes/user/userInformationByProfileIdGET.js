@@ -23,8 +23,8 @@ module.exports = async (req, res) => {
     if(!userData) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));}
 
 
-    const teamKeywordList;
-    const answerKeywordList;
+    // const teamKeywordList;
+    // const answerKeywordList;
 
     // ^_^// 객체의 키값인 code를 colorCode로 바꾸어주는 작업
     Object.keys(getKeyword).forEach(function (key) {
