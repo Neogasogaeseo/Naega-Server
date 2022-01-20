@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { issueDB, memberDB } = require('../../../db')
+const { issueDB, memberDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
   const { id: userId } = req.user;
   
   if (!teamId || !categoryId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const intTeamId = Number(teamId);
 
   let client;
   
@@ -20,13 +21,13 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const checkMemberList = await memberDB.checkMemberTeam(client, teamId, userId);
+    const checkMemberList = await memberDB.checkMemberTeam(client, userId, intTeamId);
     if(!checkMemberList) {
       //^_^// 유저가 해당 팀의 팀원이 아닐 경우 error 리턴
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_MEMBER));
     }
 
-    const issueData = await issueDB.addIssue(client, teamId, userId, categoryId, content, imageUrls);
+    const issueData = await issueDB.addIssue(client, intTeamId, userId, categoryId, content, imageUrls);
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_TEAM_ISSUE, issueData));
     
