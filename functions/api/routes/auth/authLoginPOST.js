@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
       method: 'POST',
       url: 'https://kauth.kakao.com/oauth/token',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
       data: qs.stringify({
         code: authenticationCode,

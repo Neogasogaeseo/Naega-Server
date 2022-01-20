@@ -18,8 +18,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    // // ^_^// formId로 해당 이슈에 해당하는 모든 feedback 가져옴
-    // const answers = await answerDB.쿼리문이름(client,formId);
+    // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
+    const answers = await answerDB.getAnswers(client, formId);
+    console.log('answers :', answers);
 
     // // // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
     // // const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
