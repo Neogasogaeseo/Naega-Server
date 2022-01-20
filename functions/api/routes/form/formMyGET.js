@@ -75,15 +75,15 @@ module.exports = async (req, res) => {
       item.answer.forEach((item) => kmap.set(item.id, item));
       keywordList.forEach((item) => kmap.set(item.id, { ...kmap.get(item.id), ...item }));
       myAnswerKeywordList = Array.from(kmap.values());
-      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.formId);
-      item.answer = myAnswerKeywordList;
-    }
-    for (const item of myAnswerKeywordList) {
-      if (item.keyword) {
-        for (const keyword of item.keyword) {
-          delete keyword.answerId;
+      for (const item of myAnswerKeywordList) {
+        if (item.keyword) {
+          for (const keyword of item.keyword) {
+            delete keyword.answerId;
+          }
         }
       }
+      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.formId);
+      item.answer = myAnswerKeywordList;
     }
 
     //^_^// 합치기 완료

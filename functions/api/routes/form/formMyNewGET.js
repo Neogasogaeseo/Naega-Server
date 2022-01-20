@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });
     let idList = extractValues(idUnique, 'formId');
+    const count = idList.length;
 
     //^_^// form id로 form, answer 정보 가져오기
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);
@@ -73,15 +74,15 @@ module.exports = async (req, res) => {
       item.answer.forEach((item) => kmap.set(item.id, item));
       keywordList.forEach((item) => kmap.set(item.id, { ...kmap.get(item.id), ...item }));
       myAnswerKeywordList = Array.from(kmap.values());
-      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.formId);
-      item.answer = myAnswerKeywordList;
-    }
-    for (const item of myAnswerKeywordList) {
-      if (item.keyword) {
-        for (const keyword of item.keyword) {
-          delete keyword.answerId;
+      for (const item of myAnswerKeywordList) {
+        if (item.keyword) {
+          for (const keyword of item.keyword) {
+            delete keyword.answerId;
+          }
         }
       }
+      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.formId);
+      item.answer = myAnswerKeywordList;
     }
 
     //^_^// 합치기 완료
@@ -98,7 +99,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultList));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList, count }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
