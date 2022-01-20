@@ -40,4 +40,23 @@ const toggleIsPinnedFeedback = async (client, feedbackId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addFeedback, getFeedbacks, toggleIsPinnedFeedback };
+const getPinnedFeedbackByProfileId = async (client, profileId) => {
+  const { rows } = await client.query (
+    `
+    SELECT u.id, u.profile_id, u.name, f.id as feedback_id, f.user_id as writer_user_id, writer.name as writer_name, f.content, f.created_at, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON f.tagged_user_id = u.id
+    JOIN "user" writer ON f.user_id = writer.id
+    WHERE u.profile_id = $1
+      AND f.is_pinned = true
+      AND u.is_deleted = false
+      AND f.is_deleted = false
+    ORDER BY f.created_at DESC
+    `,
+
+    [profileId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addFeedback, getFeedbacks, toggleIsPinnedFeedback, getPinnedFeedbackByProfileId, };

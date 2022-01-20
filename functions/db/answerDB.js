@@ -103,4 +103,27 @@ const addAnswer = async (client, userId, formId, name, relationshipId, content) 
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getRelationship, addAnswer,getAnswers, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList };
+const getPinnedAnswerByProfileId = async (client, profileId) => {
+    const { rows } = await client.query (
+        `
+        SELECT l.user_id as user_id, u.profile_id, f.light_icon_image, f.title, a.id as answer_id, r.name as relationship_name, a.name, a.content, a.created_at, a.is_pinned
+        FROM answer a
+        JOIN link_user_form l ON a.link_user_form_id = l.id
+        JOIN "user" u ON l.user_id = u.id
+        JOIN relationship r ON a.relationship_id = r.id
+        JOIN form f ON l.form_id = f.id
+        WHERE u.profile_id = $1
+            AND a.is_pinned = true
+            AND a.is_deleted = false
+            AND l.is_deleted = false
+            AND u.is_deleted = false
+            AND f.is_deleted = false
+        ORDER BY a.created_at DESC
+        `,
+
+        [profileId],
+    );
+    return convertSnakeToCamel.keysToCamel(rows);
+}
+
+module.exports = { getRelationship, addAnswer,getAnswers, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList,getPinnedAnswerByProfileId };

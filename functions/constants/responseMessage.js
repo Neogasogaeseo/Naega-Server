@@ -61,6 +61,8 @@ module.exports = {
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
   READ_ISSUE_FEEDBACK_SUCCESS: '팀 이슈 피드백 조회 성공',
   FEEDBACK_IS_PINNED_TOGGLE_SUCCESS: '피드백 핀 토글 성공',
+  NO_PINNED_FEEDBACK: '북마크된 피드백이 없습니다',
+  READ_TEAM_AND_PINNED_FEEDBACK_SUCCESS: '팀과 북마크 피드백 조회 성공',
 
   // 너가소개서
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
@@ -70,8 +72,10 @@ module.exports = {
   FORM_CREATE_FAIL: '존재하지 않는 폼입니다',
   DUPLICATE_FORM: '이미 존재하는 폼입니다',
   ANSWER_CREATE_SUCCESS: '답변 등록 성공',
-  // NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
+  NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
   READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
   NO_MY_FORM_CONTENT: '생성한 폼이 없습니다',
   READ_FORM_DETAIL_SUCCESS: '폼 디테일 조회 성공',
+  READ_ALL_PINNED_ANSWER_SUCCESS: '북마크된 답변 조회 성공',
+  NO_PINNED_ANSWER: '북마크된 답변이 없습니다',
 };

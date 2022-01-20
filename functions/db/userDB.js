@@ -140,4 +140,5 @@ const getUserByAccessToken = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+
 module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, getUserByAccessToken};
