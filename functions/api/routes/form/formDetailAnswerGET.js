@@ -49,7 +49,10 @@ module.exports = async (req, res) => {
     const formDetailAnswer = Object.entries(answersTofind).map(([answerId, data]) => ({ ...data }));
     console.log('issueDetailAnswer', formDetailAnswer);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS));
+    const answerCount = formDetailAnswer.length;
+    const data = { answerCount, answer: formDetailAnswer };
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_ANSWER_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
