@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { answerDB, linkAnswerKeywordDB, feedbackDB } = require('../../../db');
 const arrayHandler = require('../../../lib/arrayHandler');
+const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -21,6 +22,9 @@ module.exports = async (req, res) => {
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
     const answers = await answerDB.getAnswerByFormId(client, formId);
+    for (const answer of answers) {
+      answer.createdAt = dayjs(answer.createdAt).format('YYYY-MM-DD');
+    }
     console.log('answers :', answers);
 
     // ^_^// 가져온 answers들의 id만 추출
