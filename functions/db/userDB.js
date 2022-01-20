@@ -17,7 +17,7 @@ const gettaggedUserProfileId = async (client, taggedUserId) => {
   const { rows } = await client.query(
     `
       SELECT u.profile_id FROM "user" u
-      WHERE user_id = $1
+      WHERE u.id = $1
       AND is_deleted = false
     `,
     [taggedUserId],

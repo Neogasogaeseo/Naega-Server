@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { feedbackDB, linkFeedbacKeywordDB, keywordDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB, keywordDB, userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -21,12 +21,16 @@ module.exports = async (req, res) => {
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
+
+    console.log('newFeedback :', newFeedback);
     //^_^// feedback x Keyword 테이블에 row 추가
     const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client, newFeedback.id, keywordIds);
     //^_^// 추가된 Keyword의 count 업데이트
     const keywordCountUpdate = await keywordDB.keywordCountUpdate(client, keywordIds);
 
-    const data = { feecbackId: newFeedback.id };
+    const taggedUserProfileId = await userDB.gettaggedUserProfileId(client, taggedUserId);
+
+    const data = { taggedUserProfileId: taggedUserProfileId.profileId, feecbackId: newFeedback.id };
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_FEEDBACK_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
