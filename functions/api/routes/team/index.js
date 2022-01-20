@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { checkUser } = require('../../../middlewares/auth');
+const uploadImage = require('../../../middlewares/uploadImage');
 
-router.post('/', checkUser, require('./teamPOST'));
-router.post('/issue', checkUser, require('./teamIssuePOST'));
+router.post('/', checkUser, uploadImage, require('./teamPOST'));
+router.post('/issue', checkUser, uploadImage, require('./teamIssuePOST'));
 
 router.put('/edit', checkUser, require('./teamPUT'));
 

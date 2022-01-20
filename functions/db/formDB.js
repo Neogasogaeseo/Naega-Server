@@ -53,7 +53,7 @@ const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
 const getForm = async (client, userId, formId) => {
   const { rows } = await client.query(
     `
-    SELECT l.id, f.title, f.subtitle, f.light_icon_image
+    SELECT l.id as link_form_id, f.title, f.subtitle, f.light_icon_image
     FROM link_user_form l 
     JOIN form f ON l.form_id = f.id
     WHERE l.user_id = $1
