@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
 const { answerDB, feedbackDB } = require('../../../db');
+const arrayHandler = require('../../../lib/arrayHandler');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -19,19 +20,12 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
-    const answers = await answerDB.getAnswers(client, formId);
+    const answers = await answerDB.getAnswerByFormId(client, formId);
     console.log('answers :', answers);
 
-    // // // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
-    // // const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
-    // // for (const feedback of feedbacks) {
-    // //   feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
-    // // }
-    // // console.log('feedbacks : ', feedbacks);
-
-    // // // ^_^// 가져온 feedbacks들의 id만 추출
-    // // const feedbackIds = arrayHandler.extractValues(feedbacks, 'id');
-    // // console.log('feedbackIds : ', feedbackIds);
+    // ^_^// 가져온 feedbacks들의 id만 추출
+    const answersIds = arrayHandler.extractValues(answers, 'id');
+    console.log('answersIds : ', answersIds);
 
     // // // ^_^// 추출한 feedbacks들로 키워드들 가져옴
     // // const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
