@@ -6,6 +6,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { answerDB, formDB, keywordDB } = require('../../../db');
 const resizeImage = require('../../../middlewares/resizeImage');
+const lodash = require('lodash');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -75,6 +76,13 @@ module.exports = async (req, res) => {
       myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.answerId);
       item.answer = myAnswerKeywordList;
     }
+    for (const item of myAnswerKeywordList) {
+      if (item.keyword) {
+        for (const keyword of item.keyword) {
+          delete keyword.id;
+        }
+      }
+    }
 
     //^_^// 합치기 완료
     const map = new Map();
@@ -82,6 +90,13 @@ module.exports = async (req, res) => {
     myForm.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myAnswerList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     const resultList = Array.from(map.values());
+    for (const item of resultList) {
+      if (item.answer) {
+        for (const answer of item.answer) {
+          delete answer.id;
+        }
+      }
+    }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultList));
   } catch (error) {
