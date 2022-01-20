@@ -45,8 +45,9 @@ module.exports = async (req, res) => {
     });
     console.log('answersTofind : ', answersTofind);
 
-    // const issueDetailFeedback = Object.entries(feedbacksTofind).map(([feedbackId, data]) => ({ ...data }));
-    // console.log('issueDetailFeedback', issueDetailFeedback);
+    // ^_^// 그룹핑해둔 값들을 풀어준다
+    const formDetailAnswer = Object.entries(answersTofind).map(([answerId, data]) => ({ ...data }));
+    console.log('issueDetailAnswer', formDetailAnswer);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS));
   } catch (error) {

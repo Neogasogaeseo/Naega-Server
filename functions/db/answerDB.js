@@ -16,7 +16,7 @@ const getAnswerByFormId = async (client, formId) => {
     `
         SELECT l.form_id, a.id,
         a.name, r.name as relationship,
-        a.content
+        a.content, a.is_pinned
         FROM "answer" a
         JOIN "relationship" r
         ON a.relationship_id = r.id
