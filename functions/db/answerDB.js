@@ -29,7 +29,7 @@ const getFormIdRecentAnswerListByUserId = async (client, userId) => {
 const getAnswerByFormIdList = async (client, formIdList) => {
   const { rows } = await client.query(
     `
-      SELECT l.form_id as id, a.id as answer_id,
+      SELECT l.form_id, a.id,
       a.name, r.name as relationship,
       a.content
       FROM "answer" a

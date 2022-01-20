@@ -6,6 +6,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { answerDB, formDB, keywordDB } = require('../../../db');
 const resizeImage = require('../../../middlewares/resizeImage');
+const lodash = require('lodash');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -42,8 +43,8 @@ module.exports = async (req, res) => {
 
     const myAnswer = await answerDB.getAnswerByFormIdList(client, idList);
     const myAnswerList = myAnswer.reduce((result, answer) => {
-      const a = result.find(({ id }) => id === answer.id);
-      a ? a.answer.push(answer) : result.push({ id: answer.id, answer: [answer] });
+      const a = result.find(({ id }) => id === answer.formId);
+      a ? a.answer.push(answer) : result.push({ id: answer.formId, answer: [answer] });
       return result;
     }, []);
 
@@ -53,7 +54,7 @@ module.exports = async (req, res) => {
       if (item.answer.length > 2) {
         item.answer = item.answer.slice(0, 2);
       }
-      item.answer.forEach((o) => answerIdList.push(o.answerId));
+      item.answer.forEach((o) => answerIdList.push(o.id));
     }
     if (answerIdList.length === 0) {
       client.release();
@@ -61,8 +62,8 @@ module.exports = async (req, res) => {
     }
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
     const keywordList = myKeywordList.reduce((result, keyword) => {
-      const a = result.find(({ id }) => id === keyword.id);
-      a ? a.keyword.push(keyword) : result.push({ id: keyword.id, keyword: [keyword] });
+      const a = result.find(({ id }) => id === keyword.answerId);
+      a ? a.keyword.push(keyword) : result.push({ id: keyword.answerId, keyword: [keyword] });
       return result;
     }, []);
 
@@ -70,11 +71,18 @@ module.exports = async (req, res) => {
     let myAnswerKeywordList = [];
     for (const item of myAnswerList) {
       const kmap = new Map();
-      item.answer.forEach((item) => kmap.set(item.answerId, item));
+      item.answer.forEach((item) => kmap.set(item.id, item));
       keywordList.forEach((item) => kmap.set(item.id, { ...kmap.get(item.id), ...item }));
       myAnswerKeywordList = Array.from(kmap.values());
-      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.answerId);
+      myAnswerKeywordList = myAnswerKeywordList.filter((answer) => answer.formId);
       item.answer = myAnswerKeywordList;
+    }
+    for (const item of myAnswerKeywordList) {
+      if (item.keyword) {
+        for (const keyword of item.keyword) {
+          delete keyword.answerId;
+        }
+      }
     }
 
     //^_^// 합치기 완료
@@ -83,6 +91,13 @@ module.exports = async (req, res) => {
     myForm.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myAnswerList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     const resultList = Array.from(map.values());
+    for (const item of resultList) {
+      if (item.answer) {
+        for (const answer of item.answer) {
+          delete answer.formId;
+        }
+      }
+    }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultList));
   } catch (error) {
