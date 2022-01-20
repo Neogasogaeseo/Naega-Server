@@ -18,7 +18,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const data = await formDB.getFormByFormId(client, formId);
-
+    if (!data) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.FORM_CREATE_FAIL));
+    }
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
