@@ -27,7 +27,7 @@ module.exports = async (req, res) => {
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_MEMBER));
     }
 
-    const issueData = await issueDB.addIssue(client, intTeamId, userId, categoryId, content, imageUrls);
+    const issueData = await issueDB.addIssue(client, userId, intTeamId, categoryId, content, imageUrls);
     
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_TEAM_ISSUE, issueData));
     
