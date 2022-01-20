@@ -14,6 +14,7 @@
 
 
 
+
 ---
 
 ## 💻 Server Developers
@@ -23,12 +24,23 @@
 </p>
 <div align = "center">
 
-    ![KakaoTalk_Photo_2022-01-19-22-36-58-2](https://user-images.githubusercontent.com/49263163/150396204-72ceebfa-867f-46e5-9b4e-7fe6f6d5b295.png)
-![KakaoTalk_Photo_2022-01-19-22-36-58-1](https://user-images.githubusercontent.com/49263163/150396194-894e132d-fc29-485a-a37d-a4470b5ee8d9.png)
-| :-----------------------------------------: | :----: | :--------: |
-||||
-|                   최영재                    | 허유정 | 주어진사랑 |
-| [realwhyjay](https://github.com/realwhyjay) |     [hujumee](https://github.com/hujumee)   |       [ozzing](https://github.com/ozzing)     |
+
+​    
+
+
+
+
+
+
+
+
+
+
+|                                                              |                                                              |                                                              |
+| :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
+| ![KakaoTalk_Photo_2022-01-21-03-22-16](https://user-images.githubusercontent.com/49263163/150398442-ed2a1509-a91f-41ab-a9ac-407b0b901e27.png) | ![3](https://user-images.githubusercontent.com/49263163/150396194-894e132d-fc29-485a-a37d-a4470b5ee8d9.png) | ![KakaoTalk_Photo_2022-01-19-22-36-58-2](https://user-images.githubusercontent.com/49263163/150396204-72ceebfa-867f-46e5-9b4e-7fe6f6d5b295.png) |
+|                            최영재                            |                          주어진사랑                          |                            허유정                            |
+|         [realwhyjay](https://github.com/realwhyjay)          |            [hujumee](https://github.com/hujumee)             |             [ozzing](https://github.com/ozzing)              |
 
 </div>
 
@@ -122,7 +134,7 @@
 
 ## ERD
 
-![12](https://user-images.githubusercontent.com/49263163/148997786-7646ded0-ea22-4912-b32c-c12786de22c7.png)
+![neogasogaeseo ERD](https://user-images.githubusercontent.com/49263163/150398851-a517fc45-d772-4f24-937a-3d707d8d49ab.png)
 
 ---
 
@@ -132,5 +144,4 @@
 
 
 ---
-
 
