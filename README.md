@@ -19,7 +19,7 @@
 ## 💻 Server Developers
 
 <p align="center">
-<img align"center" src = ></img>
+<img align"center" src = https://user-images.githubusercontent.com/49263163/150396081-70ca4dd0-305c-4f03-a975-61167a073d9c.png></img>
 </p>
 <div align = "center">
 
