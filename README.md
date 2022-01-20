@@ -40,7 +40,7 @@
 | :----------------------------------------------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
 | ![KakaoTalk_Photo_2022-01-21-03-22-16](https://user-images.githubusercontent.com/49263163/150398442-ed2a1509-a91f-41ab-a9ac-407b0b901e27.png) | ![3](https://user-images.githubusercontent.com/49263163/150396194-894e132d-fc29-485a-a37d-a4470b5ee8d9.png) | ![KakaoTalk_Photo_2022-01-19-22-36-58-2](https://user-images.githubusercontent.com/49263163/150396204-72ceebfa-867f-46e5-9b4e-7fe6f6d5b295.png) |
 |                            최영재                            |                          주어진사랑                          |                            허유정                            |
-|         [realwhyjay](https://github.com/realwhyjay)          |            [hujumee](https://github.com/hujumee)             |             [ozzing](https://github.com/ozzing)              |
+|         [realwhyjay](https://github.com/realwhyjay)          |            [ozzing](https://github.com/ozzing)             |             [hujumee](https://github.com/hujumee)              |
 
 </div>
 
