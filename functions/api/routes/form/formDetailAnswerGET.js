@@ -38,11 +38,11 @@ module.exports = async (req, res) => {
     }, {});
     console.log('answersTofind', answersTofind);
 
-    // // linkFeedbackKeywords.map((o) => {
-    // //   feedbacksTofind[o.feedbackId].keywords.push(o);
-    // //   return o;
-    // // });
-    // // console.log(feedbacksTofind);
+    linkAnswerKeywords.map((o) => {
+      answersTofind[o.answerId].keywords.push(o);
+      return o;
+    });
+    console.log('answersTofind : ', answersTofind);
 
     // const issueDetailFeedback = Object.entries(feedbacksTofind).map(([feedbackId, data]) => ({ ...data }));
     // console.log('issueDetailFeedback', issueDetailFeedback);
