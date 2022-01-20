@@ -4,7 +4,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const checkKeyword = async (client, keyword, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-        SELECT k.name, color.code FROM keyword k
+        SELECT k.id ,k.name, color.code FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.name = $1
         AND k.user_id = $2

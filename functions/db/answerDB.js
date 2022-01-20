@@ -11,6 +11,30 @@ const getRelationship = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAnswers = async (client, formId) => {
+  const { rows } = await client.query(/*sql*/ `
+      SELECT a.id, a.form_id FROM (SELECT * FROM answer JOIN link_user_form ON answer.link_user_form_id = link_user_form.id JOIN form ON form.id = link_user_form.form_id) a
+      WHERE a.form_id = ${formId}
+      `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+// SELECT a.id, a.form_id, a.user_id, u.name, a.content,a.created_at, a.is_pinned
+//       FROM (SELECT * FROM answer JOIN link_user_form ON answer.link_user_form_id = link_user_form.id JOIN form ON form.id = link_user_form.form_id) a
+//       JOIN "user" u ON a.user_id = u.id
+//       WHERE a.form_id = ${formId}
+
+const getFeedbacks = async (client, issueId) => {
+  const { rows } = await client.query(/*sql*/ `
+      SELECT f.id, f.issue_id, f.user_id, u.name as "name", f.tagged_user_id, tag.name as taggedUserName , f.content,f.created_at, f.is_pinned
+      FROM feedback f 
+      JOIN "user" u ON f.user_id = u.id
+      JOIN "user" tag ON f.tagged_user_id = tag.id
+      WHERE issue_id = ${issueId}
+      AND f.is_deleted = false
+      `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getFormIdRecentAnswerListByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
@@ -44,17 +68,7 @@ const getAnswerByFormIdList = async (client, formIdList) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-// const getAnswers = async (client, formId) => {
-//     const { rows } = await client.query(/*sql*/ `
-//       SELECT a.id, a.form_id, a.user_id, u.name as "name", f.tagged_user_id, tag.name as taggedUserName , f.content,f.created_at, f.is_pinned
-//       FROM (SELECT * FROM answer JOIN link_user_form ON answer.link_user_form_id = link_user_form.id) a
-//       JOIN "user" u ON f.user_id = u.id
-//       JOIN "user" tag ON f.tagged_user_id = tag.id
-//       WHERE issue_id = ${formId}
-//       AND f.is_deleted = false
-//       `);
-//     return convertSnakeToCamel.keysToCamel(rows);
-//   };
+
 
 const addAnswer = async (client, userId, formId, name, relationshipId, content) => {
   //^_^// 링크 테이블의 id 가져오기
@@ -89,4 +103,4 @@ const addAnswer = async (client, userId, formId, name, relationshipId, content) 
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getRelationship, addAnswer, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList };
+module.exports = { getRelationship, addAnswer,getAnswers, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList };
