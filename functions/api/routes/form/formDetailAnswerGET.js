@@ -38,6 +38,7 @@ module.exports = async (req, res) => {
     }, {});
     console.log('answersTofind', answersTofind);
 
+    // ^_^// answerId로 그룹화 해준 answers들에 keywords를 넣어준다..
     linkAnswerKeywords.map((o) => {
       answersTofind[o.answerId].keywords.push(o);
       return o;
