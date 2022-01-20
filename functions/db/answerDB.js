@@ -23,23 +23,7 @@ const getRelationship = async (client) => {
 //     return convertSnakeToCamel.keysToCamel(rows);
 //   };
 
-const addAnswer = async (client, userId, formId, name, relationshipId, content) => {
-    //^_^// 링크 테이블의 id 가져오기
-    const { rows: linkRows } = await client.query (
-        `
-        SELECT id 
-        FROM link_user_form 
-        WHERE form_id = $1
-            AND user_id = $2
-            AND is_deleted = false
-        `,
-
-        [formId, userId],
-    );
-    if (linkRows.length === 0) return null;
-
-    const linkUserFormId = linkRows[0].id;
-
+const addAnswer = async (client, linkFormId, name, relationshipId, content) => {
     //^_^// answer테이블에 insert하기
     const { rows } = await client.query (
         `
@@ -50,7 +34,7 @@ const addAnswer = async (client, userId, formId, name, relationshipId, content) 
         RETURNING *
         `,
 
-        [linkUserFormId, name, relationshipId, content],
+        [linkFormId, name, relationshipId, content],
     );
     console.log(rows[0]);
     return convertSnakeToCamel.keysToCamel(rows[0]);
