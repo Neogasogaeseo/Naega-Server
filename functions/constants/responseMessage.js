@@ -54,7 +54,7 @@ module.exports = {
   READ_ALL_CATEGORY_SUCCESS: '이슈 카테고리 조회 성공',
   POST_TEAM_ISSUE: '팀 이슈 등록 성공',
   NO_TEAM_ISSUE_CONTENT: '이슈 컨텐트 값이 없습니다',
-  s: '팀 이슈 디테일 조회 성공',
+  READ_TEAM_ISSUE_DETAIL_SUCCESS: '팀 이슈 디테일 조회 성공',
 
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
