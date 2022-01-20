@@ -32,6 +32,7 @@ module.exports = async (req, res) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });
     let idList = extractValues(idUnique, 'formId');
+    const count = idList.length;
     idList = idList.slice(0, 2); //^_^// 전체 조회시 삭제
 
     //^_^// form id로 form, answer 정보 가져오기
@@ -99,7 +100,7 @@ module.exports = async (req, res) => {
       }
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultList));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList, count }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
