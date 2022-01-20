@@ -31,19 +31,12 @@ module.exports = async (req, res) => {
     const linkAnswerKeywords = await linkAnswerKeywordDB.getKeywordsWithAnswerIdList(client, answersIds);
     console.log('linkAnswerKeywords : ', linkAnswerKeywords);
 
-    // ^_^// 추출한 answers
+    // ^_^// 추출한 answers들에 keywords를 넣어주기 위해 가공 -> answer id로 그룹화 해준다
     const answersTofind = answers.reduce((acc, x) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
     }, {});
     console.log('answersTofind', answersTofind);
-
-    // // ^_^// 추출한 feedbakcs
-    // const feedbacksTofind = feedbacks.reduce((acc, x) => {
-    //   acc[x.id] = { ...x, keywords: [] };
-    //   return acc;
-    // }, {});
-    // console.log('feedbacksTofind', feedbacksTofind);
 
     // // linkFeedbackKeywords.map((o) => {
     // //   feedbacksTofind[o.feedbackId].keywords.push(o);
