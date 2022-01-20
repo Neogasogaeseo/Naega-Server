@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
     });
     let idList = extractValues(idUnique, 'formId');
     const count = idList.length;
-    idList = idList.slice(0, 2); //^_^// 전체 조회시 삭제
+    if (idList.length > 2) idList = idList.slice(0, 2);
 
     //^_^// form id로 form, answer 정보 가져오기
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);
