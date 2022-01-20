@@ -13,6 +13,18 @@ const checkUserProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const gettaggedUserProfileId = async (client, taggedUserId) => {
+  const { rows } = await client.query(
+    `
+      SELECT u.profile_id FROM "user" u
+      WHERE user_id = $1
+      AND is_deleted = false
+    `,
+    [taggedUserId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const addUser = async (client, profileId, name, authenticationCode, provider, image) => {
   const { rows } = await client.query(
     `
@@ -113,7 +125,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
 };
 
 const getUserListByOnlyProfileId = async (client, profileId, userId) => {
-    const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
@@ -127,18 +139,26 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-
 const getUserByAccessToken = async (client, userId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT id, profile_id, name, image
     FROM "user"
     WHERE id = ${userId}
       AND is_deleted = false
-    `
+    `,
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-
-module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, getUserByAccessToken};
+module.exports = {
+  checkUserProfileId,
+  addUser,
+  getUserByAuthenticationCode,
+  updateRefreshTokenById,
+  getUserById,
+  getUserListByProfileIdTeamId,
+  getUserListByOnlyProfileId,
+  getUserByAccessToken,
+  gettaggedUserProfileId,
+};
