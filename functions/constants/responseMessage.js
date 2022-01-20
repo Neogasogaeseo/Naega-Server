@@ -67,9 +67,11 @@ module.exports = {
   READ_ALL_FORM_RECENT_SUCCESS: '전체 폼 최신순 조회 성공',
   FORM_CREATE_SUCCESS: '폼 생성 성공',
   READ_FORM_SUCCESS: '폼 정보 조회 성공',
-  FORM_CREATE_FAIL: '이미 존재하는 폼입니다',
+  FORM_CREATE_FAIL: '존재하지 않는 폼입니다',
+  DUPLICATE_FORM: '이미 존재하는 폼입니다',
   ANSWER_CREATE_SUCCESS: '답변 등록 성공',
   // NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
   READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
+  NO_MY_FORM_CONTENT: '생성한 폼이 없습니다',
   READ_FORM_DETAIL_SUCCESS: '폼 디테일 조회 성공',
 };
