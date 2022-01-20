@@ -6,7 +6,6 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { answerDB, formDB, keywordDB } = require('../../../db');
 const resizeImage = require('../../../middlewares/resizeImage');
-const { times, remove } = require('lodash');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -38,6 +37,7 @@ module.exports = async (req, res) => {
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);
     for (const form of myForm) {
       form.createdAt = dayjs(form.createdAt).format('YYYY-MM-DD');
+      form.darkIconImage = resizeImage(form.darkIconImage);
     }
 
     const myAnswer = await answerDB.getAnswerByFormIdList(client, idList);
