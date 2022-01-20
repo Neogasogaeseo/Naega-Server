@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { userDB, keywordDB } = require('../../../db');
+const { userDB, linkFeedbacKeywordDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
@@ -23,7 +23,8 @@ module.exports = async (req, res) => {
     if(!userData) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));}
 
 
-    // const teamKeywordList;
+    const teamKeywordList = await linkFeedbacKeywordDB.getTopKeywordListOnFeedback(client, profileId);
+    console.log("teamKeywordList: ", teamKeywordList);
     // const answerKeywordList;
 
     // ^_^// 객체의 키값인 code를 colorCode로 바꾸어주는 작업

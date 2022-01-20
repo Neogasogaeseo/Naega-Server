@@ -25,4 +25,23 @@ const getKeywords = async (client, feedbackIds) => {
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addLinkFeedbackKeyword, getKeywords };
+
+const getTopKeywordListOnFeedback = async (client, profileId) => {
+  const { rows } = client.query(
+    `
+    SELECT l.*
+    FROM link_feedback_keyword l
+    JOIN keyword k ON l.keyword_id = k.id
+    JOIN "user" u ON u.id = k.user_id
+    WHERE u.profile_id = $1
+      AND l.is_deleted = false
+      AND k.is_deleted = false
+      AND u.is_deleted = false
+    ORDER BY l.keyword_id
+    `,
+
+    [profileId]
+  )
+}
+
+module.exports = { addLinkFeedbackKeyword, getKeywords, getTopKeywordListOnFeedback, };
