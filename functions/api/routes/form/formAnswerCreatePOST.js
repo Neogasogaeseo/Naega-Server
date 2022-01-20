@@ -8,8 +8,8 @@ const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-  const { userId, formId, name, relationshipId, content, keywordList } = req.body;
-  if (!userId || !formId || !name || !relationshipId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  const {linkFormId, name, relationshipId, content, keywordList } = req.body;
+  if (!linkFormId || !name || !relationshipId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
     
   let client;
   
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const answerData = await answerDB.addAnswer(client, userId, formId, name, relationshipId, content);
+    const answerData = await answerDB.addAnswer(client, linkFormId, name, relationshipId, content);
     if (answerData === null) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_FORM));
 
     const { id: answerId } = answerData;

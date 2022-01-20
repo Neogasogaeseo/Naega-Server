@@ -6,10 +6,8 @@ const db = require('../../../db/db');
 const { keywordDB, userDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const user = req.user;
   const { offset, limit, userId } = req.query;
 
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   if (!offset || !limit || !userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
