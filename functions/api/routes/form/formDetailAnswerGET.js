@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { answerDB, feedbackDB } = require('../../../db');
+const { answerDB, linkAnswerKeywordDB, feedbackDB } = require('../../../db');
 const arrayHandler = require('../../../lib/arrayHandler');
 
 module.exports = async (req, res) => {
@@ -23,13 +23,13 @@ module.exports = async (req, res) => {
     const answers = await answerDB.getAnswerByFormId(client, formId);
     console.log('answers :', answers);
 
-    // ^_^// 가져온 feedbacks들의 id만 추출
+    // ^_^// 가져온 answers들의 id만 추출
     const answersIds = arrayHandler.extractValues(answers, 'id');
     console.log('answersIds : ', answersIds);
 
-    // // // ^_^// 추출한 feedbacks들로 키워드들 가져옴
-    // // const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
-    // // console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
+    // ^_^// 추출한 answers들로 키워드들 가져옴
+    const linkAnswerKeywords = await linkAnswerKeywordDB.getKeywordsWithAnswerIdList(client, answersIds);
+    console.log('linkAnswerKeywords : ', linkAnswerKeywords);
 
     // // // ^_^// 추출한 feedbakcs
     // // const feedbacksTofind = feedbacks.reduce((acc, x) => {
