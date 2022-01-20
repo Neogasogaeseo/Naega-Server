@@ -57,7 +57,7 @@ const keywordCountUpdate = async (client, keywordIds) => {
 const getKeywordByAnswerId = async (client, answerIdList) => {
   const { rows } = await client.query(
     `
-    SELECT u.form_id as id, k.id as keyword_id, k.name, c.code as color_code
+    SELECT l.answer_id as id, k.id as keyword_id, k.name, c.code as color_code
     FROM "link_answer_keyword" l
     JOIN "keyword" k
     ON l.keyword_id = k.id
