@@ -47,7 +47,6 @@ module.exports = {
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',
   READ_MY_ISSUE_SUCCESS: '나와 관련된 이슈 조회 성공',
   READ_TEAM_SUCCESS: '팀 조회 성공',
-  NO_FORM: '생성된 폼이 없습니다',
 
   // 팀원소개서 이슈
   READ_TEAM_ISSUE_SUCCESS: '팀 이슈 조회 성공',
