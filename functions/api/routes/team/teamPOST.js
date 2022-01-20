@@ -6,7 +6,9 @@ const db = require('../../../db/db');
 const { teamDB, memberDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { teamName, image, description, userIdList } = req.body;
+  const { teamName, description, userIdList } = req.body;
+  const imageUrls = req.imageUrls;
+
   //^_^// hostUser POST를 위해 토큰값에서 user.id 가져오기
   const { id: hostUserId } = req.user;
 
@@ -20,7 +22,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
     //^_^// 팀 생성 POST
-    const teamData = await teamDB.addTeam(client, teamName, image, description);
+    const teamData = await teamDB.addTeam(client, teamName, imageUrls, description);
 
     //^_^// member POST를 위해 팀 생성 POST 후 만들어진 team.id 가져오기
     const { id: teamId } = teamData;
