@@ -29,7 +29,7 @@ module.exports = async (req, res) => {
     console.log('feedbackIds : ', feedbackIds);
 
     // ^_^// 추출한 feedbacks들로 키워드들 가져옴
-    const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
+    const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, feedbackIds);
     console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
     // ^_^// 추출한 feedbakcs

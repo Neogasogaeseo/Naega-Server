@@ -114,7 +114,7 @@ const getFormBanner = async (client) => {
 const getFormByFormId = async (client, formId) => {
   const { rows } = await client.query(
     `
-    SELECT f.id
+    SELECT f.id, f.title, f.subtitle, f.dark_icon_image
     FROM "form" f
     WHERE f.is_deleted = false
     AND f.id = $1
