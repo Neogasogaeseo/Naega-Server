@@ -31,12 +31,19 @@ module.exports = async (req, res) => {
     const linkAnswerKeywords = await linkAnswerKeywordDB.getKeywordsWithAnswerIdList(client, answersIds);
     console.log('linkAnswerKeywords : ', linkAnswerKeywords);
 
-    // // // ^_^// 추출한 feedbakcs
-    // // const feedbacksTofind = feedbacks.reduce((acc, x) => {
-    // //   acc[x.id] = { ...x, keywords: [] };
-    // //   return acc;
-    // // }, {});
-    // // console.log('feedbacksTofind', feedbacksTofind);
+    // ^_^// 추출한 answers
+    const answersTofind = answers.reduce((acc, x) => {
+      acc[x.id] = { ...x, keywords: [] };
+      return acc;
+    }, {});
+    console.log('answersTofind', answersTofind);
+
+    // // ^_^// 추출한 feedbakcs
+    // const feedbacksTofind = feedbacks.reduce((acc, x) => {
+    //   acc[x.id] = { ...x, keywords: [] };
+    //   return acc;
+    // }, {});
+    // console.log('feedbacksTofind', feedbacksTofind);
 
     // // linkFeedbackKeywords.map((o) => {
     // //   feedbacksTofind[o.feedbackId].keywords.push(o);
