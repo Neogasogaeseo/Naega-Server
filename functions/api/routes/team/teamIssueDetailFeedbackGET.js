@@ -18,7 +18,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
-    const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
+    let feedbacks = await feedbackDB.getFeedbacks(client, issueId);
+    if (feedbacks.length === 0) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_ISSUE_FEEDBACK, []));
+    }
     for (const feedback of feedbacks) {
       feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
     }
