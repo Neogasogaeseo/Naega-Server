@@ -98,7 +98,7 @@ const getFormBanner = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.light_icon_image, f.is_deleted,
     c.code as color_code
     FROM "form" f
     JOIN "color" c
