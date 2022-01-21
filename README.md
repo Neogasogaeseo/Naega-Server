@@ -132,6 +132,40 @@
 
 ---
 
+## Dependencies
+
+```json
+"dependencies": {
+    "axios": "^0.24.0",
+    "busboy": "^0.3.1",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
+    "crypto": "^1.0.1",
+    "dayjs": "^1.10.7",
+    "dotenv": "^10.0.0",
+    "eslint-config-prettier": "^8.3.0",
+    "express": "^4.17.1",
+    "firebase": "^9.6.2",
+    "firebase-admin": "^9.2.0",
+    "firebase-functions": "^3.11.0",
+    "fs": "0.0.1-security",
+    "helmet": "^4.6.0",
+    "hpp": "^0.2.3",
+    "jsonwebtoken": "^8.5.1",
+    "lodash": "^4.17.21",
+    "node-fetch": "^3.1.0",
+    "os": "^0.1.2",
+    "passport": "^0.5.2",
+    "passport-kakao": "^1.0.1",
+    "path": "^0.12.7",
+    "pg": "^8.7.1",
+    "qs": "^6.10.3"
+  },
+```
+
+---
+
 ## ERD
 
 ![neogasogaeseo ERD](https://user-images.githubusercontent.com/49263163/150398851-a517fc45-d772-4f24-937a-3d707d8d49ab.png)
@@ -144,4 +178,5 @@
 
 
 ---
+
 
