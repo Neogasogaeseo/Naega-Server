@@ -25,9 +25,9 @@ module.exports = async (req, res) => {
     //^_^// formId 최신순 정렬
     const myFormIdRecentList = await answerDB.getFormIdRecentAnswerListByUserId(client, userId);
     if (myFormIdRecentList.length === 0) {
-      client.release();
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
+    console.log(myFormIdRecentList);
     const idUnique = myFormIdRecentList.filter((form, index, arr) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });

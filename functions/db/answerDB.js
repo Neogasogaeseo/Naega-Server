@@ -33,10 +33,8 @@ const getFormIdRecentAnswerListByUserId = async (client, userId) => {
     `
     SELECT l.form_id
     FROM "link_user_form" l
-    FULL JOIN "answer" a
-    ON l.id = a.link_user_form_id
     WHERE l.user_id = $1
-    ORDER BY a.updated_at DESC NULLs LAST
+    ORDER BY l.updated_at
     `,
     [userId],
   );
