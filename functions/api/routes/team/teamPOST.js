@@ -14,7 +14,6 @@ module.exports = async (req, res) => {
 
   //^_^// teamName 외에는 값이 없어도 ok
   if (!teamName) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  console.log(userIdList);
 
   let client;
 
