@@ -41,8 +41,7 @@ module.exports = async (req, res) => {
       form.createdAt = dayjs(form.createdAt).format('YYYY-MM-DD');
       form.darkIconImage = resizeImage(form.darkIconImage);
     }
-
-    const myAnswer = await answerDB.getAnswerByFormIdList(client, idList);
+    const myAnswer = await answerDB.getAnswerByFormIdListAndUserID(client, idList, userId);
     const myAnswerList = myAnswer.reduce((result, answer) => {
       const a = result.find(({ id }) => id === answer.formId);
       a ? a.answer.push(answer) : result.push({ id: answer.formId, answer: [answer] });
@@ -58,9 +57,9 @@ module.exports = async (req, res) => {
       item.answer.forEach((o) => answerIdList.push(o.id));
     }
     if (answerIdList.length === 0) {
-      client.release();
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, myForm));
     }
+
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
     const keywordList = myKeywordList.reduce((result, keyword) => {
       const a = result.find(({ id }) => id === keyword.answerId);
