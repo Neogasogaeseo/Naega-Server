@@ -33,7 +33,7 @@ const getKeywordsWithAnswerIdList = async (client, answerIds) => {
 const getTopKeywordListOnAnswer = async (client, userId) => {
   const { rows } = await client.query (
     `
-    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code
+    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code
     FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
            FROM link_answer_keyword
            WHERE is_deleted = false
