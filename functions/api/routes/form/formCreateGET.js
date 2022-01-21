@@ -24,7 +24,6 @@ module.exports = async (req, res) => {
     }
 
     const form = await formDB.getFormByFormIdAndUserId(client, formId, userId);
-    console.log(form);
     if (form) {
       const q = await encrypt(userId, formId);
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DUPLICATE_FORM, q));
