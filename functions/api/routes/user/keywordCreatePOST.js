@@ -17,8 +17,8 @@ module.exports = async (req, res) => {
     const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
 
     if (alreadyKeyword) {
-      alreadyKeyword.colorCode = alreadyKeyword.code;
-      delete alreadyKeyword.code;
+      // alreadyKeyword.colorCode = alreadyKeyword.code;
+      // delete alreadyKeyword.code;
 
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
     }
@@ -29,8 +29,8 @@ module.exports = async (req, res) => {
     console.log('newKeyword :', newKeyword);
 
     const returnedKeyword = await keywordDB.checkKeyword(client, name, userId);
-    returnedKeyword.colorCode = returnedKeyword.code;
-    delete returnedKeyword.code;
+    // returnedKeyword.colorCode = returnedKeyword.code;
+    // delete returnedKeyword.code;
 
     console.log('returnedKeyword :', returnedKeyword);
 
