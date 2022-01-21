@@ -78,4 +78,5 @@ module.exports = {
   READ_ALL_PINNED_ANSWER_SUCCESS: '북마크된 답변 조회 성공',
   NO_PINNED_ANSWER: '북마크된 답변이 없습니다',
   READ_FORM_ANSWER_DETAIL_SUCCESS: '폼 디테일 답변 조회 성공 ',
+  ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
 };

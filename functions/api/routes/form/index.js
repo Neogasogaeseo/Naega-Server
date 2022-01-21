@@ -13,5 +13,6 @@ router.post('/create', checkUser, require('./formCreatePOST'));
 router.get('/create/:formId', checkUser, require('./formCreateGET'));
 router.get('/detail/:formId', checkUser, require('./formDetailGET'));
 router.get('/detail/:formId/answer', checkUser, require('./formDetailAnswerGET'));
+router.put('/detail/answer/:answerId/pin', checkUser, require('./formDetailAnswerPinPUT'));
 
 module.exports = router;
