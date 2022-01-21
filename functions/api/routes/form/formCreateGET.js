@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const data = await formDB.getFormByFormId(client, formId);
+    const data = await formDB.getFormByFormIdAndUserId(client, formId, userId);
     if (!data) {
       return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.FORM_CREATE_FAIL));
     }
