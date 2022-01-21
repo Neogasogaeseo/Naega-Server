@@ -7,7 +7,7 @@ const { teamDB, memberDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { teamName, description, userIdList } = req.body;
-  const imageUrls = req.imageUrls;
+  const imageUrls = req.imageUrls + '/team';
 
   //^_^// hostUser POST를 위해 토큰값에서 user.id 가져오기
   const { id: hostUserId } = req.user;

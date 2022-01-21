@@ -8,7 +8,7 @@ const jwtHandlers = require('../../../lib/jwtHandlers');
 
 module.exports = async (req, res) => {
   const { profileId, name, provider, accesstoken, refreshtoken } = req.body;
-  const imageUrls = req.imageUrls;
+  const imageUrls = req.imageUrls + '/user';
   let client;
   let kakao_profile = '';
   if (!profileId || !name || !provider || !accesstoken || !refreshtoken) {
