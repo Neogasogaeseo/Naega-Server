@@ -97,15 +97,14 @@ const getTopKeyword = async (client, userId) => {
         WHERE k.user_id = ${userId}
         AND is_deleted = FALSE
         ORDER BY k.count DESC
-        LIMIT 5 OFFSET 0 
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
-  const feedbackIdQuery = "(" + feedbackIdList.map(o => o).join(', ') + ')';
- 
-  const { rows: keywordRows } = await client.query (
+  const feedbackIdQuery = '(' + feedbackIdList.map((o) => o).join(', ') + ')';
+
+  const { rows: keywordRows } = await client.query(
     `
     SELECT l.feedback_id, k.name, k.color_id, color.code as color_code
     FROM keyword k
@@ -114,15 +113,15 @@ const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
     WHERE l.feedback_id IN ${feedbackIdQuery}
       AND l.is_deleted = false
       AND k.is_deleted = false
-    `
+    `,
   );
   if (!keywordRows) return [];
   return convertSnakeToCamel.keysToCamel(keywordRows);
 };
 
 const getKeywordListByAnswerId = async (client, answerIdList) => {
-  const answerIdQuery = "(" + answerIdList.map(o => o).join(', ') + ')';
-  const { rows: keywordRows } = await client.query (
+  const answerIdQuery = '(' + answerIdList.map((o) => o).join(', ') + ')';
+  const { rows: keywordRows } = await client.query(
     `
     SELECT l.answer_id, k.name, k.color_id, color.code as color_code
     FROM keyword k
@@ -131,11 +130,10 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
     WHERE l.answer_id IN ${answerIdQuery}
       AND l.is_deleted = false
       AND k.is_deleted = false
-    `
+    `,
   );
   if (!keywordRows) return [];
   return convertSnakeToCamel.keysToCamel(keywordRows);
 };
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, getKeywordListByAnswerId,getKeywordByAnswerId };
-
+module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, getKeywordListByAnswerId, getKeywordByAnswerId };
