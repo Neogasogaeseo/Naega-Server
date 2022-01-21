@@ -12,8 +12,7 @@ const getRelationship = async (client) => {
 };
 
 const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
-  const { rows } = await client.query(
-    `
+  const { rows } = await client.query(/*sql*/ `
         SELECT l.form_id, a.id,
         a.name, r.name as relationship,
         a.content, a.is_pinned, a.created_at
@@ -23,11 +22,9 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
         JOIN "link_user_form" l
         ON a.link_user_form_id = l.id
         WHERE l.form_id = ${formId}
-        AND l.user_id = $1
+        AND l.user_id = ${userId}
         ORDER BY l.updated_at
-        `,
-    [userId],
-  );
+        `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 

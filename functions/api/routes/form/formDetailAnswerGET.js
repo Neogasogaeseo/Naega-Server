@@ -19,9 +19,10 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+    console.log(userId);
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
-    const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, 70);
+    const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, userId);
 
     if (answers.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_FORM_ISSUE, []));
