@@ -62,6 +62,26 @@ const getAnswerByFormIdList = async (client, formIdList) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAnswerByFormIdListAndUserID = async (client, formIdList, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT l.form_id, a.id,
+      a.name, r.name as relationship,
+      a.content
+      FROM "answer" a
+      JOIN "relationship" r
+      ON a.relationship_id = r.id
+      JOIN "link_user_form" l
+      ON a.link_user_form_id = l.id
+      WHERE l.form_id in (${formIdList.join(',')})
+      AND l.user_id = $1
+      ORDER BY l.updated_at
+      `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const addAnswer = async (client, linkFormId, name, relationshipId, content) => {
   //^_^// answer테이블에 insert하기
   const { rows } = await client.query(
@@ -80,8 +100,8 @@ const addAnswer = async (client, linkFormId, name, relationshipId, content) => {
 };
 
 const getPinnedAnswerByProfileId = async (client, profileId) => {
-    const { rows } = await client.query (
-        `
+  const { rows } = await client.query(
+    `
         SELECT l.user_id as user_id, u.profile_id, f.light_icon_image, f.title, a.id as answer_id, r.name as relationship_name, a.name, a.content, a.created_at, a.is_pinned
         FROM answer a
         JOIN link_user_form l ON a.link_user_form_id = l.id
@@ -97,9 +117,9 @@ const getPinnedAnswerByProfileId = async (client, profileId) => {
         ORDER BY a.created_at DESC
         `,
 
-        [profileId],
-    );
-    return convertSnakeToCamel.keysToCamel(rows);
+    [profileId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const toggleIsPinnedAnswer = async (client, answerId) => {
@@ -113,4 +133,13 @@ const toggleIsPinnedAnswer = async (client, answerId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getRelationship, addAnswer, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList, getAnswerByFormId, getPinnedAnswerByProfileId, toggleIsPinnedAnswer };
+module.exports = {
+  getRelationship,
+  addAnswer,
+  getAnswerByFormIdListAndUserID,
+  getFormIdRecentAnswerListByUserId,
+  getAnswerByFormIdList,
+  getAnswerByFormId,
+  getPinnedAnswerByProfileId,
+  toggleIsPinnedAnswer,
+};
