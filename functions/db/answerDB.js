@@ -79,4 +79,15 @@ const addAnswer = async (client, linkFormId, name, relationshipId, content) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getRelationship, addAnswer, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList, getAnswerByFormId };
+const toggleIsPinnedAnswer = async (client, answerId) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE answer
+    SET is_pinned = NOT is_pinned, updated_at = now()
+    WHERE id = ${answerId}
+    AND is_deleted = false
+    RETURNING answer.id, answer.is_pinned
+    `);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { getRelationship, addAnswer, getFormIdRecentAnswerListByUserId, getAnswerByFormIdList, getAnswerByFormId, toggleIsPinnedAnswer };
