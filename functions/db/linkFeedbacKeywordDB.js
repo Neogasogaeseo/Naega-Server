@@ -27,24 +27,21 @@ const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
 };
 
 
-const getTopKeywordListOnFeedback = async (client, profileId) => {
-  const { rows } = client.query(
+const getTopKeywordListOnFeedback = async (client, userId) => {
+  const { rows } = await client.query(
     `
-    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code, u.profile_id
+    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code
     FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
            FROM link_feedback_keyword
            WHERE is_deleted = false
            GROUP BY keyword_id) l
    JOIN "keyword" k ON l.keyword_id = k.id
-   JOIN "user" u ON u.id = k.user_id
    JOIN "color" c ON c.id = k.color_id
-   WHERE u.profile_id = $1
-       AND k.is_deleted = false
+   WHERE k.user_id = ${userId}
+      AND k.is_deleted = false
    ORDER BY l.count_keyword_id DESC
    LIMIT 3
    `,
-
-    [profileId]
   );
   console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
