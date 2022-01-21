@@ -4,23 +4,23 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { feedbackDB } = require('../../../db');
+const { answerDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { feedbackId } = req.params;
+  const { answerId } = req.params;
   const user = req.user;
-  console.log('feecbackId : ', feedbackId);
-  if (!feedbackId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  console.log('answerId : ', answerId);
+  if (!answerId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const toggleIsPinnedFeedback = await feedbackDB.toggleIsPinnedFeedback(client, feedbackId);
+    const toggleIsPinnedAnswer = await answerDB.toggleIsPinnedAnswer(client, answerId);
 
-    console.log('toggleIsPinnedFeedback :', toggleIsPinnedFeedback);
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ANSWER_IS_PINNED_TOGGLE_SUCCESS, toggleIsPinnedFeedback));
+    console.log('toggleIsPinnedAnswer :', toggleIsPinnedAnswer);
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FEEDBACK_IS_PINNED_TOGGLE_SUCCESS, toggleIsPinnedAnswer));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
