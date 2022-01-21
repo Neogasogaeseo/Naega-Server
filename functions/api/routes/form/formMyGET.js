@@ -40,6 +40,7 @@ module.exports = async (req, res) => {
     for (const form of myForm) {
       form.createdAt = dayjs(form.createdAt).format('YYYY-MM-DD');
       form.darkIconImage = resizeImage(form.darkIconImage);
+      form.answer = [];
     }
     const myAnswer = await answerDB.getAnswerByFormIdListAndUserID(client, idList, userId);
     const myAnswerList = myAnswer.reduce((result, answer) => {
@@ -55,6 +56,7 @@ module.exports = async (req, res) => {
         item.answer = item.answer.slice(0, 2);
       }
       item.answer.forEach((o) => answerIdList.push(o.id));
+      item.answer.forEach((o) => (o.keyword = []));
     }
     if (answerIdList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, myForm));
@@ -63,7 +65,7 @@ module.exports = async (req, res) => {
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
     const keywordList = myKeywordList.reduce((result, keyword) => {
       const a = result.find(({ id }) => id === keyword.answerId);
-      a ? a.keyword.push(keyword) : result.push({ id: keyword.answerId, keyword: [keyword] });
+      a ? a.keyword.push(keyword) : result.push({ id: keyword.answerId, keyword: keyword ? [keyword] : [] });
       return result;
     }, []);
 
