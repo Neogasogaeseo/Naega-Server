@@ -19,21 +19,23 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    /*
     const userData = await userDB.getUserListByProfileId(client, profileId);
     if(!userData) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));}
-
+*/
 
     const teamKeywordList = await linkFeedbacKeywordDB.getTopKeywordListOnFeedback(client, profileId);
     console.log("teamKeywordList: ", teamKeywordList);
     // const answerKeywordList;
 
     // ^_^// 객체의 키값인 code를 colorCode로 바꾸어주는 작업
+    /*
     Object.keys(getKeyword).forEach(function (key) {
         getKeyword[key].colorCode = getKeyword[key].code;
         delete getKeyword[key].code;
       });
-    
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    */
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, teamKeywordList));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
