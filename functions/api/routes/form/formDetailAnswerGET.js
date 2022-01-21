@@ -9,7 +9,7 @@ const arrayHandler = require('../../../lib/arrayHandler');
 const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
-  const user = req.user;
+  const { id: userId } = req.user;
   const { formId } = req.params;
 
   if (!formId) {
@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
-    const answers = await answerDB.getAnswerByFormId(client, formId);
+    const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, userId);
     for (const answer of answers) {
       answer.createdAt = dayjs(answer.createdAt).format('YYYY-MM-DD');
     }

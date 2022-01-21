@@ -11,7 +11,7 @@ const getRelationship = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getAnswerByFormId = async (client, formId) => {
+const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
   const { rows } = await client.query(
     `
         SELECT l.form_id, a.id,
@@ -23,8 +23,10 @@ const getAnswerByFormId = async (client, formId) => {
         JOIN "link_user_form" l
         ON a.link_user_form_id = l.id
         WHERE l.form_id = ${formId}
+        AND l.user_id = $1
         ORDER BY l.updated_at
         `,
+    [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -139,7 +141,7 @@ module.exports = {
   getAnswerByFormIdListAndUserID,
   getFormIdRecentAnswerListByUserId,
   getAnswerByFormIdList,
-  getAnswerByFormId,
+  getAnswerByFormIdAndUserId,
   getPinnedAnswerByProfileId,
   toggleIsPinnedAnswer,
 };
