@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../middlewares/slackAPI');
-const { userDB, keywordDB } = require('../../../db');
+const { userDB, linkFeedbacKeywordDB, linkAnswerKeywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
@@ -21,18 +21,22 @@ module.exports = async (req, res) => {
 
     const userData = await userDB.getUserListByProfileId(client, profileId);
     if(!userData) { return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));}
+    const userId = userData.id;
+    console.log("userId: ", userId);
 
-
-    // const teamKeywordList;
-    // const answerKeywordList;
-
-    // ^_^// 객체의 키값인 code를 colorCode로 바꾸어주는 작업
-    Object.keys(getKeyword).forEach(function (key) {
-        getKeyword[key].colorCode = getKeyword[key].code;
-        delete getKeyword[key].code;
-      });
+    const teamKeywordList = await linkFeedbacKeywordDB.getTopKeywordListOnFeedback(client, userId);
+    console.log("teamKeywordList: ", teamKeywordList);
     
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    const answerKeywordList = await linkAnswerKeywordDB.getTopKeywordListOnAnswer(client, userId);
+    console.log("answerKeyword: ", answerKeywordList);
+
+    const resultData = {
+      user: userData,
+      teamKeywordList,
+      answerKeywordList,
+    }
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, resultData));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

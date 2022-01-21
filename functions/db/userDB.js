@@ -151,6 +151,20 @@ const getUserByAccessToken = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getUserListByProfileId = async (client, profileId) => {
+  const { rows } = await client.query (
+    `
+    SELECT id, name, profile_id, image
+    FROM "user"
+    WHERE profile_id = $1
+      AND is_deleted = false
+    `,
+    [profileId],
+  );
+  console.log(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   checkUserProfileId,
   addUser,
@@ -161,4 +175,5 @@ module.exports = {
   getUserListByOnlyProfileId,
   getUserByAccessToken,
   gettaggedUserProfileId,
+  getUserListByProfileId,
 };

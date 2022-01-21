@@ -29,4 +29,24 @@ const getKeywordsWithAnswerIdList = async (client, answerIds) => {
           `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList };
+
+const getTopKeywordListOnAnswer = async (client, userId) => {
+  const { rows } = await client.query (
+    `
+    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code
+    FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
+           FROM link_answer_keyword
+           WHERE is_deleted = false
+           GROUP BY keyword_id) l
+   JOIN "keyword" k ON l.keyword_id = k.id
+   JOIN "color" c ON c.id = k.color_id
+   WHERE k.user_id = ${userId}
+      AND k.is_deleted = false
+   ORDER BY l.count_keyword_id DESC
+   LIMIT 3
+    `,
+  );
+  console.log(rows);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getTopKeywordListOnAnswer, };
