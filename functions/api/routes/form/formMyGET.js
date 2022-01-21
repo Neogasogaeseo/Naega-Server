@@ -14,8 +14,7 @@ const extractValues = (arr, key) => {
 };
 
 module.exports = async (req, res) => {
-  // const { id: userId } = req.user;
-  const { userId } = req.body;
+  const { id: userId } = req.user;
   if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
