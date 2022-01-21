@@ -58,7 +58,7 @@ module.exports = async (req, res) => {
     }
     if (answerIdList.length === 0) {
       client.release();
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, myForm));
     }
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
     const keywordList = myKeywordList.reduce((result, keyword) => {
