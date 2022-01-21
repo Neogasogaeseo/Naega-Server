@@ -50,6 +50,19 @@ const getFormIsCreatedByUserId = async (client, formIdList, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getFormIsCreatedByUserIdAndFormId = async (client, formId, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.form_id as id, l.is_deleted
+    FROM "link_user_form" l
+    WHERE l.user_id = $1
+    AND l.form_id = $2
+    `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const getForm = async (client, userId, formId) => {
   const { rows } = await client.query(
     `
@@ -98,7 +111,7 @@ const getFormBanner = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image, f.is_deleted,
+    f.is_new, f.is_banner, f.light_icon_image,
     c.code as color_code
     FROM "form" f
     JOIN "color" c
@@ -174,6 +187,7 @@ module.exports = {
   getAllFormPopular,
   getFormIsCreatedByUserId,
   getFormByUserIdAndFormId,
+  getFormIsCreatedByUserIdAndFormId,
   addForm,
   getForm,
   getFormBanner,

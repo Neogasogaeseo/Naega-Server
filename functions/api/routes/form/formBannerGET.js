@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const form = await formDB.getFormBanner(client);
-
+    const isCreated = await formDB.getFormIsCreatedByUserIdAndFormId(client, form.id, userId);
+    if (isCreated) form.isDeleted = isCreated.isDeleted;
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_BANNER_SUCCESS, form));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
