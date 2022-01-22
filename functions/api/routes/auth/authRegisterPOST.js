@@ -9,7 +9,7 @@ const slackAPI = require('../../../middlewares/slackAPI');
 
 module.exports = async (req, res) => {
   const { profileId, name, provider, accesstoken, refreshtoken } = req.body;
-  const imageUrls = req.imageUrls + '/user';
+  const imageUrls = req.imageUrls;
   let client;
   let kakao_profile = '';
   if (!profileId || !name || !provider || !accesstoken || !refreshtoken) {

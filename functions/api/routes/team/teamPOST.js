@@ -8,7 +8,7 @@ const slackAPI = require('../../../middlewares/slackAPI');
 
 module.exports = async (req, res) => {
   const { teamName, description, userIdList } = req.body;
-  const imageUrls = req.imageUrls + '/team';
+  const imageUrls = req.imageUrls;
 
   //^_^// hostUser POST를 위해 토큰값에서 user.id 가져오기
   const { id: hostUserId } = req.user;
