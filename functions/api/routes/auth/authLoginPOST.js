@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const qs = require('qs');
+const slackAPI = require('../../../middlewares/slackAPI');
 
 module.exports = async (req, res) => {
   const { provider, authenticationCode } = req.body;
@@ -64,6 +65,9 @@ module.exports = async (req, res) => {
       }),
     );
   } catch (error) {
+    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
+    ${JSON.stringify(error)}`;
+    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
     client.release();
