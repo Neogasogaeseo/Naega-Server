@@ -21,6 +21,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
     // ^_^// 폼 디테일 조회
     const formDetail = await formDB.getFormDetail(client, formId, user.id);
+    if (!formDetail) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_FORM));
+    }
     formDetail.createdAt = dayjs(formDetail.createdAt).format('YYYY-MM-DD');
 
     // ^_^// 링크 복사용 해쉬
