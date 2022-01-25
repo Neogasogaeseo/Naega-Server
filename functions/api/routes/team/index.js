@@ -3,8 +3,8 @@ const router = express.Router();
 const { checkUser } = require('../../../middlewares/auth');
 const uploadImage = require('../../../middlewares/uploadImage');
 
-router.post('/', checkUser, uploadImage, require('./teamPOST'));
-router.post('/issue', checkUser, uploadImage, require('./teamIssuePOST'));
+router.post('/', checkUser, uploadImage('team'), require('./teamPOST'));
+router.post('/issue', checkUser, uploadImage('issue'), require('./teamIssuePOST'));
 
 router.put('/edit', checkUser, require('./teamPUT'));
 
