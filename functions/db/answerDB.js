@@ -34,7 +34,7 @@ const getFormIdRecentAnswerListByUserId = async (client, userId) => {
     SELECT l.form_id
     FROM "link_user_form" l
     WHERE l.user_id = $1
-    ORDER BY l.updated_at
+    ORDER BY l.updated_at DESC
     `,
     [userId],
   );
