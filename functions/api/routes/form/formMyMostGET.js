@@ -24,16 +24,15 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     //^_^// formId 최신순 정렬
-    const myFormIdRecentList = await answerDB.getNewFormIdListByUserId(client, userId);
-    if (myFormIdRecentList.length === 0) {
+    const myFormIdMostList = await answerDB.getMostFormIdListByUserId(client, userId);
+    if (myFormIdMostList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
-    const idUnique = myFormIdRecentList.filter((form, index, arr) => {
+    const idUnique = myFormIdMostList.filter((form, index, arr) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });
     let idList = extractValues(idUnique, 'formId');
     const count = idList.length;
-    if (idList.length > 2) idList = idList.slice(0, 2);
 
     //^_^// form id로 form, answer 정보 가져오기
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);

@@ -4,6 +4,7 @@ const { checkUser } = require('../../../middlewares/auth');
 
 router.get('/', checkUser, require('./formMyGET'));
 router.get('/new', checkUser, require('./formMyNewGET'));
+router.get('/most', checkUser, require('./formMyMostGET'));
 router.get('/template/popular', checkUser, require('./formTemplatePopularGET'));
 router.get('/template/recent', checkUser, require('./formTemplateRecentGET'));
 router.get('/answer', require('./formAnswerGET'));
