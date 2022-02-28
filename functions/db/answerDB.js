@@ -34,7 +34,23 @@ const getNewFormIdListByUserId = async (client, userId) => {
     SELECT l.form_id
     FROM "link_user_form" l
     WHERE l.user_id = $1
-    ORDER BY l.updated_at DESC
+    ORDER BY l.created_at DESC
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getMostFormIdListByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.form_id, COUNT(a.id) as cnt
+    FROM "link_user_form" l
+    LEFT JOIN "answer" a
+    ON l.id = a.link_user_form_id
+    WHERE l.user_id = $1
+    GROUP BY l.form_id
+    ORDER BY cnt DESC
     `,
     [userId],
   );
@@ -135,6 +151,7 @@ module.exports = {
   addAnswer,
   getAnswerByFormIdListAndUserID,
   getNewFormIdListByUserId,
+  getMostFormIdListByUserId,
   getAnswerByFormIdList,
   getAnswerByFormIdAndUserId,
   getPinnedAnswerByProfileId,
