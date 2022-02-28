@@ -60,7 +60,7 @@ module.exports = async (req, res) => {
     }
     if (answerIdList.length === 0) {
       const resultList = myForm;
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList, count }));
     }
 
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
