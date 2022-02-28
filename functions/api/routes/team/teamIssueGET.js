@@ -25,7 +25,6 @@ module.exports = async (req, res) => {
     //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getFeedbackIdRecentListByUserId(client, userId);
     if (myIssueIdRecentList.length === 0) {
-      client.release();
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_TEAM_ISSUE_CONTENT));
     }
     const idUnique = myIssueIdRecentList.filter((issue, index, arr) => {
@@ -38,27 +37,33 @@ module.exports = async (req, res) => {
     for (const issue of myIssue) {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
+
     const myTeam = await issueDB.getTeamByIssueId(client, idList);
-    myTeam.forEach((item) => (item.teamImage = resizeImage(item.teamImage)));
+    myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
     //^_^// feedback 당한 사람 가져오기 완료
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
     myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
-      return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
+      return arr.findIndex((item) => item.name === feedback.name && item.issueId === feedback.issueId) === index;
     });
-    const feedbackList = feedbackUnique.reduce((result, feedback) => {
-      const a = result.find(({ id }) => id === feedback.id);
-      a ? a.feedback.push(feedback) : result.push({ id: feedback.id, feedback: [feedback] });
+    const myfeedbackList = feedbackUnique.reduce((result, feedback) => {
+      const a = result.find(({ id }) => id === feedback.issueId);
+      a ? a.feedback.push(feedback) : result.push({ id: feedback.issueId, feedback: feedback ? [feedback] : [] });
       return result;
     }, []);
 
     //^_^// 합치기 완료
     const map = new Map();
-    feedbackList.forEach((item) => map.set(item.id, item));
-    myIssue.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
-    myTeam.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    myIssue.forEach((item) => map.set(item.id, item));
+    myfeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());
+
+    resultList.forEach((item) => {
+      item.feedback.forEach((o) => delete o.issueId);
+      delete item.team.issueId;
+    });
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_MY_ISSUE_SUCCESS, resultList));
   } catch (error) {
