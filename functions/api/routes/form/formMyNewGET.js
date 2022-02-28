@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     //^_^// formId 최신순 정렬
-    const myFormIdRecentList = await answerDB.getFormIdRecentAnswerListByUserId(client, userId);
+    const myFormIdRecentList = await answerDB.getNewFormIdListByUserId(client, userId);
     if (myFormIdRecentList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }

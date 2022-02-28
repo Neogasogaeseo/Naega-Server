@@ -28,7 +28,7 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getFormIdRecentAnswerListByUserId = async (client, userId) => {
+const getNewFormIdListByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
     SELECT l.form_id
@@ -134,7 +134,7 @@ module.exports = {
   getRelationship,
   addAnswer,
   getAnswerByFormIdListAndUserID,
-  getFormIdRecentAnswerListByUserId,
+  getNewFormIdListByUserId,
   getAnswerByFormIdList,
   getAnswerByFormIdAndUserId,
   getPinnedAnswerByProfileId,
