@@ -15,9 +15,10 @@ const extractValues = (arr, key) => {
 };
 
 module.exports = async (req, res) => {
-  const { id: userId } = req.user;
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  // const { id: userId } = req.user;
+  // if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
+  const userId = 489;
   let client;
 
   try {
@@ -59,7 +60,7 @@ module.exports = async (req, res) => {
     }
     if (answerIdList.length === 0) {
       const resultList = myForm;
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList, count }));
     }
 
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
