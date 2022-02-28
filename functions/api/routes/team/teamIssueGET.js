@@ -47,7 +47,7 @@ module.exports = async (req, res) => {
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.issueId === feedback.issueId) === index;
     });
-    const myfeedbackList = feedbackUnique.reduce((result, feedback) => {
+    const myFeedbackList = feedbackUnique.reduce((result, feedback) => {
       const a = result.find(({ id }) => id === feedback.issueId);
       a ? a.feedback.push(feedback) : result.push({ id: feedback.issueId, feedback: feedback ? [feedback] : [] });
       return result;
@@ -56,7 +56,7 @@ module.exports = async (req, res) => {
     //^_^// 합치기 완료
     const map = new Map();
     myIssue.forEach((item) => map.set(item.id, item));
-    myfeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    myFeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());
 
