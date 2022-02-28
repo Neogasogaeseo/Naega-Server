@@ -26,7 +26,6 @@ module.exports = async (req, res) => {
     //^_^// formId 최신순 정렬
     const myFormIdRecentList = await answerDB.getFormIdRecentAnswerListByUserId(client, userId);
     if (myFormIdRecentList.length === 0) {
-      client.release();
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
     const idUnique = myFormIdRecentList.filter((form, index, arr) => {
@@ -59,7 +58,8 @@ module.exports = async (req, res) => {
       item.answer.forEach((o) => (o.keyword = []));
     }
     if (answerIdList.length === 0) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, myForm));
+      const resultList = myForm;
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList }));
     }
 
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
