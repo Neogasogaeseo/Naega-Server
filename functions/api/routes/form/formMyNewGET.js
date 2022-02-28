@@ -58,8 +58,7 @@ module.exports = async (req, res) => {
       item.answer.forEach((o) => (o.keyword = []));
     }
     if (answerIdList.length === 0) {
-      const resultList = myForm;
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList, count }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList: myForm, count }));
     }
 
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
