@@ -28,7 +28,6 @@ module.exports = async (req, res) => {
     if (myFormIdRecentList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
-    console.log(myFormIdRecentList);
     const idUnique = myFormIdRecentList.filter((form, index, arr) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });
@@ -60,7 +59,7 @@ module.exports = async (req, res) => {
       item.answer.forEach((o) => (o.keyword = []));
     }
     if (answerIdList.length === 0) {
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, myForm));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, { resultList: myForm, count }));
     }
 
     const myKeywordList = await keywordDB.getKeywordByAnswerId(client, answerIdList);
