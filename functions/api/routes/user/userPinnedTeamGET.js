@@ -25,7 +25,7 @@ module.exports = async (req, res) => {
     const pinnedFeedbackList = await feedbackDB.getPinnedFeedbackByProfileId(client, profileId);
 
     //^_^// 북마크한 피드백리스트와 소속된 teamList가 모두 없는 경우 204코드 return
-    if (pinnedFeedbackList.length === 0 & teamList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_TEAM_AND_PINNED_FEEDBACK));
+    if (pinnedFeedbackList.length === 0 & teamList.length === 0) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_TEAM_AND_PINNED_FEEDBACK));
 
     //^_^// 북마크한 피드백리스트가 없는 경우 teamList만 return 
     if (pinnedFeedbackList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_PINNED_FEEDBACK, {teamList}));
