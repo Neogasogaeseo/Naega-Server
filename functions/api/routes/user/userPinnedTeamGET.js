@@ -23,7 +23,12 @@ module.exports = async (req, res) => {
 
     //^_^// 북마크한 피드백 리스트 가져오기
     const pinnedFeedbackList = await feedbackDB.getPinnedFeedbackByProfileId(client, profileId);
-    if (pinnedFeedbackList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_PINNED_FEEDBACK, teamList));
+
+    //^_^// 북마크한 피드백리스트와 소속된 teamList가 모두 없는 경우 204코드 return
+    if (pinnedFeedbackList.length === 0 & teamList.length === 0) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_TEAM_AND_PINNED_FEEDBACK));
+
+    //^_^// 북마크한 피드백리스트가 없는 경우 teamList만 return 
+    if (pinnedFeedbackList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_PINNED_FEEDBACK, {teamList}));
 
     //^_^// 날짜 형식 바꿔주기
     for (const feedback of pinnedFeedbackList) {
@@ -44,7 +49,6 @@ module.exports = async (req, res) => {
       acc[cur.feedbackId] = { ...cur, keywords: [] };
       return acc;
     }, {});
-    console.log(feedbackListPopId);
 
     //^_^//keyword 리스트 안에 객체값 집어넣기
     keywordList.map((o) => {
@@ -56,8 +60,8 @@ module.exports = async (req, res) => {
 
     //^_^// key와 value값으로 구분 후 value값만 map함수로 빼내기
     const resultFeedbackList = Object.entries(feedbackListPopId).map(([feedbackId, data]) => ({ ...data }));
-    console.log('result ', resultFeedbackList);
-
+    
+    //^_^// 팀과 북마크한 피드백 리스트가 모두 있는 경우 return 데이터
     const resultData = {
       teamList,
       pinnedFeedbackList: resultFeedbackList,

@@ -92,7 +92,7 @@ const getTeamListByProfileId = async (client, profileId) => {
       AND t.is_deleted = false
     `,
 
-    [profileId,]
+    [profileId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };

@@ -63,6 +63,7 @@ module.exports = {
   NO_PINNED_FEEDBACK: '북마크된 피드백이 없습니다',
   READ_TEAM_AND_PINNED_FEEDBACK_SUCCESS: '팀과 북마크 피드백 조회 성공',
   NO_ISSUE_FEEDBACK: '팀 이슈 피드백 없음',
+  NO_TEAM_AND_PINNED_FEEDBACK: '소속된 팀과 북마크 피드백이 없습니다',
 
   // 너가소개서
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
