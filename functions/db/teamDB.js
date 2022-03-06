@@ -18,7 +18,7 @@ const getTeamById = async (client, teamId) => {
 const getMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     `
-      SELECT u.id, u.image, u.name
+      SELECT u.id, u.profile_id, u.image, u.name
       FROM "member" m JOIN "user" u
       ON m.user_id = u.id
       WHERE m.team_id = $1
@@ -79,7 +79,7 @@ const getNewTeamByUserId = async (client, userId) => {
 };
 
 const getTeamListByProfileId = async (client, profileId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT t.id, t.name, t.image, t.is_deleted
     FROM "user" u
@@ -97,4 +97,4 @@ const getTeamListByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, };
+module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId };
