@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
     console.log(userSearchList);
 
     if (userSearchList.length === 0) {
-      return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST, []));
+      return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST));
     } else {
       res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_LIST_SUCCESS, userSearchList));
     }
