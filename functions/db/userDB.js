@@ -91,7 +91,7 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
+const getUserListByProfileIdTeamId = async (client, profileId, teamId, offset, limit) => {
   //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
   const { rows: existMemberRows } = await client.query(
     `
@@ -99,6 +99,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
     FROM "user" u JOIN member
       ON u.id = member.user_id
     WHERE member.team_id = ${teamId}
+      AND member.is_deleted = false
     `,
   );
   console.log(existMemberRows);
@@ -114,9 +115,10 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
     WHERE profile_id ILIKE '%' || $1 || '%'
       AND is_deleted = FALSE
       AND u.profile_id NOT IN ${profileIdSet}
+    LIMIT $2 OFFSET $3
     `,
 
-    [profileId],
+    [profileId, limit, offset],
   );
   if (!rows) {
     return null;
@@ -124,7 +126,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getUserListByOnlyProfileId = async (client, profileId, userId) => {
+const getUserListByOnlyProfileId = async (client, profileId, userId, offset, limit) => {
   const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
@@ -132,9 +134,10 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
     WHERE profile_id ILIKE '%' || $1 || '%'
       AND id != $2
       AND is_deleted = FALSE
+    LIMIT $3 OFFSET $4
     `,
 
-    [profileId, userId],
+    [profileId, userId, limit, offset],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };

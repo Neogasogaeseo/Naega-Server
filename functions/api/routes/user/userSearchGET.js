@@ -8,9 +8,9 @@ const slackAPI = require('../../../middlewares/slackAPI');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const { profileId, teamId } = req.query;
+  const { profileId, teamId, limit, offset, } = req.query;
 
-  if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!profileId || !limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -19,9 +19,9 @@ module.exports = async (req, res) => {
 
     let userSearchList;
     if (!teamId) {
-      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId);
+      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId, offset, limit);
     } else {
-      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, teamId);
+      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, teamId, offset, limit);
     }
     console.log(userSearchList);
 
