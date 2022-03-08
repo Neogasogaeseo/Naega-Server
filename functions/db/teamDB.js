@@ -70,7 +70,8 @@ const getNewTeamByUserId = async (client, userId) => {
     AND t.is_deleted = false
     AND m.is_confirmed = false
     AND m.is_deleted = false
-    ORDER BY m.updated_at ASC
+    ORDER BY m.updated_at DESC
+    LIMIT 1;
     `,
     [userId],
   );
