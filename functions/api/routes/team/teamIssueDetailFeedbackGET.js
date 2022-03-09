@@ -6,7 +6,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const dayjs = require('dayjs');
 const { feedbackDB, linkFeedbacKeywordDB } = require('../../../db');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { issueId } = req.params;

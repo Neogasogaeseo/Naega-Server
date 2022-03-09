@@ -6,7 +6,7 @@ const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const qs = require('qs');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { provider, authenticationCode } = req.body;

@@ -5,8 +5,8 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { issueDB } = require('../../../db');
-const resizeImage = require('../../../middlewares/resizeImage');
-const slackAPI = require('../../../middlewares/slackAPI');
+const resizeImage = require('../../../lib/resizeImage');
+const slackAPI = require('../../../lib/slackAPI');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
