@@ -24,6 +24,7 @@ const getMemberByTeamId = async (client, teamId) => {
       WHERE m.team_id = $1
       AND m.is_deleted = false
       AND u.is_deleted = false
+      ORDER BY m.is_host DESC
       `,
     [teamId],
   );
