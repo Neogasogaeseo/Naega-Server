@@ -150,4 +150,50 @@ const deleteMember = async (client, userId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllTeamByUserId, getAllTeamMemberByTeamId, addMember, checkMemberHost, updateMemberAccept, updateMemberReject, addHostMember, checkMemberTeam, deleteMember };
+const updateOldHost = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_host = false, is_deleted = true, is_confirmed = false
+    WHERE user_id = $1
+    AND team_id = $2
+    AND is_deleted = false
+    RETURNING *
+    `,
+
+    [userId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateNewHost = async (client, memberId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_host = true
+    WHERE user_id = $1
+    AND team_id = $2
+    AND is_deleted = false
+    RETURNING *
+    `,
+
+    [memberId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = {
+  getAllTeamByUserId,
+  getAllTeamMemberByTeamId,
+  addMember,
+  checkMemberHost,
+  updateMemberAccept,
+  updateMemberReject,
+  addHostMember,
+  checkMemberTeam,
+  deleteMember,
+  updateOldHost,
+  updateNewHost,
+};

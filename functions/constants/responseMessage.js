@@ -43,6 +43,7 @@ module.exports = {
   NO_MEMBER: '존재하지 않는 팀원입니다',
   NO_AUTH_MEMBER: '수정, 삭제 권한이 없습니다',
   DELETE_MEMBER_SUCCESS: '팀원 삭제 성공',
+  DELEGATE_HOST_SUCCESS: '관리자 권한 위임 성공',
 
   // 팀원소개서
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',

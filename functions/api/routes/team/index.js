@@ -24,6 +24,7 @@ router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
 router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
 router.put('/feedback/:feedbackId/pin', checkUser, require('./teamIssueDetailFeedbackPinPUT'));
 
+router.put('/host', checkUser, require('./teamHostPUT'));
 router.delete('/member', checkUser, require('./teamMemberDELETE'));
 router.delete('/', checkUser, require('./teamDELETE'));
 
