@@ -4,8 +4,8 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { teamDB } = require('../../../db');
-const resizeImage = require('../../../middlewares/resizeImage');
-const slackAPI = require('../../../middlewares/slackAPI');
+const resizeImage = require('../../../lib/resizeImage');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { teamId } = req.params;

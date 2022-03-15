@@ -3,9 +3,8 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { memberDB } = require('../../../db');
-const { teamDB } = require('../../../db');
-const slackAPI = require('../../../middlewares/slackAPI');
+const { memberDB, teamDB } = require('../../../db');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;

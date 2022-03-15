@@ -3,8 +3,8 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
-const { encrypt, decrypt } = require('../../../middlewares/crypto');
+const slackAPI = require('../../../lib/slackAPI');
+const { encrypt } = require('../../../lib/crypto');
 const { formDB } = require('../../../db');
 
 module.exports = async (req, res) => {

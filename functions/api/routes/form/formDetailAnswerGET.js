@@ -3,8 +3,8 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
-const { answerDB, linkAnswerKeywordDB, feedbackDB } = require('../../../db');
+const slackAPI = require('../../../lib/slackAPI');
+const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 const arrayHandler = require('../../../lib/arrayHandler');
 const dayjs = require('dayjs');
 

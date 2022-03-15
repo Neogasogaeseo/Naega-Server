@@ -1,11 +1,10 @@
 const functions = require('firebase-functions');
 const dayjs = require('dayjs');
 const util = require('../../../lib/util');
-const arrayHandler = require('../../../lib/arrayHandler');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../../../lib/slackAPI');
 const { teamDB, feedbackDB, keywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
@@ -25,10 +24,10 @@ module.exports = async (req, res) => {
     const pinnedFeedbackList = await feedbackDB.getPinnedFeedbackByProfileId(client, profileId);
 
     //^_^// 북마크한 피드백리스트와 소속된 teamList가 모두 없는 경우 204코드 return
-    if (pinnedFeedbackList.length === 0 & teamList.length === 0) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_TEAM_AND_PINNED_FEEDBACK));
+    if ((pinnedFeedbackList.length === 0) & (teamList.length === 0)) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_TEAM_AND_PINNED_FEEDBACK));
 
-    //^_^// 북마크한 피드백리스트가 없는 경우 teamList만 return 
-    if (pinnedFeedbackList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_PINNED_FEEDBACK, {teamList}));
+    //^_^// 북마크한 피드백리스트가 없는 경우 teamList만 return
+    if (pinnedFeedbackList.length === 0) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_PINNED_FEEDBACK, { teamList }));
 
     //^_^// 날짜 형식 바꿔주기
     for (const feedback of pinnedFeedbackList) {
@@ -60,7 +59,7 @@ module.exports = async (req, res) => {
 
     //^_^// key와 value값으로 구분 후 value값만 map함수로 빼내기
     const resultFeedbackList = Object.entries(feedbackListPopId).map(([feedbackId, data]) => ({ ...data }));
-    
+
     //^_^// 팀과 북마크한 피드백 리스트가 모두 있는 경우 return 데이터
     const resultData = {
       teamList,

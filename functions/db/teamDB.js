@@ -18,12 +18,13 @@ const getTeamById = async (client, teamId) => {
 const getMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     `
-      SELECT u.id, u.profile_id, u.image, u.name
+      SELECT u.id, u.profile_id, u.image, u.name, m.is_host
       FROM "member" m JOIN "user" u
       ON m.user_id = u.id
       WHERE m.team_id = $1
       AND m.is_deleted = false
       AND u.is_deleted = false
+      ORDER BY m.is_host DESC
       `,
     [teamId],
   );
@@ -70,7 +71,8 @@ const getNewTeamByUserId = async (client, userId) => {
     AND t.is_deleted = false
     AND m.is_confirmed = false
     AND m.is_deleted = false
-    ORDER BY m.updated_at ASC
+    ORDER BY m.updated_at DESC
+    LIMIT 1;
     `,
     [userId],
   );
