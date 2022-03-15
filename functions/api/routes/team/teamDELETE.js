@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     const teamHost = await teamDB.getIsHost(client, userId, teamId);
     if (teamHost.isHost) {
       const team = await teamDB.deleteTeam(client, teamId);
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, { team }));
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_TEAM_SUCCESS, { team }));
     } else {
       res.status(statusCode.UNAUTHORIZED).send(util.success(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
     }
