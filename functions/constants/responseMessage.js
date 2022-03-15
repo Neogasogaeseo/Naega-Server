@@ -41,7 +41,7 @@ module.exports = {
   READ_ALL_TEAM_MEMBER: '모든 팀원 정보 조회 성공',
   POST_MEMBER: '팀원 등록 성공',
   NO_MEMBER: '존재하지 않는 팀원입니다',
-  NO_AUTH_MEMBER: '수정 권한이 없습니다',
+  NO_AUTH_MEMBER: '수정, 삭제 권한이 없습니다',
 
   // 팀원소개서
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',

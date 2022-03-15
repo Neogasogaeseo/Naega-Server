@@ -24,4 +24,6 @@ router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
 router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
 router.put('/feedback/:feedbackId/pin', checkUser, require('./teamIssueDetailFeedbackPinPUT'));
 
+router.delete('/', checkUser, require('./teamDELETE'));
+
 module.exports = router;
