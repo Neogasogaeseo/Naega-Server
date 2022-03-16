@@ -9,6 +9,6 @@ router.get('/', checkUser, require('./userInformationByTokenGET'));
 router.get('/:profileId', require('./userInformationByProfileIdGET'));
 router.get('/:profileId/answer', require('./userPinnedAnswerGET'));
 router.get('/:profileId/team', require('./userPinnedTeamGET'));
-
+router.get('/notice/member', checkUser, require('./userNoticeMemberGET'));
 
 module.exports = router;
