@@ -19,6 +19,10 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    const checkDuplicate = await userDB.checkUserProfileId(client, profileId);
+    
+    if (checkDuplicate) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
+
     const userData = await userDB.updateUserInformationById(client, userId, profileId, name, image);
  
     const result = { user: userData};
