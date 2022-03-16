@@ -3,15 +3,15 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
+const { userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
  
   const { id: userId } = req.user;
-  const {} = req.body;
+  const { profileId, name, image } = req.body;
   
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-
+  if (!userId || !profileId || !name) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   let client;
   
   
@@ -19,9 +19,11 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const DB데이터 = await 파일이름DB.쿼리문이름(client);
-    
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, DB데이터));
+    const userData = await userDB.updateUserInformationById(client, userId, profileId, name, image);
+ 
+    const result = { user: userData};
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_USER, result));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
