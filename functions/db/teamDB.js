@@ -99,4 +99,31 @@ const getTeamListByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId };
+const getIsHost = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.is_host
+    FROM "member" m
+    WHERE m.user_id = $1
+    AND m.team_id = $2
+    `,
+
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteTeam = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE team
+    SET is_deleted = true, updated_at = NOW()
+    WHERE id = $1
+    RETURNING *
+    `,
+    [teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam };

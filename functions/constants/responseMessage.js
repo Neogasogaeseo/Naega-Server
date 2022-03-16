@@ -34,14 +34,16 @@ module.exports = {
   POST_TEAM: '팀 생성 성공',
   NO_TEAM: '존재하지 않는 팀입니다',
   UPDATE_TEAM: '팀 정보 수정 성공',
-  DELETE_TEAM: '팀 삭제 성공',
+  DELETE_TEAM_SUCCESS: '팀 삭제 성공',
 
   // 팀원 정보
   READ_MEMBER: '팀원 정보 조회 성공',
   READ_ALL_TEAM_MEMBER: '모든 팀원 정보 조회 성공',
   POST_MEMBER: '팀원 등록 성공',
   NO_MEMBER: '존재하지 않는 팀원입니다',
-  NO_AUTH_MEMBER: '수정 권한이 없습니다',
+  NO_AUTH_MEMBER: '수정, 삭제 권한이 없습니다',
+  DELETE_MEMBER_SUCCESS: '팀원 삭제 성공',
+  DELEGATE_HOST_SUCCESS: '관리자 권한 위임 성공',
 
   // 팀원소개서
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',
