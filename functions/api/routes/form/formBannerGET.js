@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../../../lib/slackAPI');
 const { formDB } = require('../../../db');
 
 module.exports = async (req, res) => {
@@ -14,7 +14,8 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const form = await formDB.getFormBanner(client);
-
+    const isCreated = await formDB.getFormIsCreatedByUserIdAndFormId(client, form.id, userId);
+    if (isCreated) form.isDeleted = isCreated.isDeleted;
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_BANNER_SUCCESS, form));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

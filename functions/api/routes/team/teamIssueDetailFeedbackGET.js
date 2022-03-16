@@ -5,7 +5,8 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const dayjs = require('dayjs');
-const { userDB, feedbackDB, keywordDB, linkFeedbacKeywordDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB } = require('../../../db');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { issueId } = req.params;
@@ -18,7 +19,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
-    const feedbacks = await feedbackDB.getFeedbacks(client, issueId);
+    let feedbacks = await feedbackDB.getFeedbacks(client, issueId);
+    if (feedbacks.length === 0) {
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_ISSUE_FEEDBACK, []));
+    }
     for (const feedback of feedbacks) {
       feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
     }
@@ -29,7 +33,7 @@ module.exports = async (req, res) => {
     console.log('feedbackIds : ', feedbackIds);
 
     // ^_^// 추출한 feedbacks들로 키워드들 가져옴
-    const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywords(client, feedbackIds);
+    const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, feedbackIds);
     console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
     // ^_^// 추출한 feedbakcs
@@ -52,6 +56,9 @@ module.exports = async (req, res) => {
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
+    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
+ ${JSON.stringify(error)}`;
+    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

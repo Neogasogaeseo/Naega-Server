@@ -13,6 +13,18 @@ const checkUserProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const gettaggedUserProfileId = async (client, taggedUserId) => {
+  const { rows } = await client.query(
+    `
+      SELECT u.profile_id FROM "user" u
+      WHERE u.id = $1
+      AND is_deleted = false
+    `,
+    [taggedUserId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const addUser = async (client, profileId, name, authenticationCode, provider, image) => {
   const { rows } = await client.query(
     `
@@ -99,7 +111,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
-    WHERE profile_id = $1
+    WHERE profile_id ILIKE '%' || $1 || '%'
       AND is_deleted = FALSE
       AND u.profile_id NOT IN ${profileIdSet}
     `,
@@ -113,11 +125,11 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
 };
 
 const getUserListByOnlyProfileId = async (client, profileId, userId) => {
-    const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
     FROM "user" u
-    WHERE profile_id = $1
+    WHERE profile_id ILIKE '%' || $1 || '%'
       AND id != $2
       AND is_deleted = FALSE
     `,
@@ -127,17 +139,41 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-
 const getUserByAccessToken = async (client, userId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT id, profile_id, name, image
     FROM "user"
     WHERE id = ${userId}
       AND is_deleted = false
-    `
+    `,
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { checkUserProfileId, addUser, getUserByAuthenticationCode, updateRefreshTokenById, getUserById, getUserListByProfileIdTeamId, getUserListByOnlyProfileId, getUserByAccessToken};
+const getUserListByProfileId = async (client, profileId) => {
+  const { rows } = await client.query (
+    `
+    SELECT id, name, profile_id, image
+    FROM "user"
+    WHERE profile_id = $1
+      AND is_deleted = false
+    `,
+    [profileId],
+  );
+  console.log(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = {
+  checkUserProfileId,
+  addUser,
+  getUserByAuthenticationCode,
+  updateRefreshTokenById,
+  getUserById,
+  getUserListByProfileIdTeamId,
+  getUserListByOnlyProfileId,
+  getUserByAccessToken,
+  gettaggedUserProfileId,
+  getUserListByProfileId,
+};

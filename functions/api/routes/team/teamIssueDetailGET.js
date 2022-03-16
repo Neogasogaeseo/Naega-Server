@@ -3,10 +3,10 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
-const { issueDB, teamDB } = require('../../../db');
+const slackAPI = require('../../../lib/slackAPI');
+const { issueDB } = require('../../../db');
 const dayjs = require('dayjs');
-const resizeImage = require('../../../middlewares/resizeImage');
+const resizeImage = require('../../../lib/resizeImage');
 
 module.exports = async (req, res) => {
   const user = req.user;

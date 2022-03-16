@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const { checkUser } = require('../../../middlewares/auth');
+const uploadImage = require('../../../middlewares/uploadImage');
 
-router.post('/', checkUser, require('./teamPOST'));
-router.post('/issue', checkUser, require('./teamIssuePOST'));
+router.post('/', checkUser, uploadImage('team'), require('./teamPOST'));
+router.post('/issue', checkUser, uploadImage('issue'), require('./teamIssuePOST'));
 
 router.put('/edit', checkUser, require('./teamPUT'));
 
@@ -22,5 +23,9 @@ router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
 router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
 router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
 router.put('/feedback/:feedbackId/pin', checkUser, require('./teamIssueDetailFeedbackPinPUT'));
+
+router.put('/host', checkUser, require('./teamHostPUT'));
+router.delete('/member', checkUser, require('./teamMemberDELETE'));
+router.delete('/', checkUser, require('./teamDELETE'));
 
 module.exports = router;

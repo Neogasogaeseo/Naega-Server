@@ -18,12 +18,13 @@ const getTeamById = async (client, teamId) => {
 const getMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     `
-      SELECT u.id, u.image, u.name
+      SELECT u.id, u.profile_id, u.image, u.name, m.is_host
       FROM "member" m JOIN "user" u
       ON m.user_id = u.id
       WHERE m.team_id = $1
       AND m.is_deleted = false
       AND u.is_deleted = false
+      ORDER BY m.is_host DESC
       `,
     [teamId],
   );
@@ -70,7 +71,8 @@ const getNewTeamByUserId = async (client, userId) => {
     AND t.is_deleted = false
     AND m.is_confirmed = false
     AND m.is_deleted = false
-    ORDER BY m.updated_at ASC
+    ORDER BY m.updated_at DESC
+    LIMIT 1;
     `,
     [userId],
   );
@@ -78,4 +80,50 @@ const getNewTeamByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId };
+const getTeamListByProfileId = async (client, profileId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.name, t.image, t.is_deleted
+    FROM "user" u
+    JOIN member m ON u.id = m.user_id
+    JOIN team t ON t.id = m.team_id
+    WHERE u.profile_id = $1
+      AND u.is_deleted = false
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND t.is_deleted = false
+    `,
+
+    [profileId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getIsHost = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.is_host
+    FROM "member" m
+    WHERE m.user_id = $1
+    AND m.team_id = $2
+    `,
+
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteTeam = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE team
+    SET is_deleted = true, updated_at = NOW()
+    WHERE id = $1
+    RETURNING *
+    `,
+    [teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam };

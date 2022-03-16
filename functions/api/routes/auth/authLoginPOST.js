@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const { userDB } = require('../../../db');
 const jwtHandlers = require('../../../lib/jwtHandlers');
 const qs = require('qs');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { provider, authenticationCode } = req.body;
@@ -21,7 +22,7 @@ module.exports = async (req, res) => {
       method: 'POST',
       url: 'https://kauth.kakao.com/oauth/token',
       headers: {
-        'content-type': 'application/x-www-form-urlencoded',
+        'content-type': 'application/x-www-form-urlencoded;charset=utf-8',
       },
       data: qs.stringify({
         code: authenticationCode,
@@ -51,9 +52,7 @@ module.exports = async (req, res) => {
     client = await db.connect();
     authUser = await userDB.getUserByAuthenticationCode(client, kakao_profile.data.id); //^_^// kakao id == auth code
     if (!authUser) {
-      return res
-        .status(statusCode.NO_CONTENT)
-        .send(util.success(statusCode.NO_CONTENT, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NEED_REGISTER, { accesstoken: socialToken.data.access_token, refreshtoken: socialToken.data.refresh_token }));
     }
     const accesstoken = jwtHandlers.sign(authUser);
     const refreshtoken = jwtHandlers.refresh(authUser);
@@ -66,6 +65,9 @@ module.exports = async (req, res) => {
       }),
     );
   } catch (error) {
+    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
+    ${JSON.stringify(error)}`;
+    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
   } finally {
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
     client.release();

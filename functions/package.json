@@ -2,7 +2,7 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "lint": "eslint",
+    "lint": "eslint . --fix",
     "serve": "cross-env NODE_ENV=development firebase serve -p 5000 -o 127.0.0.1",
     "shell": "firebase functions:shell",
     "start": "npm run shell",

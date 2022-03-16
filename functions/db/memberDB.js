@@ -84,7 +84,9 @@ const addMember = async (client, teamId, userIdList) => {
     return [];
   }
 
-  const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
+  const valuesInsertQuery = JSON.parse(userIdList)
+    .map((x) => `(${teamId}, ${x})`)
+    .join(', ');
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -115,4 +117,85 @@ const checkMemberHost = async (client, userId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { getAllTeamByUserId, getAllTeamMemberByTeamId, addMember, checkMemberHost, updateMemberAccept, updateMemberReject, addHostMember, };
+//^_^// 유저가 해당 팀의 멤버인지 확인하는 쿼리
+const checkMemberTeam = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.team_id, m.user_id    
+    FROM "member" m
+    WHERE m.user_id = $1
+      AND m.team_id = $2
+      AND is_deleted = false
+    `,
+
+    [userId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteMember = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_deleted = true, is_confirmed = false,
+    updated_at = NOW()
+    WHERE user_id = $1
+    AND team_id = $2
+    RETURNING *
+    `,
+
+    [userId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateOldHost = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_host = false, is_deleted = true, 
+    is_confirmed = false, updated_at = NOW()
+    WHERE user_id = $1
+    AND team_id = $2
+    AND is_deleted = false
+    RETURNING *
+    `,
+
+    [userId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateNewHost = async (client, memberId, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_host = true, updated_at = NOW()
+    WHERE user_id = $1
+    AND team_id = $2
+    AND is_deleted = false
+    RETURNING *
+    `,
+
+    [memberId, teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = {
+  getAllTeamByUserId,
+  getAllTeamMemberByTeamId,
+  addMember,
+  checkMemberHost,
+  updateMemberAccept,
+  updateMemberReject,
+  addHostMember,
+  checkMemberTeam,
+  deleteMember,
+  updateOldHost,
+  updateNewHost,
+};

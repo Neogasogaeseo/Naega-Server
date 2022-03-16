@@ -4,7 +4,7 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const checkKeyword = async (client, keyword, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-        SELECT k.name, color.code FROM keyword k
+        SELECT k.id ,k.name, color.code as colorCode FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.name = $1
         AND k.user_id = $2
@@ -54,4 +54,86 @@ const keywordCountUpdate = async (client, keywordIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate };
+const getTeamKeywordList = async (client, userId, limit) => {
+  //^_^// 링크 테이블과의 조인 방법 다시 고민해봐야함
+  const { rows } = await client.query(
+    /*sql*/ `
+        SELECT k.id, k.name, color.code FROM keyword k
+        JOIN color ON k.color_id = color.id
+        WHERE k.user_id = $1
+        AND is_deleted = FALSE
+        LIMIT $2
+        `,
+    [userId, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getKeywordByAnswerId = async (client, answerIdList) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.answer_id, k.id, k.name, c.code as color_code
+    FROM "link_answer_keyword" l
+    JOIN "keyword" k
+    ON l.keyword_id = k.id
+    JOIN "color" c
+    ON k.color_id = c.id
+    JOIN "answer" a
+    ON l.answer_id = a.id
+    JOIN "link_user_form" u
+    ON a.link_user_form_id = u.id
+    WHERE l.is_deleted = false
+    AND l.answer_id in (${answerIdList.join(',')})
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getTopKeyword = async (client, userId) => {
+  const { rows } = await client.query(/*sql*/ `
+        SELECT k.id, k.name, color.code as colorCode 
+        FROM keyword k
+        JOIN color ON k.color_id = color.id
+        WHERE k.user_id = ${userId}
+        AND is_deleted = FALSE
+        ORDER BY k.count DESC
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
+  const feedbackIdQuery = '(' + feedbackIdList.map((o) => o).join(', ') + ')';
+
+  const { rows: keywordRows } = await client.query(
+    `
+    SELECT l.feedback_id, k.name, k.color_id, color.code as color_code
+    FROM keyword k
+    JOIN link_feedback_keyword l ON l.keyword_id = k.id
+    JOIN color ON color.id = k.color_id
+    WHERE l.feedback_id IN ${feedbackIdQuery}
+      AND l.is_deleted = false
+      AND k.is_deleted = false
+    `,
+  );
+  if (!keywordRows) return [];
+  return convertSnakeToCamel.keysToCamel(keywordRows);
+};
+
+const getKeywordListByAnswerId = async (client, answerIdList) => {
+  const answerIdQuery = '(' + answerIdList.map((o) => o).join(', ') + ')';
+  const { rows: keywordRows } = await client.query(
+    `
+    SELECT l.answer_id, k.name, k.color_id, color.code as color_code
+    FROM keyword k
+    JOIN link_answer_keyword l ON l.keyword_id = k.id
+    JOIN color ON color.id = k.color_id
+    WHERE l.answer_id IN ${answerIdQuery}
+      AND l.is_deleted = false
+      AND k.is_deleted = false
+    `,
+  );
+  if (!keywordRows) return [];
+  return convertSnakeToCamel.keysToCamel(keywordRows);
+};
+
+module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, getKeywordListByAnswerId, getKeywordByAnswerId };

@@ -4,12 +4,12 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { keywordDB } = require('../../../db');
+const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const user = req.user;
   const { name, userId } = req.body;
 
-  if (!user) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!name || !userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   let client;
 
   try {
@@ -18,8 +18,8 @@ module.exports = async (req, res) => {
     const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
 
     if (alreadyKeyword) {
-      alreadyKeyword.colorCode = alreadyKeyword.code;
-      delete alreadyKeyword.code;
+      // alreadyKeyword.colorCode = alreadyKeyword.code;
+      // delete alreadyKeyword.code;
 
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
     }
@@ -30,8 +30,8 @@ module.exports = async (req, res) => {
     console.log('newKeyword :', newKeyword);
 
     const returnedKeyword = await keywordDB.checkKeyword(client, name, userId);
-    returnedKeyword.colorCode = returnedKeyword.code;
-    delete returnedKeyword.code;
+    // returnedKeyword.colorCode = returnedKeyword.code;
+    // delete returnedKeyword.code;
 
     console.log('returnedKeyword :', returnedKeyword);
 
@@ -39,6 +39,9 @@ module.exports = async (req, res) => {
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
+    const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
+ ${JSON.stringify(error)}`;
+    slackAPI.sendMessageToSlack(slackMessage, slackAPI.DEV_WEB_HOOK_ERROR_MONITORING);
 
     res.status(statusCode.INTERNAL_SERVER_ERROR).send(util.fail(statusCode.INTERNAL_SERVER_ERROR, responseMessage.INTERNAL_SERVER_ERROR));
   } finally {

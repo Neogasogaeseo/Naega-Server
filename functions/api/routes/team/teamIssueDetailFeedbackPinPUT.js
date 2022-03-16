@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const slackAPI = require('../../../middlewares/slackAPI');
+const slackAPI = require('../../../lib/slackAPI');
 const { feedbackDB } = require('../../../db');
 
 module.exports = async (req, res) => {
@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
     const toggleIsPinnedFeedback = await feedbackDB.toggleIsPinnedFeedback(client, feedbackId);
 
     console.log('toggleIsPinnedFeedback :', toggleIsPinnedFeedback);
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.FEEDBACK_IS_PINNED_TOGGLE_SUCCESS, toggleIsPinnedFeedback));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ANSWER_IS_PINNED_TOGGLE_SUCCESS, toggleIsPinnedFeedback));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
