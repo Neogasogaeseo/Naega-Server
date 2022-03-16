@@ -10,7 +10,7 @@ module.exports = async (req, res) => {
 
   const { profileId } = req.params;
   
-  if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST,))
+  if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST,responseMessage.NULL_VALUE));
 
   let client;
   
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     //^_^// 중복되는 아이디가 있을 때
     if (checkUser) return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DUPLICATE_USER_PROFILE_ID));
     
-    //^_^// 없을 때
+    //^_^// 중복되는 아이디가 없을 때
     res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
     
   } catch (error) {
