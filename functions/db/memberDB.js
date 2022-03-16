@@ -138,7 +138,8 @@ const deleteMember = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true, is_confirmed = false
+    SET is_deleted = true, is_confirmed = false,
+    updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     RETURNING *
@@ -154,7 +155,8 @@ const updateOldHost = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_host = false, is_deleted = true, is_confirmed = false
+    SET is_host = false, is_deleted = true, 
+    is_confirmed = false, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     AND is_deleted = false
@@ -171,7 +173,7 @@ const updateNewHost = async (client, memberId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_host = true
+    SET is_host = true, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     AND is_deleted = false

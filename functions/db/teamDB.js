@@ -117,7 +117,7 @@ const deleteTeam = async (client, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE team
-    SET is_deleted = true
+    SET is_deleted = true, updated_at = NOW()
     WHERE id = $1
     RETURNING *
     `,
