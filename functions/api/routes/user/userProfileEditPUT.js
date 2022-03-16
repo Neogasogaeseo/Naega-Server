@@ -21,7 +21,10 @@ module.exports = async (req, res) => {
 
     const checkDuplicate = await userDB.checkUserProfileId(client, profileId);
     
-    if (checkDuplicate) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
+    //^_^// 중복된 다른 유저의 아이디가 존재하는 경우 
+    if (checkDuplicate) {
+      if (checkDuplicate.id != userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
+    };
 
     const userData = await userDB.updateUserInformationById(client, userId, profileId, name, image);
  
