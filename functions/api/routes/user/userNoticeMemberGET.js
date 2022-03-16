@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { memberDB, teamDB } = require('../../../db');
+const { times } = require('lodash');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
@@ -23,14 +24,26 @@ module.exports = async (req, res) => {
     const teamIdList = invitedTeamIdList.map((o) => o.teamId);
     const teamList = await teamDB.getTeamListByTeamIdList(client, teamIdList);
 
-    const map = new Map();
-    teamIdList.forEach((item) => map.set(item, item));
-    teamList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
-    invitedTeamIdList.forEach((item) => map.set(item.teamId, { ...map.get(item.teamId), ...item }));
-    const noticeList = Array.from(map.values());
-    noticeList.forEach((o) => delete o.teamId);
+    const noticeList = teamIdList.map((id) => {
+      const item = { id, team: {}, invitation: {} };
+      return item;
+    });
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_NOTICE_SUCCESS, { noticeList }));
+    teamList.map((o) => {
+      const item = noticeList.find((e) => e.id === o.id);
+      item.team = o;
+      return o;
+    });
+    invitedTeamIdList.map((o) => {
+      const item = noticeList.find((e) => e.id === o.teamId);
+      delete o.teamId;
+      item.invitation = o;
+      return o;
+    });
+    noticeList.forEach((o) => delete o.id);
+    const notice = noticeList.filter((o) => o.team.isDeleted === false);
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_NOTICE_SUCCESS, { notice }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

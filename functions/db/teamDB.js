@@ -129,7 +129,7 @@ const deleteTeam = async (client, teamId) => {
 const getTeamListByTeamIdList = async (client, teamIdList) => {
   const { rows } = await client.query(
     `
-    SELECT t.id, t.name, t.image, t.is_deleted as team_deleted
+    SELECT t.id, t.name, t.image, t.is_deleted
     FROM "team" t
     WHERE t.id in (${teamIdList})
     `,
