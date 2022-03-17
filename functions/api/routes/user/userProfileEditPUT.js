@@ -27,8 +27,8 @@ module.exports = async (req, res) => {
     };
 
     const userData = await userDB.updateUserInformationById(client, userId, profileId, name, image);
- 
-    const result = { user: userData};
+
+    const result = {user: {profileId: userData.profileId, name: userData.name, image: userData.image}};
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_USER, result));
     
