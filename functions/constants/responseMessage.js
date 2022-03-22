@@ -17,11 +17,12 @@ module.exports = {
   TOKEN_INVALID: '잘못된 토큰입니다.',
   DUPLICATE_USER_PROFILE_ID: '*중복된 아이디입니다.',
 
-  // 프로필 조회
+  // 유저
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
   READ_USER_SUCCESS: '유저 조회 성공',
   READ_USER_LIST_SUCCESS: '유저 검색 결과 조회 성공',
   NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
+  UPDATE_USER: '유저 정보 수정 성공',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
