@@ -88,4 +88,5 @@ module.exports = {
 
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',
+  READ_NOTICE_SUCCESS: '알림 존재 여부 조회 성공',
 };
