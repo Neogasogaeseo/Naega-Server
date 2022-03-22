@@ -186,15 +186,16 @@ const updateNewHost = async (client, memberId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getInvitedTeamIdList = async (client, userId) => {
+const getInvitedTeamIdList = async (client, userId, offset, limit) => {
   const { rows } = await client.query(
     `
     SELECT m.team_id, m.is_confirmed, m.is_deleted
     FROM "member" m
     WHERE m.user_id = $1
     ORDER BY updated_at DESC
+    LIMIT $3 OFFSET $2
     `,
-    [userId],
+    [userId, offset, limit],
   );
 
   return convertSnakeToCamel.keysToCamel(rows);

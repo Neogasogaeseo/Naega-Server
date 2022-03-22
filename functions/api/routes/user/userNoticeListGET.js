@@ -5,22 +5,19 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { memberDB, teamDB } = require('../../../db');
-const { times } = require('lodash');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const {} = req.params;
-  const {} = req.query;
-  const {} = req.body;
+  const { offset, limit } = req.query;
 
-  if (!userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!userId || !offset || !limit) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const invitedTeamIdList = await memberDB.getInvitedTeamIdList(client, userId);
+    const invitedTeamIdList = await memberDB.getInvitedTeamIdList(client, userId, offset, limit);
     const teamIdList = invitedTeamIdList.map((o) => o.teamId);
     const teamList = await teamDB.getTeamListByTeamIdList(client, teamIdList);
 
