@@ -98,9 +98,9 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId, offset, l
     FROM "user" u
     LEFT JOIN member m ON m.user_id = u.id
     WHERE profile_id ILIKE '%' || $1 || '%'
-      AND m.team_id = $2 OR m.team_id IS NULL
+      AND (m.team_id = $2 OR m.team_id IS NULL)
       AND u.is_deleted = FALSE
-      AND m.is_deleted = FALSE OR m.is_deleted IS NULL
+      AND (m.is_deleted = FALSE OR m.is_deleted IS NULL)
     LIMIT $3 OFFSET $4
     `,
 
