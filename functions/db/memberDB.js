@@ -50,7 +50,7 @@ const updateMemberReject = async (client, userId, teamId) => {
 const getAllTeamMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT u.id, u.name, u.image
+    SELECT u.id, u.name, u.image, m.is_confirmed
     FROM member m
     JOIN "user" u ON u.id = m.user_id
     WHERE m.team_id = $1
