@@ -17,11 +17,12 @@ module.exports = {
   TOKEN_INVALID: '잘못된 토큰입니다.',
   DUPLICATE_USER_PROFILE_ID: '*중복된 아이디입니다.',
 
-  // 프로필 조회
+  // 유저
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
   READ_USER_SUCCESS: '유저 조회 성공',
   READ_USER_LIST_SUCCESS: '유저 검색 결과 조회 성공',
   NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
+  UPDATE_USER: '유저 정보 수정 성공',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
@@ -34,14 +35,16 @@ module.exports = {
   POST_TEAM: '팀 생성 성공',
   NO_TEAM: '존재하지 않는 팀입니다',
   UPDATE_TEAM: '팀 정보 수정 성공',
-  DELETE_TEAM: '팀 삭제 성공',
+  DELETE_TEAM_SUCCESS: '팀 삭제 성공',
 
   // 팀원 정보
   READ_MEMBER: '팀원 정보 조회 성공',
   READ_ALL_TEAM_MEMBER: '모든 팀원 정보 조회 성공',
   POST_MEMBER: '팀원 등록 성공',
   NO_MEMBER: '존재하지 않는 팀원입니다',
-  NO_AUTH_MEMBER: '수정 권한이 없습니다',
+  NO_AUTH_MEMBER: '수정, 삭제 권한이 없습니다',
+  DELETE_MEMBER_SUCCESS: '팀원 삭제 성공',
+  DELEGATE_HOST_SUCCESS: '관리자 권한 위임 성공',
 
   // 팀원소개서
   READ_ALL_TEAM_SUCCESS: '팀 목록 조회 성공',

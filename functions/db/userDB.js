@@ -168,6 +168,20 @@ const getUserListByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const updateUserInformationById = async (client, userId, profileId, name, image) => {
+  const { rows } = await client.query(
+    `
+        UPDATE "user" u
+        SET profile_id = $2, name = $3, image = $4
+        WHERE id = $1
+        RETURNING *   
+    `,
+    [userId, profileId, name, image],
+  );
+  console.log(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   checkUserProfileId,
   addUser,
@@ -179,4 +193,5 @@ module.exports = {
   getUserByAccessToken,
   gettaggedUserProfileId,
   getUserListByProfileId,
+  updateUserInformationById,
 };
