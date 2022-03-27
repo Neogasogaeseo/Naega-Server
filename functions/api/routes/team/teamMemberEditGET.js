@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { userDB, memberDB } = require('../../../db');
+const { memberDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
