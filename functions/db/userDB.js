@@ -92,33 +92,19 @@ const getUserById = async (client, userId) => {
 };
 
 const getUserListByProfileIdTeamId = async (client, profileId, teamId, offset, limit) => {
-  //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
-  const { rows: existMemberRows } = await client.query(
-    `
-    SELECT u.profile_id
-    FROM "user" u JOIN member
-      ON u.id = member.user_id
-    WHERE member.team_id = ${teamId}
-      AND member.is_deleted = false
-    `,
-  );
-  console.log(existMemberRows);
-
-  const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
-  console.log(profileIdSet);
-
-  //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
   const { rows } = await client.query(
     `
-    SELECT u.id, u.profile_id, u.name, u.image
+    SELECT u.id, u.profile_id, u.name, u.image, m.is_confirmed
     FROM "user" u
+    LEFT JOIN member m ON m.user_id = u.id
     WHERE profile_id ILIKE '%' || $1 || '%'
-      AND is_deleted = FALSE
-      AND u.profile_id NOT IN ${profileIdSet}
-    LIMIT $2 OFFSET $3
+      AND m.team_id = $2 OR m.team_id IS NULL
+      AND u.is_deleted = FALSE
+      AND m.is_deleted = FALSE OR m.is_deleted IS NULL
+    LIMIT $3 OFFSET $4
     `,
 
-    [profileId, limit, offset],
+    [profileId, teamId, limit, offset],
   );
   if (!rows) {
     return null;
