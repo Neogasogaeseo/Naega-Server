@@ -91,20 +91,21 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileIdTeamId = async (client, profileId, teamId, offset, limit) => {
+const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, offset, limit) => {
   const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image, m.is_confirmed
     FROM "user" u
     LEFT JOIN member m ON m.user_id = u.id
     WHERE profile_id ILIKE '%' || $1 || '%'
-      AND (m.team_id = $2 OR m.team_id IS NULL)
+      AND u.id != $2
+      AND (m.team_id = $3 OR m.team_id IS NULL)
       AND u.is_deleted = FALSE
       AND (m.is_deleted = FALSE OR m.is_deleted IS NULL)
-    LIMIT $3 OFFSET $4
+    LIMIT $4 OFFSET $5
     `,
 
-    [profileId, teamId, limit, offset],
+    [profileId, userId, teamId, limit, offset],
   );
   if (!rows) {
     return null;

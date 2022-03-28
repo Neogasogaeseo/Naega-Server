@@ -30,7 +30,7 @@ module.exports = async (req, res) => {
       userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId, offset, limit);
     } else {
       //^_^// 팀 수정에서 검색할 때
-      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, teamId, offset, limit);
+      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, userId, teamId, offset, limit);
     };
 
     if (userSearchList.length === 0) {
