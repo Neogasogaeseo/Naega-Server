@@ -91,32 +91,21 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
-  //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
-  const { rows: existMemberRows } = await client.query(
-    `
-    SELECT u.profile_id
-    FROM "user" u JOIN member
-      ON u.id = member.user_id
-    WHERE member.team_id = ${teamId}
-    `,
-  );
-  console.log(existMemberRows);
-
-  const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
-  console.log(profileIdSet);
-
-  //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
+const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, offset, limit) => {
   const { rows } = await client.query(
     `
-    SELECT u.id, u.profile_id, u.name, u.image
+    SELECT u.id, u.profile_id, u.name, u.image, m.is_confirmed
     FROM "user" u
+    LEFT JOIN member m ON m.user_id = u.id
     WHERE profile_id ILIKE '%' || $1 || '%'
-      AND is_deleted = FALSE
-      AND u.profile_id NOT IN ${profileIdSet}
+      AND u.id != $2
+      AND (m.team_id = $3 OR m.team_id IS NULL)
+      AND u.is_deleted = FALSE
+      AND (m.is_deleted = FALSE OR m.is_deleted IS NULL)
+    LIMIT $4 OFFSET $5
     `,
 
-    [profileId],
+    [profileId, userId, teamId, limit, offset],
   );
   if (!rows) {
     return null;
@@ -124,7 +113,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getUserListByOnlyProfileId = async (client, profileId, userId) => {
+const getUserListByOnlyProfileId = async (client, profileId, userId, offset, limit) => {
   const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
@@ -132,9 +121,10 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
     WHERE profile_id ILIKE '%' || $1 || '%'
       AND id != $2
       AND is_deleted = FALSE
+    LIMIT $3 OFFSET $4
     `,
 
-    [profileId, userId],
+    [profileId, userId, limit, offset],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };

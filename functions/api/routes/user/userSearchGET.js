@@ -8,9 +8,15 @@ const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const { profileId, teamId } = req.query;
+  const { profileId, teamId, limit, offset, } = req.query;
 
   if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  
+  /**오늘의 한마디...*
+   * 기존 코드와의 충돌 방지를 위해 다음 배포때 추가할 예정
+   * userDB getUserById 쿼리문에도 limit, offset 추가 잊지 말기
+  if (!limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  */
 
   let client;
 
@@ -18,17 +24,23 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     let userSearchList;
+
     if (!teamId) {
-      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId);
+      //^_^// 팀 첫 등록할 때 (teamId 없음)
+      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId, offset, limit);
     } else {
-      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, teamId);
-    }
-    console.log(userSearchList);
+      //^_^// 팀 수정에서 검색할 때
+      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, userId, teamId, offset, limit);
+    };
 
     if (userSearchList.length === 0) {
-      return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST, []));
+      //^_^// 유저 검색 결과가 없을 때 204
+      return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, responseMessage.NO_USER_SEARCH_LIST));
     } else {
-      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_LIST_SUCCESS, userSearchList));
+      const resultData = {
+        user: userSearchList
+      };
+      res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_LIST_SUCCESS, resultData));
     }
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
