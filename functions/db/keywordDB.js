@@ -16,6 +16,19 @@ const checkKeyword = async (client, keyword, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getKeywordById = async (client, keywordId) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+        SELECT *
+        FROM keyword k
+        WHERE k.id = $1
+        AND is_deleted = FALSE
+        `,
+    [keywordId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const addKeyword = async (client, keywordId) => {
   const { rows } = await client.query(
     /*sql*/ `
@@ -156,8 +169,29 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
   return convertSnakeToCamel.keysToCamel(keywordRows);
 };
 
+const deleteKeyword = async (client, keywordId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = 0, is_deleted = true
+        WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteKeywordCount = async (client, keywordId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = count-1
+        WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   checkKeyword,
+  getKeywordById,
   addKeyword,
   addNewKeyword,
   getKeywordList,
@@ -167,4 +201,6 @@ module.exports = {
   getKeywordListByFeedbackId,
   getKeywordListByAnswerId,
   getKeywordByAnswerId,
+  deleteKeyword,
+  deleteKeywordCount,
 };
