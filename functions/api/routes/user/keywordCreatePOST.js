@@ -14,28 +14,19 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
-
+    let newKeyword;
     const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
+    // console.log('alreadyKeyword', alreadyKeyword);
 
     if (alreadyKeyword) {
-      // alreadyKeyword.colorCode = alreadyKeyword.code;
-      // delete alreadyKeyword.code;
-
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
+      newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
+      // console.log('oldNewKeyword : ', newKeyword);
+    } else {
+      const colorId = Math.floor(Math.random() * 4) + 1;
+      newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
+      // console.log('realNewKeyword :', newKeyword);
     }
-
-    const colorId = Math.floor(Math.random() * 10);
-    const newKeyword = await keywordDB.addKeyword(client, name, userId, colorId);
-
-    console.log('newKeyword :', newKeyword);
-
-    const returnedKeyword = await keywordDB.checkKeyword(client, name, userId);
-    // returnedKeyword.colorCode = returnedKeyword.code;
-    // delete returnedKeyword.code;
-
-    console.log('returnedKeyword :', returnedKeyword);
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, newKeyword));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
