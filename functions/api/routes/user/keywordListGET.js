@@ -17,9 +17,7 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const getKeyword = await keywordDB.getKeywordList(client, userId, offset, limit);
-
     const getUser = await userDB.getUserById(client, userId);
-
     const data = { name: getUser.name, keyword: getKeyword };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_KEYWORD_SUCCESS, data));
