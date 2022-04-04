@@ -23,7 +23,7 @@ const updateMemberAccept = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_confirmed = true
+    SET is_confirmed = true, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     RETURNING *
@@ -37,7 +37,7 @@ const updateMemberReject = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true
+    SET is_deleted = true, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     RETURNING *
@@ -189,7 +189,7 @@ const updateNewHost = async (client, memberId, teamId) => {
 const getInvitedTeamIdList = async (client, userId, offset, limit) => {
   const { rows } = await client.query(
     `
-    SELECT m.team_id, m.is_confirmed, m.is_deleted
+    SELECT m.team_id, m.is_confirmed, m.is_deleted, m.updated_at
     FROM "member" m
     WHERE m.user_id = $1
     ORDER BY updated_at DESC
