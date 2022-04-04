@@ -4,7 +4,8 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const checkKeyword = async (client, keyword, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-        SELECT k.id ,k.name, color.code as colorCode FROM keyword k
+        SELECT k.id ,k.name, color.code as colorCode , color.font_code as fontColor 
+        FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.name = $1
         AND k.user_id = $2
@@ -15,13 +16,45 @@ const checkKeyword = async (client, keyword, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const addKeyword = async (client, name, userId, colorId) => {
+const getKeywordById = async (client, keywordId) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+        SELECT *
+        FROM keyword k
+        WHERE k.id = $1
+        AND is_deleted = FALSE
+        `,
+    [keywordId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addKeyword = async (client, keywordId) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+        UPDATE keyword
+        SET count = count+1
+        WHERE
+        id = $1 AND is_deleted = false
+        RETURNING keyword.id, keyword.name, 
+        (SELECT color.code FROM color WHERE color.id = keyword.color_id)as colorCode, 
+        (SELECT color.font_code  FROM color WHERE color.id = keyword.color_id)as fontColor
+        `,
+    [keywordId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const addNewKeyword = async (client, name, userId, colorId) => {
   const { rows } = await client.query(
     /*sql*/ `
         INSERT INTO keyword
-        ("name", user_id, color_id)
+        ("name", user_id, color_id,count)
         VALUES
-        ($1, $2, $3)
+        ($1, $2, $3,1)
+        RETURNING keyword.id, keyword.name, 
+        (SELECT color.code FROM color WHERE color.id = $3)as colorCode, 
+        (SELECT color.font_code  FROM color WHERE color.id = $3)as fontColor
         `,
     [name, userId, colorId],
   );
@@ -31,7 +64,7 @@ const addKeyword = async (client, name, userId, colorId) => {
 const getKeywordList = async (client, userId, offset, limit) => {
   const { rows } = await client.query(
     /*sql*/ `
-        SELECT k.id, k.name, color.code as colorCode FROM keyword k
+        SELECT k.id, k.name, color.code as colorCode, color.font_code as fontColor, k.count FROM keyword k
         JOIN color ON k.color_id = color.id
         WHERE k.user_id = $1
         AND is_deleted = FALSE
@@ -136,4 +169,38 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
   return convertSnakeToCamel.keysToCamel(keywordRows);
 };
 
-module.exports = { checkKeyword, addKeyword, getKeywordList, keywordCountUpdate, getTopKeyword, getTeamKeywordList, getKeywordListByFeedbackId, getKeywordListByAnswerId, getKeywordByAnswerId };
+const deleteKeyword = async (client, keywordId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = 0, is_deleted = true
+        WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteKeywordCount = async (client, keywordId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = count-1
+        WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = {
+  checkKeyword,
+  getKeywordById,
+  addKeyword,
+  addNewKeyword,
+  getKeywordList,
+  keywordCountUpdate,
+  getTopKeyword,
+  getTeamKeywordList,
+  getKeywordListByFeedbackId,
+  getKeywordListByAnswerId,
+  getKeywordByAnswerId,
+  deleteKeyword,
+  deleteKeywordCount,
+};

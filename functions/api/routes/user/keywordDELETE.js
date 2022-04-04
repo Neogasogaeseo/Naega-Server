@@ -3,30 +3,30 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { keywordDB } = require('../../../db');
+const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { name, userId } = req.body;
+  const { keywordId } = req.query;
 
-  if (!name || !userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!keywordId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
   let client;
 
   try {
     client = await db.connect(req);
-    let newKeyword;
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
-    // console.log('alreadyKeyword', alreadyKeyword);
 
-    if (alreadyKeyword) {
-      newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
-      // console.log('oldNewKeyword : ', newKeyword);
+    const Keyword = await keywordDB.getKeywordById(client, keywordId);
+    console.log('Keyword : ', Keyword);
+    if (Keyword.count <= 1) {
+      const deletedKeyword = await keywordDB.deleteKeyword(client, keywordId);
+      console.log('deletedKeyword : ', deletedKeyword);
     } else {
-      const colorId = Math.floor(Math.random() * 4) + 1;
-      newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
-      // console.log('realNewKeyword :', newKeyword);
+      const deletedKeyword = await keywordDB.deleteKeywordCount(client, keywordId);
+      console.log('deletedKeyword - count: ', deletedKeyword);
     }
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, newKeyword));
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_KEYWORD_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

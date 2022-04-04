@@ -3,6 +3,7 @@ const { checkUser } = require('../../../middlewares/auth');
 const router = express.Router();
 
 router.post('/keyword', require('./keywordCreatePOST'));
+router.delete('/keyword', require('./keywordDELETE'));
 
 router.put('/edit', checkUser, require('./userProfileEditPUT'));
 
