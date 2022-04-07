@@ -17,7 +17,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const Keyword = await keywordDB.getKeywordById(client, keywordId);
-    // console.log('Keyword : ', Keyword);
+    if (!Keyword) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_EXIST_KEYWORD));
+    }
+    console.log('Keyword : ', Keyword);
     if (Keyword.count <= 1) {
       const deletedKeyword = await keywordDB.deleteKeywordAndCount(client, keywordId);
       // console.log('deletedKeyword : ', deletedKeyword);

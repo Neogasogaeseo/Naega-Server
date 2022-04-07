@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { keywordDB } = require('../../../db');
+const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
@@ -14,6 +14,13 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const checkUser = await userDB.getUserById(client, userId);
+
+    if (!checkUser) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+    }
+
     let newKeyword;
     const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
     // console.log('alreadyKeyword', alreadyKeyword);

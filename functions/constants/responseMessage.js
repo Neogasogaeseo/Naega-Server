@@ -28,7 +28,10 @@ module.exports = {
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
   ADD_KEYWORD_SUCCESS: '키워드 생성 성공',
   READ_KEYWORD_SUCCESS: '키워드 조회 성공',
+  CANCLE_KEYWORD_SUCCESS: '키워드 생성 취소 성공',
+  NOT_EXIST_KEYWORD: '존재하지 않는 키워드 입니다.',
   DELETE_KEYWORD_SUCCESS: '키워드 삭제 성공',
+  DELETE_KEYWORD_FAIL: '키워드 삭제 실패',
 
   // 팀 정보
   READ_TEAM: '팀 정보 조회 성공',

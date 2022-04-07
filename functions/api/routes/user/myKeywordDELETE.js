@@ -17,7 +17,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const deletedKeyword = await keywordDB.deleteMyKeyword(client, keywordId, userId);
-
+    if (!deletedKeyword) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DELETE_KEYWORD_FAIL));
+    }
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_KEYWORD_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
