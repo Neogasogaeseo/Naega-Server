@@ -9,6 +9,8 @@ router.put('/edit', checkUser, require('./userProfileEditPUT'));
 
 router.get('/search', checkUser, require('./userSearchGET'));
 router.get('/keyword', require('./keywordListGET'));
+router.get('/myKeyword', checkUser, require('./myKeywordListGET'));
+
 router.get('/notice/bar', checkUser, require('./userNoticeBarGET'));
 router.get('/notice', checkUser, require('./userNoticeListGET'));
 router.get('/', checkUser, require('./userInformationByTokenGET'));
