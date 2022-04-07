@@ -18,6 +18,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const team = await teamDB.getTeamById(client, teamId);
+    if (!team) {
+      return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+    }
     const member = await teamDB.getMemberByTeamId(client, teamId);
     member.forEach((item) => (item.image = resizeImage(item.image)));
     const data = {
