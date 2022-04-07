@@ -17,13 +17,13 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const Keyword = await keywordDB.getKeywordById(client, keywordId);
-    console.log('Keyword : ', Keyword);
+    // console.log('Keyword : ', Keyword);
     if (Keyword.count <= 1) {
       const deletedKeyword = await keywordDB.deleteKeywordAndCount(client, keywordId);
-      console.log('deletedKeyword : ', deletedKeyword);
+      // console.log('deletedKeyword : ', deletedKeyword);
     } else {
       const deletedKeyword = await keywordDB.deleteKeywordCount(client, keywordId);
-      console.log('deletedKeyword - count: ', deletedKeyword);
+      // console.log('deletedKeyword - count: ', deletedKeyword);
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCLE_KEYWORD_SUCCESS));
