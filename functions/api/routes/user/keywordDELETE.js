@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
       console.log('deletedKeyword - count: ', deletedKeyword);
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_KEYWORD_SUCCESS));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCLE_KEYWORD_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
