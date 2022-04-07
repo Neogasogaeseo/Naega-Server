@@ -4,6 +4,7 @@ const router = express.Router();
 
 router.post('/keyword', require('./keywordCreatePOST'));
 router.delete('/keyword', require('./keywordDELETE'));
+router.delete('/myKeyword', checkUser, require('./myKeywordDELETE'));
 
 router.put('/edit', checkUser, require('./userProfileEditPUT'));
 

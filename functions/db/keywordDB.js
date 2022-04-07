@@ -169,11 +169,31 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
   return convertSnakeToCamel.keysToCamel(keywordRows);
 };
 
-const deleteKeyword = async (client, keywordId) => {
+const deleteKeywordAndCount = async (client, keywordId) => {
   const { rows } = await client.query(/*sql*/ `
         UPDATE keyword 
         SET count = 0, is_deleted = true
         WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteKeyword = async (client, keywordId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET is_deleted = true
+        WHERE id = ${keywordId}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteMyKeyword = async (client, keywordId, userId) => {
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET is_deleted = true
+        WHERE id = ${keywordId} AND user_id = ${userId}
         RETURNING *
         `);
   return convertSnakeToCamel.keysToCamel(rows);
@@ -201,6 +221,8 @@ module.exports = {
   getKeywordListByFeedbackId,
   getKeywordListByAnswerId,
   getKeywordByAnswerId,
-  deleteKeyword,
+  deleteKeywordAndCount,
   deleteKeywordCount,
+  deleteKeyword,
+  deleteMyKeyword,
 };
