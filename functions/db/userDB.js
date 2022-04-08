@@ -142,7 +142,7 @@ const getUserByAccessToken = async (client, userId) => {
 };
 
 const getUserListByProfileId = async (client, profileId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT id, name, profile_id, image
     FROM "user"
@@ -169,6 +169,19 @@ const updateUserInformationById = async (client, userId, profileId, name, image)
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const deleteUser = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+        UPDATE "user" u
+        SET is_deleted = true, updated_at = NOW()
+        WHERE id = $1
+        RETURNING *   
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   checkUserProfileId,
   addUser,
@@ -181,4 +194,5 @@ module.exports = {
   gettaggedUserProfileId,
   getUserListByProfileId,
   updateUserInformationById,
+  deleteUser,
 };
