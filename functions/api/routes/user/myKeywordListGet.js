@@ -7,29 +7,23 @@ const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { keywordId } = req.query;
+  const { offset, limit } = req.query;
+  const { id: userId } = req.user;
 
-  if (!keywordId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!offset || !limit) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
   try {
     client = await db.connect(req);
 
-    const Keyword = await keywordDB.getKeywordById(client, keywordId);
-    if (!Keyword) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_EXIST_KEYWORD));
-    }
-    console.log('Keyword : ', Keyword);
-    if (Keyword.count <= 1) {
-      const deletedKeyword = await keywordDB.deleteKeywordAndCount(client, keywordId);
-      // console.log('deletedKeyword : ', deletedKeyword);
-    } else {
-      const deletedKeyword = await keywordDB.deleteKeywordCount(client, keywordId);
-      // console.log('deletedKeyword - count: ', deletedKeyword);
-    }
+    const getKeyword = await keywordDB.getKeywordList(client, userId, offset, limit);
+    const getUser = await userDB.getUserById(client, userId);
+    const sumCount = getKeyword.map((item) => item.count).reduce((acc, cur) => acc + cur, 0);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCLE_KEYWORD_SUCCESS));
+    const data = { name: getUser.name, keyword: getKeyword, totalCount: sumCount };
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_KEYWORD_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

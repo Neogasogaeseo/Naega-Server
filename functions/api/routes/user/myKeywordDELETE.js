@@ -8,7 +8,7 @@ const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { keywordId } = req.query;
-
+  const { id: userId } = req.user;
   if (!keywordId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
@@ -16,20 +16,11 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const Keyword = await keywordDB.getKeywordById(client, keywordId);
-    if (!Keyword) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_EXIST_KEYWORD));
+    const deletedKeyword = await keywordDB.deleteMyKeyword(client, keywordId, userId);
+    if (!deletedKeyword) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DELETE_KEYWORD_FAIL));
     }
-    console.log('Keyword : ', Keyword);
-    if (Keyword.count <= 1) {
-      const deletedKeyword = await keywordDB.deleteKeywordAndCount(client, keywordId);
-      // console.log('deletedKeyword : ', deletedKeyword);
-    } else {
-      const deletedKeyword = await keywordDB.deleteKeywordCount(client, keywordId);
-      // console.log('deletedKeyword - count: ', deletedKeyword);
-    }
-
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCLE_KEYWORD_SUCCESS));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_KEYWORD_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
