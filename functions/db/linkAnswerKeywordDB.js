@@ -21,7 +21,7 @@ const addLinkAnswerKeyword = async (client, answerId, keywordList) => {
 
 const getKeywordsWithAnswerIdList = async (client, answerIds) => {
   const { rows } = await client.query(/*sql*/ `
-          SELECT keyword.id,keyword.name,color.code as colorCode, link_answer_keyword.answer_id  
+          SELECT keyword.id,keyword.name,color.code as colorCode,color.font_code as fontColor, link_answer_keyword.answer_id  
           FROM link_answer_keyword
           JOIN keyword ON keyword.id = link_answer_keyword.keyword_id
           JOIN color ON keyword.color_id = color.id
@@ -31,7 +31,7 @@ const getKeywordsWithAnswerIdList = async (client, answerIds) => {
 };
 
 const getTopKeywordListOnAnswer = async (client, userId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code
     FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
@@ -49,4 +49,4 @@ const getTopKeywordListOnAnswer = async (client, userId) => {
   console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getTopKeywordListOnAnswer, };
+module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getTopKeywordListOnAnswer };

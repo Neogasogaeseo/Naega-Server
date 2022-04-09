@@ -32,7 +32,7 @@ module.exports = async (req, res) => {
     // ^_^// count 내림차순 keyword 조회
     const topKeyword = await keywordDB.getTopKeyword(client, user.id);
 
-    const data = { ...formDetail, q, keyword: topKeyword };
+    const data = { form: formDetail, q, keyword: topKeyword };
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_DETAIL_SUCCESS, data));
   } catch (error) {
