@@ -28,9 +28,23 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAnswerByFormIdAndUserIdForFormDetailTopKeyword = async (client, formId, userId) => {
+  const { rows } = await client.query(/*sql*/ `
+        SELECT  a.id
+        FROM "answer" a
+        JOIN "relationship" r
+        ON a.relationship_id = r.id
+        JOIN "link_user_form" l
+        ON a.link_user_form_id = l.id
+        WHERE l.form_id = ${formId}
+        AND l.user_id = ${userId}
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getNewFormIdListByUserId = async (client, userId) => {
   const { rows } = await client.query(
-    `
+    /*sql*/ `
     SELECT l.form_id
     FROM "link_user_form" l
     WHERE l.user_id = $1
@@ -154,6 +168,7 @@ module.exports = {
   getMostFormIdListByUserId,
   getAnswerByFormIdList,
   getAnswerByFormIdAndUserId,
+  getAnswerByFormIdAndUserIdForFormDetailTopKeyword,
   getPinnedAnswerByProfileId,
   toggleIsPinnedAnswer,
 };
