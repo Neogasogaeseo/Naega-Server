@@ -11,7 +11,7 @@ const getRelationship = async (client) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
+const getAnswerByFormIdAndUserId = async (client, formId, userId, offset) => {
   const { rows } = await client.query(/*sql*/ `
         SELECT l.form_id, a.id,
         a.name, r.name as relationship,
@@ -23,9 +23,26 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId) => {
         ON a.link_user_form_id = l.id
         WHERE l.form_id = ${formId}
         AND l.user_id = ${userId}
-        ORDER BY l.updated_at
+        ORDER BY a.updated_at DESC
+        OFFSET ${offset}
+        LIMIT 2
         `);
   return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getAnswerCountByFormIdAndUserId = async (client, formId, userId) => {
+  const { rows } = await client.query(/*sql*/ `
+          SELECT count(*)
+          FROM "answer" a
+          JOIN "relationship" r
+          ON a.relationship_id = r.id
+          JOIN "link_user_form" l
+          ON a.link_user_form_id = l.id
+          WHERE l.form_id = ${formId}
+          AND l.user_id = ${userId}
+          AND a.is_deleted = false
+          `);
+  return convertSnakeToCamel.keysToCamel(rows[0].count);
 };
 
 const getAnswerByFormIdAndUserIdForFormDetailTopKeyword = async (client, formId, userId) => {
@@ -168,6 +185,7 @@ module.exports = {
   getMostFormIdListByUserId,
   getAnswerByFormIdList,
   getAnswerByFormIdAndUserId,
+  getAnswerCountByFormIdAndUserId,
   getAnswerByFormIdAndUserIdForFormDetailTopKeyword,
   getPinnedAnswerByProfileId,
   toggleIsPinnedAnswer,

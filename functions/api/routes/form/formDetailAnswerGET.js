@@ -4,16 +4,19 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { answerDB, linkAnswerKeywordDB } = require('../../../db');
+const { answerDB, linkAnswerKeywordDB, linkUserFormDB } = require('../../../db');
 const arrayHandler = require('../../../lib/arrayHandler');
 const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
   const { formId } = req.params;
-
+  let { offset } = req.query;
   if (!formId) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  }
+  if (!offset) {
+    offset = 0;
   }
   let client;
 
@@ -22,15 +25,23 @@ module.exports = async (req, res) => {
     console.log(userId);
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
-    const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, userId);
+    const answerCount = await answerDB.getAnswerCountByFormIdAndUserId(client, formId, userId);
+    console.log('answerCount : ', answerCount);
 
-    if (answers.length === 0) {
+    if (answerCount.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_FORM_ISSUE, []));
     }
+
+    const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, userId, offset);
+
+    if (!answers) {
+      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_MORE_ANSWER));
+    }
+
+    console.log('answers :', answers);
     for (const answer of answers) {
       answer.createdAt = dayjs(answer.createdAt).format('YYYY-MM-DD');
     }
-    console.log('answers :', answers);
 
     // ^_^// 가져온 answers들의 id만 추출
     const answersIds = arrayHandler.extractValues(answers, 'id');
@@ -58,7 +69,7 @@ module.exports = async (req, res) => {
     const formDetailAnswer = Object.entries(answersTofind).map(([answerId, data]) => ({ ...data }));
     console.log('issueDetailAnswer', formDetailAnswer);
 
-    const answerCount = formDetailAnswer.length;
+    // const answerCount = formDetailAnswer.length;
     const data = { answerCount, answer: formDetailAnswer };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_ANSWER_DETAIL_SUCCESS, data));

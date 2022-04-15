@@ -38,7 +38,7 @@ const getKeywordsWithAnswerIdListForFormDetail = async (client, answerIds) => {
           JOIN color ON keyword.color_id = color.id
           WHERE link_answer_keyword.answer_id IN (${answerIds.join()})
           ORDER BY keyword.count DESC
-          LIMIT 5
+          -- LIMIT 5
           `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
