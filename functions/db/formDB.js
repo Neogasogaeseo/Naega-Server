@@ -5,7 +5,7 @@ const getAllFormRecent = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     JOIN "color" c
@@ -21,7 +21,7 @@ const getAllFormPopular = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     LEFT JOIN (SELECT form_id, COUNT(*) cnt
@@ -66,7 +66,7 @@ const getFormIsCreatedByUserIdAndFormId = async (client, formId, userId) => {
 const getForm = async (client, userId, formId) => {
   const { rows } = await client.query(
     `
-    SELECT l.id as link_form_id, f.title, f.subtitle, f.light_icon_image
+    SELECT l.id as link_form_id, f.title, f.subtitle, f.dark_icon_image
     FROM link_user_form l 
     JOIN form f ON l.form_id = f.id
     WHERE l.user_id = $1
@@ -111,7 +111,7 @@ const getFormBanner = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     JOIN "color" c

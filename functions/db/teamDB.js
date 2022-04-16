@@ -126,4 +126,15 @@ const deleteTeam = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam };
+const getTeamListByTeamIdList = async (client, teamIdList) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.name, t.image, t.is_deleted
+    FROM "team" t
+    WHERE t.id in (${teamIdList})
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam, getTeamListByTeamIdList };

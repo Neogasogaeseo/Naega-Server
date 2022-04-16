@@ -6,8 +6,8 @@ const uploadImage = require('../../../middlewares/uploadImage');
 router.post('/', checkUser, uploadImage('team'), require('./teamPOST'));
 router.post('/issue', checkUser, uploadImage('issue'), require('./teamIssuePOST'));
 
-router.put('/edit', checkUser, uploadImage('team'), require('./teamPUT'));
-
+router.get('/edit/:teamId', checkUser, require('./teamEditGET'));
+router.put('/edit', checkUser, uploadImage('team'), require('./teamEditPUT'));
 router.get('/edit/member/:teamId', checkUser, require('./teamMemberEditGET'));
 router.post('/edit/member', checkUser, require('./teamMemberEditPOST'));
 

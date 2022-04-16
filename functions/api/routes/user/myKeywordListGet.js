@@ -7,33 +7,23 @@ const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { name, userId } = req.body;
+  const { offset, limit } = req.query;
+  const { id: userId } = req.user;
 
-  if (!name || !userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!offset || !limit) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
   let client;
 
   try {
     client = await db.connect(req);
 
-    const checkUser = await userDB.getUserById(client, userId);
+    const getKeyword = await keywordDB.getKeywordList(client, userId, offset, limit);
+    const getUser = await userDB.getUserById(client, userId);
+    const sumCount = getKeyword.map((item) => item.count).reduce((acc, cur) => acc + cur, 0);
 
-    if (!checkUser) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
-    }
+    const data = { name: getUser.name, keyword: getKeyword, totalCount: sumCount };
 
-    let newKeyword;
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
-    // console.log('alreadyKeyword', alreadyKeyword);
-
-    if (alreadyKeyword) {
-      newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
-      // console.log('oldNewKeyword : ', newKeyword);
-    } else {
-      const colorId = Math.floor(Math.random() * 4) + 1;
-      newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
-      // console.log('realNewKeyword :', newKeyword);
-    }
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, newKeyword));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_KEYWORD_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

@@ -7,33 +7,29 @@ const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { name, userId } = req.body;
+  const { keywordId } = req.query;
 
-  if (!name || !userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!keywordId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
   let client;
 
   try {
     client = await db.connect(req);
 
-    const checkUser = await userDB.getUserById(client, userId);
-
-    if (!checkUser) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
+    const Keyword = await keywordDB.getKeywordById(client, keywordId);
+    if (!Keyword) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NOT_EXIST_KEYWORD));
     }
-
-    let newKeyword;
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
-    // console.log('alreadyKeyword', alreadyKeyword);
-
-    if (alreadyKeyword) {
-      newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
-      // console.log('oldNewKeyword : ', newKeyword);
+    console.log('Keyword : ', Keyword);
+    if (Keyword.count <= 1) {
+      const deletedKeyword = await keywordDB.deleteKeywordAndCount(client, keywordId);
+      // console.log('deletedKeyword : ', deletedKeyword);
     } else {
-      const colorId = Math.floor(Math.random() * 4) + 1;
-      newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
-      // console.log('realNewKeyword :', newKeyword);
+      const deletedKeyword = await keywordDB.deleteKeywordCount(client, keywordId);
+      // console.log('deletedKeyword - count: ', deletedKeyword);
     }
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, newKeyword));
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CANCLE_KEYWORD_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
