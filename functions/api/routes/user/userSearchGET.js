@@ -8,9 +8,9 @@ const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
-  const { searchId, teamId, limit, offset, } = req.query;
+  const { profileId, teamId, limit, offset, } = req.query;
 
-  if (!searchId || !limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!profileId || !limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -21,10 +21,10 @@ module.exports = async (req, res) => {
 
     if (!teamId) {
       //^_^// 팀 첫 등록할 때 (teamId 없음)
-      userSearchList = await userDB.getUserListByOnlyProfileId(client, searchId, userId, offset, limit);
+      userSearchList = await userDB.getUserListByOnlyProfileId(client, profileId, userId, offset, limit);
     } else {
       //^_^// 팀 수정에서 검색할 때
-      userSearchList = await userDB.getUserListByProfileIdTeamId(client, searchId, userId, teamId, offset, limit);
+      userSearchList = await userDB.getUserListByProfileIdTeamId(client, profileId, userId, teamId, offset, limit);
     };
 
     if (userSearchList.length === 0) {
