@@ -23,6 +23,7 @@ module.exports = {
   READ_USER_LIST_SUCCESS: '유저 검색 결과 조회 성공',
   NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
   UPDATE_USER: '유저 정보 수정 성공',
+  DELETE_USER_SUCCESS: '유저 삭제 성공',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
