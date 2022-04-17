@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     const checkUser = await memberDB.checkMemberHost(client, user.id, teamId);
     if (!checkUser) {
       //^_^// is_host가 false인 경우 수정하지 못하도록 함
-      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
 
     //^_^// 새로운 유저 멤버로 추가

@@ -23,7 +23,7 @@ module.exports = async (req, res) => {
     const checkUser = await memberDB.checkMemberHost(client, userId, teamId);
     if (!checkUser) {
       //^_^// is_host가 false인 경우 조회 불가
-      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
     
     //^_^// 팀 정보 조회
