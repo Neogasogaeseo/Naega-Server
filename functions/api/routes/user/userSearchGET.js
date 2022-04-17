@@ -10,13 +10,7 @@ module.exports = async (req, res) => {
   const { id: userId } = req.user;
   const { profileId, teamId, limit, offset, } = req.query;
 
-  if (!profileId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  
-  /**오늘의 한마디...*
-   * 기존 코드와의 충돌 방지를 위해 다음 배포때 추가할 예정
-   * userDB getUserById 쿼리문에도 limit, offset 추가 잊지 말기
-  if (!limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  */
+  if (!profileId || !limit || !offset) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
