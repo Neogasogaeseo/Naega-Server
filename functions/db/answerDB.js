@@ -25,7 +25,7 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId, offset) => {
         AND l.user_id = ${userId}
         ORDER BY a.updated_at DESC
         OFFSET ${offset}
-        LIMIT 2
+        LIMIT 10
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };

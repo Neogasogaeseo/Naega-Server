@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
 
     const answers = await answerDB.getAnswerByFormIdAndUserId(client, formId, userId, offset);
 
-    if (!answers) {
+    if (!answers || answers.length === 0) {
       return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_MORE_ANSWER));
     }
 
