@@ -62,6 +62,7 @@ module.exports = {
   POST_TEAM_ISSUE: '팀 이슈 등록 성공',
   NO_TEAM_ISSUE_CONTENT: '이슈 컨텐트 값이 없습니다',
   READ_TEAM_ISSUE_DETAIL_SUCCESS: '팀 이슈 디테일 조회 성공',
+  NO_ISSUE_ID: '존재하지 않는 이슈 id 입니다',
 
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
@@ -90,6 +91,7 @@ module.exports = {
   READ_FORM_ANSWER_DETAIL_SUCCESS: '폼 디테일 답변 조회 성공 ',
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
+  NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
 
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',
