@@ -22,6 +22,8 @@ router.put('/invite/reject', checkUser, require('./teamInviteRejectPUT'));
 router.get('/issue/category', require('./teamIssueCategoryGET'));
 router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
 router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
+router.put('/feedback/:feedbackId', checkUser, require('./teamFeedbackPUT'));
+// router.delete('/feedback/:feedbackId', checkUser, require('./teamFeedbackDELETE'));
 
 router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
 router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
