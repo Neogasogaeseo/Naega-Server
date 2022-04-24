@@ -4,16 +4,15 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { userDB, issueDB } = require('../../../db');
+const { issueDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-  const user = req.user;
-  const { issueId } = req.params
-  const {} = req.query
-  const { categoryId, content, image } = req.body
+  const { id: userId } = req.user;
+  const { issueId } = req.params;
+  const { categoryId, content, image } = req.body;
   
-  if (!user || !issueId || !categoryId || !content || !image) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!user || !issueId || !categoryId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   
   let client;
   
@@ -23,9 +22,9 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     //^_^// userId가 이슈의 userId와 일치하는지 확인
-    const checkUser = await issueDB.getUserIdByIssueId(client, issueId);
+    const checkUser = await issueDB.checkIssueUserId(client, issueId);
 
-    if(checkUser.userId != user.id) {
+    if(checkUser.userId != userId) {
       //^_^// 이슈의 작성자가 아닌 경우 수정하지 못하도록 함
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
