@@ -21,7 +21,7 @@ const addLinkAnswerKeyword = async (client, answerId, keywordList) => {
 
 const getKeywordsWithAnswerIdList = async (client, answerIds) => {
   const { rows } = await client.query(/*sql*/ `
-          SELECT keyword.id,keyword.name,color.code as colorCode, link_answer_keyword.answer_id  
+          SELECT keyword.id,keyword.name,color.code as colorCode,color.font_code as fontColor, link_answer_keyword.answer_id  
           FROM link_answer_keyword
           JOIN keyword ON keyword.id = link_answer_keyword.keyword_id
           JOIN color ON keyword.color_id = color.id
@@ -30,9 +30,21 @@ const getKeywordsWithAnswerIdList = async (client, answerIds) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getKeywordsWithAnswerIdListForFormDetail = async (client, answerIds) => {
+  const { rows } = await client.query(/*sql*/ `
+          SELECT keyword.id,keyword.name,color.code as colorCode,color.font_code as fontColor  
+          FROM link_answer_keyword
+          JOIN keyword ON keyword.id = link_answer_keyword.keyword_id
+          JOIN color ON keyword.color_id = color.id
+          WHERE link_answer_keyword.answer_id IN (${answerIds.join()})
+          ORDER BY keyword.count DESC
+          -- LIMIT 5
+          `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getTopKeywordListOnAnswer = async (client, userId) => {
-  const { rows } = await client.query (
-    `
+  const { rows } = await client.query(/*sql*/ `
     SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code
     FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
            FROM link_answer_keyword
@@ -44,9 +56,8 @@ const getTopKeywordListOnAnswer = async (client, userId) => {
       AND k.is_deleted = false
    ORDER BY l.count_keyword_id DESC
    LIMIT 3
-    `,
-  );
+    `);
   console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getTopKeywordListOnAnswer, };
+module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getKeywordsWithAnswerIdListForFormDetail, getTopKeywordListOnAnswer };

@@ -17,7 +17,7 @@ const addLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
 };
 const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
   const { rows } = await client.query(/*sql*/ `
-        SELECT keyword.id,keyword.name,color.code as colorCode, link_feedback_keyword.feedback_id  
+        SELECT keyword.id,keyword.name,color.code as colorCode, color.font_code as fontColor, link_feedback_keyword.feedback_id  
         FROM link_feedback_keyword
         JOIN keyword ON keyword.id = link_feedback_keyword.keyword_id
         JOIN color ON keyword.color_id = color.id
@@ -25,7 +25,6 @@ const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-
 
 const getTopKeywordListOnFeedback = async (client, userId) => {
   const { rows } = await client.query(
@@ -47,4 +46,4 @@ const getTopKeywordListOnFeedback = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addLinkFeedbackKeyword, getKeywordsWithFeedbackIdList, getTopKeywordListOnFeedback, };
+module.exports = { addLinkFeedbackKeyword, getKeywordsWithFeedbackIdList, getTopKeywordListOnFeedback };

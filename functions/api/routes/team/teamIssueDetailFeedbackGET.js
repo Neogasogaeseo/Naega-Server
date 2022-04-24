@@ -26,22 +26,22 @@ module.exports = async (req, res) => {
     for (const feedback of feedbacks) {
       feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
     }
-    console.log('feedbacks : ', feedbacks);
+    // console.log('feedbacks : ', feedbacks);
 
     // ^_^// 가져온 feedbacks들의 id만 추출
     const feedbackIds = arrayHandler.extractValues(feedbacks, 'id');
-    console.log('feedbackIds : ', feedbackIds);
+    // console.log('feedbackIds : ', feedbackIds);
 
     // ^_^// 추출한 feedbacks들로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, feedbackIds);
-    console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
+    // console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
-    // ^_^// 추출한 feedbakcs
+    // ^_^// 추출한 feedbacks
     const feedbacksTofind = feedbacks.reduce((acc, x) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
     }, {});
-    console.log('feedbacksTofind', feedbacksTofind);
+    // console.log('feedbacksTofind', feedbacksTofind);
 
     linkFeedbackKeywords.map((o) => {
       feedbacksTofind[o.feedbackId].keywords.push(o);
@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
     console.log(feedbacksTofind);
 
     const issueDetailFeedback = Object.entries(feedbacksTofind).map(([feedbackId, data]) => ({ ...data }));
-    console.log('issueDetailFeedback', issueDetailFeedback);
+    // console.log('issueDetailFeedback', issueDetailFeedback);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ISSUE_FEEDBACK_SUCCESS, issueDetailFeedback));
   } catch (error) {

@@ -20,4 +20,6 @@ router.get('/:profileId/answer', require('./userPinnedAnswerGET'));
 router.get('/:profileId/team', require('./userPinnedTeamGET'));
 router.get('/edit/profileId/:profileId', checkUser, require('./userIdDuplicateCheckGET'));
 
+router.delete('/', checkUser, require('./userDELETE'));
+
 module.exports = router;
