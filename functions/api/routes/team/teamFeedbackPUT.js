@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { feedbackDB, linkFeedbacKeywordDB, keywordDB, userDB } = require('../../../db');
 const dayjs = require('dayjs');
+const arrayHandler = require('../../../lib/arrayHandler');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -23,7 +24,7 @@ module.exports = async (req, res) => {
 
     //^_^// 해당 피드백 get
     const feedback = await feedbackDB.getFeedbackById(client, feedbackId);
-    console.log('feedback :', feedback);
+    // console.log('feedback :', feedback);
     //^_^// 유저가 작성자/피드백 받은 사람 중 한명인지 확인
     if (feedback.userId !== user.id && feedback.taggedUserId !== user.id) {
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
@@ -31,24 +32,28 @@ module.exports = async (req, res) => {
     //^_^// 작성된 내용으로 피드백 수정
     const edittedFeedback = await feedbackDB.editFeedback(client, feedbackId, taggedUserId, content);
     // newFeedback.createdAt = dayjs(newFeedback.createdAt).format('YYYY-MM-DD');
-    console.log('edittedFeedback :', edittedFeedback);
+    // console.log('edittedFeedback :', edittedFeedback);
 
     // ^_^// 추출한 feedback으로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, [feedbackId]);
-    console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
+    // console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
-    //^_^// 기존의 키워드 아이디와 비교, 지워진 키워드는 삭제하고, 새로운 키워드가 있다면 추가한다
+    //^_^// 기존의 키워드 아이디와 비교하여, 지워져야하는 키워드와 생성해야 할 키워드를 찾는다
+    const keywordIdsBeforeUpdate = arrayHandler.extractValues(linkFeedbackKeywords, 'id');
 
-    //^_^// feedback x Keyword 테이블에 row 추가
-    // const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client, newFeedback.id, keywordIds);
+    const keywordsForCreate = keywordIds.filter((value) => !keywordIdsBeforeUpdate.includes(value));
+    const keywordsForDelete = keywordIdsBeforeUpdate.filter((value) => !keywordIds.includes(value));
 
-    //^_^// 지워진 Keyword의 count --
-    // const keywordCountUpdate = await keywordDB.keywordCountUpdate(client, keywordIds);
+    // console.log('keywordIdsBeforeUpdate : ', keywordIdsBeforeUpdate, 'keywordIds : ', keywordIds, 'keywordsForDelete : ', keywordsForDelete, 'keywordsForCreate : ', keywordsForCreate);
 
-    // const taggedUserProfileId = await userDB.gettaggedUserProfileId(client, taggedUserId);
+    //^_^// feedback x Keyword 테이블에 row 추가 및 삭제
+    const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client, feedbackId, keywordsForCreate);
+    const deleteLinkFeedbackKeyword = await linkFeedbacKeywordDB.deleteLinkFeedbackKeyword(client, feedbackId, keywordsForDelete);
+
+    // console.log('addLinkFeedbackKeyword : ', addLinkFeedbackKeyword, 'deleteLinkFeedbackKeyword : ', deleteLinkFeedbackKeyword);
 
     // const data = { taggedUserProfileId: taggedUserProfileId.profileId, feecbackId: newFeedback.id, createdAt: newFeedback.createdAt };
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_FEEDBACK_SUCCESS));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_FEEDBACK_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
