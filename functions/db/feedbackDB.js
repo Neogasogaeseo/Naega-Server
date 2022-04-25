@@ -78,4 +78,14 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addFeedback, getFeedbacks, getFeedbackById, editFeedback, toggleIsPinnedFeedback, getPinnedFeedbackByProfileId };
+const deleteFeedback = async (client, feedbackId) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE feedback
+  SET is_deleted = true, updated_at = now()
+  WHERE id = ${feedbackId}
+  AND is_deleted = false
+  RETURNING *`);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { addFeedback, getFeedbacks, getFeedbackById, editFeedback, toggleIsPinnedFeedback, getPinnedFeedbackByProfileId, deleteFeedback };

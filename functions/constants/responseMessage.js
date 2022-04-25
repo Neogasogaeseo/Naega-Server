@@ -67,6 +67,7 @@ module.exports = {
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
   UPDATE_FEEDBACK_SUCCESS: '피드백 수정 성공',
+  DELETE_FEEDBACK_SUCCESS: '피드백 삭제 성공',
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
   READ_ISSUE_FEEDBACK_SUCCESS: '팀 이슈 피드백 조회 성공',
   FEEDBACK_IS_PINNED_TOGGLE_SUCCESS: '피드백 핀 토글 성공',
