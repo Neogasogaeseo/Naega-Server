@@ -30,7 +30,6 @@ module.exports = async (req, res) => {
     if (feedback.userId !== user.id && feedback.taggedUserId !== user.id) {
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
     }
-
     // ^_^// 추출한 feedback으로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, [feedbackId]);
     console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
