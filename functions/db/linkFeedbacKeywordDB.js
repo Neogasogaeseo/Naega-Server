@@ -15,6 +15,7 @@ const addLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
 
   return convertSnakeToCamel.keysToCamel(rows.rows);
 };
+
 const deleteLinkFeedbackKeyword = async (client, feedbackId, keywordIds) => {
   let rows = { rows: null };
   if (keywordIds.length > 0) {
