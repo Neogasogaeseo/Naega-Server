@@ -84,6 +84,7 @@ module.exports = {
   FORM_CREATE_FAIL: '존재하지 않는 폼입니다',
   DUPLICATE_FORM: '이미 존재하는 폼입니다',
   ANSWER_CREATE_SUCCESS: '답변 등록 성공',
+  ANSWER_DELETE_SUCCESS: '답변 삭제 성공',
   NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
   READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
   NO_MY_FORM_CONTENT: '생성한 폼이 없습니다',
@@ -94,6 +95,7 @@ module.exports = {
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
   NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
+  NO_ANSWER: '존재하지 않는 답변',
 
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',

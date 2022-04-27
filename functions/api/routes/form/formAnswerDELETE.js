@@ -28,10 +28,9 @@ module.exports = async (req, res) => {
 
     const answer = await answerDB.getAnswerUserIdByAnswerId(client, answerId);
     if (!answer) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_ISSUE_FEEDBACK));
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_ANSWER));
     }
-    console.log(' answer : ', answer);
-    console.log('userId : ', user.id);
+
     //^_^// 유저가 답변 받은 사람인지 확인
     if (answer.userId !== user.id) {
       return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
@@ -52,7 +51,7 @@ module.exports = async (req, res) => {
     // // ^_^// answer 삭제 (with answerId)
     const deleteAnswer = await answerDB.deleteAnswer(client, answerId);
 
-    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_FEEDBACK_SUCCESS));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ANSWER_DELETE_SUCCESS));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
