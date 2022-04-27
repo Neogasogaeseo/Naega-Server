@@ -60,4 +60,21 @@ const getTopKeywordListOnAnswer = async (client, userId) => {
   console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
-module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getKeywordsWithAnswerIdListForFormDetail, getTopKeywordListOnAnswer };
+
+const deleteLinkAnswerKeyword = async (client, answerId, keywordIds) => {
+  let rows = { rows: null };
+  if (keywordIds.length > 0) {
+    rows = await client.query(/*sql*/ `
+            UPDATE link_answer_keyword
+            SET is_deleted = true
+            WHERE answer_id = ${answerId}
+            AND is_deleted = false
+            AND link_answer_keyword.keyword_id IN (${keywordIds.join()})
+            RETURNING *
+            `);
+  }
+
+  return convertSnakeToCamel.keysToCamel(rows.rows);
+};
+
+module.exports = { addLinkAnswerKeyword, getKeywordsWithAnswerIdList, getKeywordsWithAnswerIdListForFormDetail, getTopKeywordListOnAnswer, deleteLinkAnswerKeyword };

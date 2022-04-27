@@ -23,11 +23,29 @@ const getAnswerByFormIdAndUserId = async (client, formId, userId, offset) => {
         ON a.link_user_form_id = l.id
         WHERE l.form_id = ${formId}
         AND l.user_id = ${userId}
+        AND a.is_deleted = false
+        AND l.is_deleted = false
         ORDER BY a.updated_at DESC
         OFFSET ${offset}
         LIMIT 10
         `);
   return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getAnswerUserIdByAnswerId = async (client, answerId) => {
+  const { rows } = await client.query(/*sql*/ `
+        SELECT u.id as user_id
+        FROM "answer" a
+        JOIN "link_user_form" l
+        ON a.link_user_form_id = l.id
+        JOIN "user" u
+        ON l.user_id = u.id
+        WHERE a.id = ${answerId}
+        AND a.is_deleted = false
+        AND l.is_deleted = false
+        AND u.is_deleted = false
+        `);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
 const getAnswerCountByFormIdAndUserId = async (client, formId, userId) => {
@@ -177,10 +195,22 @@ const toggleIsPinnedAnswer = async (client, answerId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const deleteAnswer = async (client, answerId) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE answer
+    SET is_deleted = true, updated_at = now()
+    WHERE id = ${answerId}
+    AND is_deleted = false
+    RETURNING *
+    `);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getRelationship,
   addAnswer,
   getAnswerByFormIdListAndUserID,
+  getAnswerUserIdByAnswerId,
   getNewFormIdListByUserId,
   getMostFormIdListByUserId,
   getAnswerByFormIdList,
@@ -189,4 +219,5 @@ module.exports = {
   getAnswerByFormIdAndUserIdForFormDetailTopKeyword,
   getPinnedAnswerByProfileId,
   toggleIsPinnedAnswer,
+  deleteAnswer,
 };
