@@ -175,7 +175,7 @@ const updateIssue = async (client, issueId, categoryId, content, image) => {
     RETURNING *
     `,
 
-    [issueId, categoru_id, content, image],
+    [issueId, categoryId, content, image],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };

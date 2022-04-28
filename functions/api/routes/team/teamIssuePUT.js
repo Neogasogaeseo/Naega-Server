@@ -8,7 +8,7 @@ const { issueDB } = require('../../../db');
 
 module.exports = async (req, res) => {
 
-  const { id: userId } = req.user;
+  const user = req.user;
   const { issueId } = req.params;
   const { categoryId, content, image } = req.body;
   
@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     //^_^// userId가 이슈의 userId와 일치하는지 확인
     const checkUser = await issueDB.checkIssueUserId(client, issueId);
 
-    if(checkUser.userId != userId) {
+    if(checkUser.userId != user.id) {
       //^_^// 이슈의 작성자가 아닌 경우 수정하지 못하도록 함
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
