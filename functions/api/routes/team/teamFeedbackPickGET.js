@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { teamDB, feedbackDB } = require('../../../db');
+const { teamDB, feedbackDB, keywordDB } = require('../../../db');
 const { NO_FEEDBACK_TO_PICK } = require('../../../constants/responseMessage');
 
 module.exports = async (req, res) => {
@@ -44,15 +44,13 @@ module.exports = async (req, res) => {
     };
 
     //^_^// 북마크한 피드백 리스트에서 아이디값 가져오기
-    const feedbackIdList = pinnedFeedbackList.map((o) => o.feedbackId);
-    console.log('feedbackIdList: ', feedbackIdList);
+    const feedbackIdList = feedbackData.map((o) => o.feedbackId);
 
     //^_^// 피드백 아이디값으로 키워드 가져오기
     const keywordList = await keywordDB.getKeywordListByFeedbackId(client, feedbackIdList);
-    console.log('keywordList: ', keywordList);
 
     //^_^// 키워드를 객체 안에 넣기 위한 밑작업
-    const feedbackListPopId = pinnedFeedbackList.reduce((acc, cur) => {
+    const feedbackListPopId = feedbackData.reduce((acc, cur) => {
       acc[cur.feedbackId] = { ...cur, keywords: [] };
       return acc;
     }, {});
@@ -60,10 +58,8 @@ module.exports = async (req, res) => {
     //^_^//keyword 리스트 안에 객체값 집어넣기
     keywordList.map((o) => {
       feedbackListPopId[o.feedbackId].keywords.push(o);
-      console.log(o);
       return o;
     });
-    console.log(feedbackListPopId);
 
     //^_^// key와 value값으로 구분 후 value값만 map함수로 빼내기
     const resultFeedbackData = Object.entries(feedbackListPopId).map(([feedbackId, data]) => ({ ...data }));
