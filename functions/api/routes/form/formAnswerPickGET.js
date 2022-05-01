@@ -27,11 +27,12 @@ module.exports = async (req, res) => {
     let answerData;
     if (!formId) { //^_^// 필터링할 폼아이디가 없을 경우 전부 가져오기
       answerData = await answerDB.getAllAnswerByUserId(client, userId, offset, limit);
-      if (!answerData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
     } else { //^_^// 필터링할 폼아이디가 있을 경우, 필터링한 답변만 가져오기
       answerData = await answerDB.getFilteredAnswerByFormId(client, userId, formId, offset, limit);
-      if (!answerData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
     }
+    //^_^// 조회값이 없을 경우 statuscode 204
+    if (!answerData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
+
 
     //^_^// 각 답변의 키워드 조회를 위한 answerId 뽑아오기
     const answerIdList = answerData.map((o) => o.answerId);
