@@ -9,6 +9,7 @@ router.get('/template/popular', checkUser, require('./formTemplatePopularGET'));
 router.get('/template/recent', checkUser, require('./formTemplateRecentGET'));
 router.get('/answer', require('./formAnswerGET'));
 router.post('/answer', require('./formAnswerCreatePOST'));
+router.delete('/answer/:answerId', checkUser, require('./formAnswerDELETE'));
 router.get('/banner', checkUser, require('./formBannerGET'));
 router.post('/create', checkUser, require('./formCreatePOST'));
 router.get('/create/:formId', checkUser, require('./formCreateGET'));

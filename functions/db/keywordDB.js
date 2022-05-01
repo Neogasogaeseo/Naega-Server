@@ -33,7 +33,7 @@ const addKeyword = async (client, keywordId) => {
   const { rows } = await client.query(
     /*sql*/ `
         UPDATE keyword
-        SET count = count+1
+        SET count = count+1, updated_at = now()
         WHERE
         id = $1 AND is_deleted = false
         RETURNING keyword.id, keyword.name, 
@@ -80,8 +80,20 @@ const keywordCountUpdate = async (client, keywordIds) => {
   const valuesQuery = `(${keywordIds.map((x) => x).join(',')})`;
   const { rows } = await client.query(/*sql*/ `
         UPDATE keyword 
-        SET count = count+1
+        SET count = count+1, updated_at = now()
         WHERE id in ${valuesQuery}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const keywordCountDelete = async (client, keywordIds) => {
+  const valuesQuery = `(${keywordIds.map((x) => x).join(',')})`;
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = count-1 , is_deleted = CASE WHEN count = 1 THEN true ELSE is_deleted END , updated_at = now()
+        WHERE id in ${valuesQuery}
+        AND count > 0
         RETURNING *
         `);
   return convertSnakeToCamel.keysToCamel(rows);
@@ -216,6 +228,7 @@ module.exports = {
   addNewKeyword,
   getKeywordList,
   keywordCountUpdate,
+  keywordCountDelete,
   getTopKeyword,
   getTeamKeywordList,
   getKeywordListByFeedbackId,

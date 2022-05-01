@@ -5,7 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { answerDB, formDB, keywordDB } = require('../../../db');
-const { NO_ANSWER } = require('../../../constants/responseMessage');
+const { NO_ANSWER, NO_ANSWER_TO_PICK } = require('../../../constants/responseMessage');
 
 module.exports = async (req, res) => {
 
@@ -39,7 +39,7 @@ module.exports = async (req, res) => {
       const resultData = {
         form: formData
       }
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, NO_ANSWER, resultData));
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, NO_ANSWER_TO_PICK, resultData));
     }
 
 

@@ -23,6 +23,7 @@ module.exports = {
   READ_USER_LIST_SUCCESS: '유저 검색 결과 조회 성공',
   NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
   UPDATE_USER: '유저 정보 수정 성공',
+  DELETE_USER_SUCCESS: '유저 삭제 성공',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',
@@ -61,9 +62,12 @@ module.exports = {
   POST_TEAM_ISSUE: '팀 이슈 등록 성공',
   NO_TEAM_ISSUE_CONTENT: '이슈 컨텐트 값이 없습니다',
   READ_TEAM_ISSUE_DETAIL_SUCCESS: '팀 이슈 디테일 조회 성공',
+  NO_ISSUE_ID: '존재하지 않는 이슈 id 입니다',
 
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
+  UPDATE_FEEDBACK_SUCCESS: '피드백 수정 성공',
+  DELETE_FEEDBACK_SUCCESS: '피드백 삭제 성공',
   INTERNAL_SERVER_ERROR: '서버 내부 에러',
   READ_ISSUE_FEEDBACK_SUCCESS: '팀 이슈 피드백 조회 성공',
   FEEDBACK_IS_PINNED_TOGGLE_SUCCESS: '피드백 핀 토글 성공',
@@ -72,7 +76,7 @@ module.exports = {
   NO_ISSUE_FEEDBACK: '팀 이슈 피드백 없음',
   NO_TEAM_AND_PINNED_FEEDBACK: '소속된 팀과 북마크 피드백이 없습니다',
   NO_FEEDBACK_TO_PICK: '내가 픽할 피드백이 없습니다',
-  READ_FILTERED_FEEDBACK_SUCCESS: "필터링된 피드백 조회 성공",
+  READ_FILTERED_FEEDBACK_SUCCESS: '필터링된 피드백 조회 성공',
 
   // 너가소개서
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
@@ -82,6 +86,7 @@ module.exports = {
   FORM_CREATE_FAIL: '존재하지 않는 폼입니다',
   DUPLICATE_FORM: '이미 존재하는 폼입니다',
   ANSWER_CREATE_SUCCESS: '답변 등록 성공',
+  ANSWER_DELETE_SUCCESS: '답변 삭제 성공',
   NO_FORM: '해당 유저와 폼 아이디로 생성된 폼이 없습니다.',
   READ_FORM_BANNER_SUCCESS: '배너 조회 성공',
   NO_MY_FORM_CONTENT: '생성한 폼이 없습니다',
@@ -92,7 +97,9 @@ module.exports = {
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
   READ_FILTERED_FORM_SUCCESS: '필터링된 폼 조회 성공',
-  NO_ANSWER: '폼에 등록된 답변이 없습니다',
+  NO_ANSWER_TO_PICK: '내가 픽할 답변이 없습니다',
+  NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
+  NO_ANSWER: '존재하지 않는 답변',
 
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',
