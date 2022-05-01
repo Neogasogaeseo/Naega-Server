@@ -85,8 +85,8 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
-    JOIN member m ON f.tagged_user_id = m.user_id
-    JOIN team t ON team_id = t.id
+    JOIN issue i ON f.issue_id = i.id
+    JOIN team t ON i.team_id = t.id
     WHERE f.tagged_user_id = $1
       AND f.is_deleted = false
       AND u.is_deleted = false
@@ -106,8 +106,8 @@ const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
-    JOIN member m ON f.tagged_user_id = m.user_id
-    JOIN team t ON team_id = t.id
+    JOIN issue i ON f.issue_id = i.id
+    JOIN team t ON i.team_id = t.id
     WHERE f.tagged_user_id = $1
       AND t.id = $2
       AND f.is_deleted = false
