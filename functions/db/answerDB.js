@@ -6,6 +6,7 @@ const getRelationship = async (client) => {
     `
         SELECT *
         FROM relationship
+        ORDER BY id
         `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
