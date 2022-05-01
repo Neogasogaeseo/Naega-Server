@@ -35,7 +35,7 @@ module.exports = async (req, res) => {
       answerData = await answerDB.getFilteredAnswerByFormId(client, userId, formId, offset, limit);
     }
     //^_^// 작성된 답변이 없는 경우 폼 리스트만 리턴
-    if (!answerData) {
+    if (answerData.length === 0) {
       const resultData = {
         form: formData
       }
