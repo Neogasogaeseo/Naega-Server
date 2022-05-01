@@ -180,6 +180,18 @@ const updateIssue = async (client, issueId, categoryId, content, image) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const deleteIssue = async (client, issueId) => {
+  const { rows } = await client.query (
+    `
+    UPDATE issue
+    SET is_deleted = true
+    WHERE id = ${issueId}
+    RETURNING *
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getFeedbackIdRecentListByUserId,
   getIssueIdRecentListByTeamId,
@@ -193,4 +205,5 @@ module.exports = {
   getTeamForIssueDetailByIssueId,
   checkIssueUserId,
   updateIssue,
+  deleteIssue,
 };

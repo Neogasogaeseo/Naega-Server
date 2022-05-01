@@ -64,6 +64,7 @@ module.exports = {
   READ_TEAM_ISSUE_DETAIL_SUCCESS: '팀 이슈 디테일 조회 성공',
   NO_ISSUE_ID: '존재하지 않는 이슈 id 입니다',
   UPDATE_ISSUE: '이슈 수정 성공',
+  DELETE_ISSUE_SUCESS: '이슈 삭제 성공',
 
   // 피드백
   ADD_FEEDBACK_SUCCESS: '피드백 생성 성공',
