@@ -93,7 +93,9 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
     WHERE f.tagged_user_id = $1
       AND f.is_deleted = false
       AND u.is_deleted = false
-      AND u2.is_deleted =false
+      AND u2.is_deleted = false
+      AND i.is_deleted = false
+      AND t.is_deleted = false
     ORDER BY f.created_at DESC
     OFFSET $2 LIMIT $3
     `,
@@ -118,7 +120,9 @@ const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit
       AND t.id = $2
       AND f.is_deleted = false
       AND u.is_deleted = false
-      AND u2.is_deleted =false
+      AND u2.is_deleted = false
+      AND i.is_deleted = false
+      AND t.is_deleted = false
     ORDER BY f.created_at DESC
     OFFSET $3 LIMIT $4
     `,
