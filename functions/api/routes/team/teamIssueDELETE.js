@@ -23,6 +23,9 @@ module.exports = async (req, res) => {
     //^_^// userId가 이슈의 userId와 일치하는지 확인
     const checkUser = await issueDB.checkIssueUserId(client, issueId);
 
+    //^_^// issueId가 존재하지 않아서 쿼리 결과가 없을 때 에러 처리
+    if (!checkUser) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_ISSUE_ID));
+
     if(checkUser.userId != user.id) {
         //^_^// 이슈의 작성자가 아닌 경우 삭제하지 못하도록 함
         return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
