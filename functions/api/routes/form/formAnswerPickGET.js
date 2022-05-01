@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
       answer:resultAnswerData
     }
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, resultData));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FILTERED_FORM_SUCCESS, resultData));
     
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
