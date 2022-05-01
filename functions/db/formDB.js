@@ -148,9 +148,10 @@ const getFormByFormIdAndUserId = async (client, formId, userId) => {
     AND f.id = $1
     AND l.user_id = $2
     `,
+
     [formId, userId],
   );
-  return convertSnakeToCamel.keysToCamel(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const getFormDetail = async (client, formId, userId) => {
@@ -181,6 +182,21 @@ const getFormByFormIdList = async (client, formIdList, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getCreatedFormListByUserId = async (client, userId) => {
+  const { rows } = await client.query (
+    `
+    SELECT l.form_id, f.light_icon_image
+    FROM link_user_form l
+    JOIN "form" f ON l.form_id = f.id
+    WHERE l.user_id = $1
+    AND l.is_deleted = false
+    `,
+
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllFormRecent,
   getFormByFormIdAndUserId,
@@ -194,4 +210,5 @@ module.exports = {
   getFormDetail,
   getFormByFormId,
   getFormByFormIdList,
+  getCreatedFormListByUserId,
 };
