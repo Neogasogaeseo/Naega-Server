@@ -1,12 +1,13 @@
 const express = require('express');
 const { checkUser } = require('../../../middlewares/auth');
 const router = express.Router();
+const uploadImage = require('../../../middlewares/uploadImage');
 
 router.post('/keyword', require('./keywordCreatePOST'));
 router.delete('/keyword', require('./keywordDELETE'));
 router.delete('/myKeyword', checkUser, require('./myKeywordDELETE'));
 
-router.put('/edit', checkUser, require('./userProfileEditPUT'));
+router.put('/edit', checkUser, uploadImage('user'), require('./userProfileEditPUT'));
 
 router.get('/search', checkUser, require('./userSearchGET'));
 router.get('/keyword', require('./keywordListGET'));

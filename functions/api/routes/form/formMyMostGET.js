@@ -37,6 +37,7 @@ module.exports = async (req, res) => {
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);
     for (const form of myForm) {
       form.createdAt = dayjs(form.createdAt).format('YYYY-MM-DD');
+      form.subtitle = form.subtitle.split('\\n').join(' ');
       form.darkIconImage = resizeImage(form.darkIconImage);
       form.answer = [];
     }

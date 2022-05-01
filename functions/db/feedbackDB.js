@@ -27,22 +27,41 @@ const getFeedbacks = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getFeedbackById = async (client, feedbackId) => {
+  const { rows } = await client.query(/*sql*/ `
+    SELECT *
+    FROM feedback 
+    WHERE id = ${feedbackId}
+    AND feedback.is_deleted = false
+    `);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const editFeedback = async (client, feedbackId, taggedUserId, content) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE feedback
+    SET tagged_user_id = ${taggedUserId}, content = '${content}', updated_at = now()
+    WHERE id = ${feedbackId}
+    AND is_deleted = false
+    RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 const toggleIsPinnedFeedback = async (client, feedbackId) => {
-  const { rows } = await client.query(
-    `
+  const { rows } = await client.query(/*sql*/ `
   UPDATE feedback
   SET is_pinned = NOT is_pinned, updated_at = now()
   WHERE id = ${feedbackId}
   AND is_deleted = false
   RETURNING feedback.id, feedback.is_pinned
-  `,
-  );
+  `);
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
 const getPinnedFeedbackByProfileId = async (client, profileId) => {
-  const { rows } = await client.query (
-    `
+  const { rows } = await client.query(
+    /*sql*/ `
     SELECT u.id, u.profile_id, u.name, f.id as feedback_id, f.user_id as writer_user_id, writer.name as writer_name, f.content, f.created_at, f.is_pinned
     FROM feedback f
     JOIN "user" u ON f.tagged_user_id = u.id
@@ -59,4 +78,64 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addFeedback, getFeedbacks, toggleIsPinnedFeedback, getPinnedFeedbackByProfileId, };
+const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
+  const { rows } = await client.query (
+    `
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON u.id = f.tagged_user_id
+    JOIN "user" u2 ON u2.id = f.user_id
+    JOIN issue i ON f.issue_id = i.id
+    JOIN team t ON i.team_id = t.id
+    WHERE f.tagged_user_id = $1
+      AND f.is_deleted = false
+      AND u.is_deleted = false
+      AND u2.is_deleted =false
+    ORDER BY f.created_at DESC
+    OFFSET $2 LIMIT $3
+    `,
+    [userId, offset, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit) => {
+  const { rows } = await client.query (
+    `
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON u.id = f.tagged_user_id
+    JOIN "user" u2 ON u2.id = f.user_id
+    JOIN issue i ON f.issue_id = i.id
+    JOIN team t ON i.team_id = t.id
+    WHERE f.tagged_user_id = $1
+      AND t.id = $2
+      AND f.is_deleted = false
+      AND u.is_deleted = false
+      AND u2.is_deleted =false
+    ORDER BY f.created_at DESC
+    OFFSET $3 LIMIT $4
+    `,
+    [userId, teamId, offset, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteFeedback = async (client, feedbackId) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE feedback
+  SET is_deleted = true, updated_at = now()
+  WHERE id = ${feedbackId}
+  AND is_deleted = false
+  RETURNING *`);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = { 
+  addFeedback, 
+  getFeedbacks, 
+  toggleIsPinnedFeedback, 
+  getPinnedFeedbackByProfileId, 
+  getAllFeedbackByUserId,
+  getFilteredFeedbackByFormId,
+  deleteFeedback,};

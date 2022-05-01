@@ -26,8 +26,8 @@ module.exports = async (req, res) => {
 
     //^_^// feedback x Keyword 테이블에 row 추가
     const addLinkFeedbackKeyword = await linkFeedbacKeywordDB.addLinkFeedbackKeyword(client, newFeedback.id, keywordIds);
-    //^_^// 추가된 Keyword의 count 업데이트
-    const keywordCountUpdate = await keywordDB.keywordCountUpdate(client, keywordIds);
+    // //^_^// 추가된 Keyword의 count 업데이트
+    // const keywordCountUpdate = await keywordDB.keywordCountUpdate(client, keywordIds);
 
     const taggedUserProfileId = await userDB.gettaggedUserProfileId(client, taggedUserId);
 

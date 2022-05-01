@@ -80,8 +80,20 @@ const keywordCountUpdate = async (client, keywordIds) => {
   const valuesQuery = `(${keywordIds.map((x) => x).join(',')})`;
   const { rows } = await client.query(/*sql*/ `
         UPDATE keyword 
-        SET count = count+1
+        SET count = count+1, updated_at = now()
         WHERE id in ${valuesQuery}
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const keywordCountDelete = async (client, keywordIds) => {
+  const valuesQuery = `(${keywordIds.map((x) => x).join(',')})`;
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET count = count-1 , is_deleted = CASE WHEN count = 1 THEN true ELSE is_deleted END , updated_at = now()
+        WHERE id in ${valuesQuery}
+        AND count > 0
         RETURNING *
         `);
   return convertSnakeToCamel.keysToCamel(rows);
@@ -105,7 +117,7 @@ const getTeamKeywordList = async (client, userId, limit) => {
 const getKeywordByAnswerId = async (client, answerIdList) => {
   const { rows } = await client.query(
     `
-    SELECT l.answer_id, k.id, k.name, c.code as color_code
+    SELECT l.answer_id, k.id, k.name, c.code as color_code, c.font_code as fontcolor
     FROM "link_answer_keyword" l
     JOIN "keyword" k
     ON l.keyword_id = k.id
@@ -139,10 +151,10 @@ const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
 
   const { rows: keywordRows } = await client.query(
     `
-    SELECT l.feedback_id, k.name, k.color_id, color.code as color_code
+    SELECT l.feedback_id, k.name, k.color_id, color.code as color_code, c.font_code as fontColor
     FROM keyword k
     JOIN link_feedback_keyword l ON l.keyword_id = k.id
-    JOIN color ON color.id = k.color_id
+    JOIN color c ON c.id = k.color_id
     WHERE l.feedback_id IN ${feedbackIdQuery}
       AND l.is_deleted = false
       AND k.is_deleted = false
@@ -156,10 +168,10 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
   const answerIdQuery = '(' + answerIdList.map((o) => o).join(', ') + ')';
   const { rows: keywordRows } = await client.query(
     `
-    SELECT l.answer_id, k.name, k.color_id, color.code as color_code
+    SELECT l.answer_id, k.name, k.color_id, c.code as color_code, c.font_code as fontColor
     FROM keyword k
     JOIN link_answer_keyword l ON l.keyword_id = k.id
-    JOIN color ON color.id = k.color_id
+    JOIN color c ON c.id = k.color_id
     WHERE l.answer_id IN ${answerIdQuery}
       AND l.is_deleted = false
       AND k.is_deleted = false
@@ -216,6 +228,7 @@ module.exports = {
   addNewKeyword,
   getKeywordList,
   keywordCountUpdate,
+  keywordCountDelete,
   getTopKeyword,
   getTeamKeywordList,
   getKeywordListByFeedbackId,
