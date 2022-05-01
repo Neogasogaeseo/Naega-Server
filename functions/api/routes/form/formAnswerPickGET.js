@@ -55,8 +55,8 @@ module.exports = async (req, res) => {
     const resultAnswerData = Object.entries(answerListPopId).map(([answerId, data]) => ({ ...data }));
 
     const resultData = {
-      form: {formData},
-      answer:{resultAnswerData}
+      form: formData,
+      answer:resultAnswerData
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, resultData));
