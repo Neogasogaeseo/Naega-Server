@@ -59,4 +59,53 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addFeedback, getFeedbacks, toggleIsPinnedFeedback, getPinnedFeedbackByProfileId, };
+const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
+  const { rows } = await client.query (
+    `
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.is_created_at, f.content, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON u.id = f.tagged_user_id
+    JOIN "user" u2 ON writer_user_id = u2.id
+    JOIN member m ON user_id = m.user_id
+    JOIN team t ON team_id = t.id
+    WHERE user_id = $1
+      AND f.is_deleted = false
+      AND u.is_deleted = false
+      AND u2.is_deleted =false
+    ORDER BY f.created_at DESC
+    OFFSET $2 LIMIT $3
+    `,
+    [userId, offset, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit) => {
+  const { rows } = await client.query (
+    `
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.is_created_at, f.content, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON u.id = f.tagged_user_id
+    JOIN "user" u2 ON writer_user_id = u2.id
+    JOIN member m ON user_id = m.user_id
+    JOIN team t ON team_id = t.id
+    WHERE user_id = $1
+      AND t.id = $2
+      AND f.is_deleted = false
+      AND u.is_deleted = false
+      AND u2.is_deleted =false
+    ORDER BY f.created_at DESC
+    OFFSET $3 LIMIT $4
+    `,
+    [userId, teamId, offset, limit],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { 
+  addFeedback, 
+  getFeedbacks, 
+  toggleIsPinnedFeedback, 
+  getPinnedFeedbackByProfileId, 
+  getAllFeedbackByUserId,
+  getFilteredFeedbackByFormId,};
