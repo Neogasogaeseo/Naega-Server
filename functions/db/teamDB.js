@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { ClientBase } = require('pg');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const getTeamById = async (client, teamId) => {
@@ -137,4 +138,30 @@ const getTeamListByTeamIdList = async (client, teamIdList) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam, getTeamListByTeamIdList };
+const getTeamListByUserId = async (client, userId) => {
+  const { rows } = await client.query (
+    `
+    SELECT t.id, t.name, t.image, t.is_deleted
+    FROM team t
+    JOIN member m ON m.team_id = t.id
+    WHERE m.user_id = $1
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND t.is_deleted = false
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+}
+
+module.exports = { 
+  addTeam, 
+  getTeamById, 
+  getMemberByTeamId, 
+  updateTeam, 
+  getNewTeamByUserId, 
+  getTeamListByProfileId, 
+  getIsHost, 
+  deleteTeam, 
+  getTeamListByTeamIdList,
+  getTeamListByUserId, };

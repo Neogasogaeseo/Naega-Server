@@ -33,4 +33,6 @@ router.put('/host', checkUser, require('./teamHostPUT'));
 router.delete('/member', checkUser, require('./teamMemberDELETE'));
 router.delete('/', checkUser, require('./teamDELETE'));
 
+router.get('/feedback/pick', checkUser, require('./teamFeedbackPickGET'));
+
 module.exports = router;

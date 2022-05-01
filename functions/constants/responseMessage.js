@@ -75,6 +75,8 @@ module.exports = {
   READ_TEAM_AND_PINNED_FEEDBACK_SUCCESS: '팀과 북마크 피드백 조회 성공',
   NO_ISSUE_FEEDBACK: '팀 이슈 피드백 없음',
   NO_TEAM_AND_PINNED_FEEDBACK: '소속된 팀과 북마크 피드백이 없습니다',
+  NO_FEEDBACK_TO_PICK: '내가 픽할 피드백이 없습니다',
+  READ_FILTERED_FEEDBACK_SUCCESS: '필터링된 피드백 조회 성공',
 
   // 너가소개서
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
@@ -94,6 +96,8 @@ module.exports = {
   READ_FORM_ANSWER_DETAIL_SUCCESS: '폼 디테일 답변 조회 성공 ',
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
+  READ_FILTERED_FORM_SUCCESS: '필터링된 폼 조회 성공',
+  NO_ANSWER_TO_PICK: '내가 픽할 답변이 없습니다',
   NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
   NO_ANSWER: '존재하지 않는 답변',
 
