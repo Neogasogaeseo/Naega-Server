@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { answerDB, formDB, keywordDB } = require('../../../db');
+const { NO_ANSWER } = require('../../../constants/responseMessage');
 
 module.exports = async (req, res) => {
 
@@ -24,14 +25,22 @@ module.exports = async (req, res) => {
     //^_^// 가장 상단에 필터링을 위한 생성된 폼 정보 가져오기
     const formData = await formDB.getCreatedFormListByUserId(client, userId);
 
+    //^_^// 생성된 폼이 없을 경우 204 리턴
+    if (!formData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
+
     let answerData;
     if (!formId) { //^_^// 필터링할 폼아이디가 없을 경우 전부 가져오기
       answerData = await answerDB.getAllAnswerByUserId(client, userId, offset, limit);
     } else { //^_^// 필터링할 폼아이디가 있을 경우, 필터링한 답변만 가져오기
       answerData = await answerDB.getFilteredAnswerByFormId(client, userId, formId, offset, limit);
     }
-    //^_^// 조회값이 없을 경우 statuscode 204
-    if (!answerData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
+    //^_^// 작성된 답변이 없는 경우 폼 리스트만 리턴
+    if (!answerData) {
+      const resultData = {
+        form: formData
+      }
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, NO_ANSWER, resultData));
+    }
 
 
     //^_^// 각 답변의 키워드 조회를 위한 answerId 뽑아오기

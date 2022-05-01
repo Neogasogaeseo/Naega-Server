@@ -90,6 +90,7 @@ module.exports = {
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
   READ_FILTERED_FORM_SUCCESS: '필터링된 폼 조회 성공',
+  NO_ANSWER: '폼에 등록된 답변이 없습니다',
 
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',
