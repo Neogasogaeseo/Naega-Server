@@ -32,16 +32,19 @@ module.exports = async (req, res) => {
     //^_^// 총 답변자 수 가져오기
     const answerCountData = await answerDB.getAnswerCount(client, formData.linkUserFormId);
 
+    //^_^// answerCount 타입 int로 변환
+    const answerCount = answerCountData.answerCount * 1;
+
     const resultData = {
       user: {
         id: formData.userId,
         name: formData.name,
         image: formData.image,
       },
-      answerCount: answerCountData.answerCount,
+      answerCount: answerCount,
       form: {
         linkFormId: formData.linkUserFormId,
-        formId: formData.form_id,
+        formId: formData.formId,
         title: formData.title,
         subtitle: formData.subtitle,
         darkIconImage: formData.darkIconImage,
