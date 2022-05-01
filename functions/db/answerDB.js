@@ -198,7 +198,7 @@ const toggleIsPinnedAnswer = async (client, answerId) => {
 const getAllAnswerByUserId = async (client, userId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT a.id as answer_id, l.form_id, f.light_icon_image, f.title, a.content, a.is_pinned
+    SELECT a.id as answer_id, l.form_id, f.dark_icon_image, f.title, a.content, a.is_pinned
     FROM link_user_form l
     JOIN answer a ON a.link_user_form_id = l.id
     JOIN "form" f ON l.form_id = f.id
@@ -216,7 +216,7 @@ const getAllAnswerByUserId = async (client, userId, offset, limit) => {
 const getFilteredAnswerByFormId = async (client, userId, formId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT a.id as answer_id, l.form_id, f.light_icon_image, f.title, a.content, a.is_pinned
+    SELECT a.id as answer_id, l.form_id, f.dark_icon_image, f.title, a.content, a.is_pinned
     FROM link_user_form l
     JOIN answer a ON a.link_user_form_id = l.id
     JOIN "form" f ON l.form_id = f.id

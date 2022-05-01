@@ -185,7 +185,7 @@ const getFormByFormIdList = async (client, formIdList, userId) => {
 const getCreatedFormListByUserId = async (client, userId) => {
   const { rows } = await client.query (
     `
-    SELECT l.form_id, l.name, f.light_icon_image, l.is_deleted
+    SELECT l.form_id, l.name, f.dark_icon_image, l.is_deleted
     FROM link_user_form l
     JOIN "form" f ON l.form_id = f.id
     WHERE l.user_id = $1
