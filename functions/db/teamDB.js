@@ -141,7 +141,7 @@ const getTeamListByTeamIdList = async (client, teamIdList) => {
 const getTeamListByUserId = async (client, userId) => {
   const { rows } = await client.query (
     `
-    SELECT t.team_id, t.name, t.image, t.is_deleted
+    SELECT t.id, t.name, t.image, t.is_deleted
     FROM team t
     JOIN member m ON m.team_id = t.id
     WHERE m.user_id = $1

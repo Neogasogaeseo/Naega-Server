@@ -62,13 +62,13 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
 const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.is_created_at, f.content, f.is_pinned
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
-    JOIN "user" u2 ON writer_user_id = u2.id
-    JOIN member m ON user_id = m.user_id
+    JOIN "user" u2 ON u2.id = f.user_id
+    JOIN member m ON f.tagged_user_id = m.user_id
     JOIN team t ON team_id = t.id
-    WHERE user_id = $1
+    WHERE f.tagged_user_id = $1
       AND f.is_deleted = false
       AND u.is_deleted = false
       AND u2.is_deleted =false
@@ -83,13 +83,13 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
 const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.is_created_at, f.content, f.is_pinned
+    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
-    JOIN "user" u2 ON writer_user_id = u2.id
-    JOIN member m ON user_id = m.user_id
+    JOIN "user" u2 ON u2.id = f.user_id
+    JOIN member m ON f.tagged_user_id = m.user_id
     JOIN team t ON team_id = t.id
-    WHERE user_id = $1
+    WHERE f.tagged_user_id = $1
       AND t.id = $2
       AND f.is_deleted = false
       AND u.is_deleted = false
