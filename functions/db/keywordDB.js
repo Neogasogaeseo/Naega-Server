@@ -117,7 +117,7 @@ const getTeamKeywordList = async (client, userId, limit) => {
 const getKeywordByAnswerId = async (client, answerIdList) => {
   const { rows } = await client.query(
     `
-    SELECT l.answer_id, k.id, k.name, c.code as color_code
+    SELECT l.answer_id, k.id, k.name, c.code as color_code, c.font_code as fontcolor
     FROM "link_answer_keyword" l
     JOIN "keyword" k
     ON l.keyword_id = k.id

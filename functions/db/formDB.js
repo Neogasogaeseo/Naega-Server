@@ -169,7 +169,7 @@ const getFormDetail = async (client, formId, userId) => {
 const getFormByFormIdList = async (client, formIdList, userId) => {
   const { rows } = await client.query(
     `
-    SELECT f.id, f.title, f.dark_icon_image, f.created_at
+    SELECT f.id, f.title, f.subtitle, f.dark_icon_image, f.created_at
     FROM "form" f
     JOIN "link_user_form" l
     ON l.form_id = f.id
