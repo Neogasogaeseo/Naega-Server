@@ -5,7 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { answerDB, formDB, keywordDB } = require('../../../db');
-const { NO_ANSWER, NO_ANSWER_TO_PICK } = require('../../../constants/responseMessage');
+const { NO_ANSWER_TO_PICK } = require('../../../constants/responseMessage');
 
 module.exports = async (req, res) => {
 
