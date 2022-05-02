@@ -37,7 +37,7 @@ module.exports = async (req, res) => {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
     const myTeam = await issueDB.getTeamByIssueId(client, idList);
-    myTeam.forEach((item) => (item.image = resizeImage(item.iamge)));
+    myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
     //^_^// feedback 당한 사람 가져오기 완료
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
@@ -55,11 +55,16 @@ module.exports = async (req, res) => {
     const map = new Map();
     myIssue.forEach((item) => map.set(item.id, item));
     myFeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    const tempList = Array.from(map.values());
+    tempList.forEach((item) => {
+      if (item.feedback) item.feedback.forEach((o) => delete o.issueId);
+      else item.feedback = [];
+    });
+
     myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());
 
     resultList.forEach((item) => {
-      item.feedback.forEach((o) => delete o.issueId);
       delete item.team.issueId;
     });
 
