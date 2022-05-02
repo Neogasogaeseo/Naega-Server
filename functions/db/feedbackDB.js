@@ -81,7 +81,10 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
 const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
+    SELECT f.id as feedback_id, t.id as team_id, 
+      f.user_id as writer_user_id, u2.name as writer_user_name, 
+      f.tagged_user_id as user_id, u.name as user_name, 
+      f.created_at, f.content, f.is_pinned
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
@@ -90,7 +93,9 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
     WHERE f.tagged_user_id = $1
       AND f.is_deleted = false
       AND u.is_deleted = false
-      AND u2.is_deleted =false
+      AND u2.is_deleted = false
+      AND i.is_deleted = false
+      AND t.is_deleted = false
     ORDER BY f.created_at DESC
     OFFSET $2 LIMIT $3
     `,
@@ -102,7 +107,10 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
 const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit) => {
   const { rows } = await client.query (
     `
-    SELECT f.id as feedback_id, t.id as team_id, f.user_id as writer_user_id, f.tagged_user_id as user_id, f.created_at, f.content, f.is_pinned
+    SELECT f.id as feedback_id, t.id as team_id, 
+      f.user_id as writer_user_id, u2.name as writer_user_name,
+      f.tagged_user_id as user_id, u.name as user_name,
+      f.created_at, f.content, f.is_pinned
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
@@ -112,7 +120,9 @@ const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit
       AND t.id = $2
       AND f.is_deleted = false
       AND u.is_deleted = false
-      AND u2.is_deleted =false
+      AND u2.is_deleted = false
+      AND i.is_deleted = false
+      AND t.is_deleted = false
     ORDER BY f.created_at DESC
     OFFSET $3 LIMIT $4
     `,

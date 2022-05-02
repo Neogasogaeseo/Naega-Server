@@ -151,7 +151,7 @@ const getKeywordListByFeedbackId = async (client, feedbackIdList) => {
 
   const { rows: keywordRows } = await client.query(
     `
-    SELECT l.feedback_id, k.name, k.color_id, color.code as color_code, c.font_code as fontColor
+    SELECT l.feedback_id, k.name, k.color_id, c.code as color_code, c.font_code as font_color
     FROM keyword k
     JOIN link_feedback_keyword l ON l.keyword_id = k.id
     JOIN color c ON c.id = k.color_id
@@ -168,7 +168,7 @@ const getKeywordListByAnswerId = async (client, answerIdList) => {
   const answerIdQuery = '(' + answerIdList.map((o) => o).join(', ') + ')';
   const { rows: keywordRows } = await client.query(
     `
-    SELECT l.answer_id, k.name, k.color_id, c.code as color_code, c.font_code as fontColor
+    SELECT l.answer_id, k.name, k.color_id, c.code as color_code, c.font_code as font_color
     FROM keyword k
     JOIN link_answer_keyword l ON l.keyword_id = k.id
     JOIN color c ON c.id = k.color_id
