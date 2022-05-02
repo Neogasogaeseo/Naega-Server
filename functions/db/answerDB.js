@@ -6,6 +6,7 @@ const getRelationship = async (client) => {
     `
         SELECT *
         FROM relationship
+        ORDER BY id
         `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -243,6 +244,18 @@ const deleteAnswer = async (client, answerId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getAnswerCount = async (client, linkUserFormId) => {
+  const { rows } = await client.query (
+    `
+    SELECT count(*) as answer_count
+    FROM answer
+    WHERE link_user_form_id = ${linkUserFormId}
+      AND is_deleted = false
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0])
+};
+
 
 module.exports = {
   getRelationship,
@@ -260,4 +273,5 @@ module.exports = {
   getAllAnswerByUserId,
   getFilteredAnswerByFormId,
   deleteAnswer,
+  getAnswerCount,
 };
