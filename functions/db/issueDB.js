@@ -153,6 +153,45 @@ const getTeamForIssueDetailByIssueId = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const checkIssueUserId = async (client, issueId) => {
+  const { rows } = await client.query(
+    `
+    SELECT user_id
+    FROM issue
+    WHERE id = ${issueId}
+    AND is_deleted = false
+    `,
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateIssue = async (client, issueId, categoryId, content, image) => {
+  const { rows } = await client.query(
+    `
+    UPDATE issue
+    SET category_id = $2, content = $3, image = $, updated_at = now()
+    WHERE id = $1
+    RETURNING *
+    `,
+
+    [issueId, categoryId, content, image],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteIssue = async (client, issueId) => {
+  const { rows } = await client.query (
+    `
+    UPDATE issue
+    SET is_deleted = true
+    WHERE id = ${issueId}
+    RETURNING *
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   getFeedbackIdRecentListByUserId,
   getIssueIdRecentListByTeamId,
@@ -164,4 +203,7 @@ module.exports = {
   getIssueCategoryList,
   addIssue,
   getTeamForIssueDetailByIssueId,
+  checkIssueUserId,
+  updateIssue,
+  deleteIssue,
 };
