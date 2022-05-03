@@ -26,7 +26,12 @@ module.exports = async (req, res) => {
       if (checkDuplicate.id != userId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.DUPLICATE_USER_PROFILE_ID));
     };
 
-    const userData = await userDB.updateUserInformationById(client, userId, profileId, name, image);
+    let userData;
+    if (!image) { //^_^// 이미지 제외 프로필 수정
+      userData = await userDB.updateUserInformationWithoutImage(client, userId, profileId, name);
+    } else { //^_^// 이미지 포함 프로필 수정
+      userData = await userDB.updateUserInformationIncludeImage(client, userId, profileId, name, image);
+    };
 
     const result = {user: {profileId: userData.profileId, name: userData.name, image: userData.image}};
 
