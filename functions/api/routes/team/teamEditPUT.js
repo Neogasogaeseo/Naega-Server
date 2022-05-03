@@ -38,7 +38,7 @@ module.exports = async (req, res) => {
     if (image === undefined) { //^_^// 이미지 변화 없는 경우
         teamData = await teamDB.updateTeamWithoutImage(client, teamId, teamName, description);
     } else {
-      if (image.replace(" ","") === "null") { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
+      if (image.replace(" ","") === "") { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
         const nullImage = null;
         teamData = await teamDB.updateTeamIncludeImage(client, teamId, teamName, description, nullImage);
       }
