@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
     };
 
     //^_^// image 값이 잘못되었을 경우
-    if (teamData === undefined) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_IMAGE))
+    if (teamData === undefined) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_IMAGE));
 
     const resultData = {
       team: {
