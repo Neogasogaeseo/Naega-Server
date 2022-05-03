@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     const answerCount = await answerDB.getAnswerCountByFormIdAndUserId(client, formId, userId);
     console.log('answerCount : ', answerCount);
 
-    if (answerCount.length === 0) {
+    if (+answerCount === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_FORM_ISSUE, []));
     }
 
@@ -38,36 +38,36 @@ module.exports = async (req, res) => {
       return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_MORE_ANSWER));
     }
 
-    console.log('answers :', answers);
+    // console.log('answers :', answers);
     for (const answer of answers) {
       answer.createdAt = dayjs(answer.createdAt).format('YYYY-MM-DD');
     }
 
     // ^_^// 가져온 answers들의 id만 추출
     const answersIds = arrayHandler.extractValues(answers, 'id');
-    console.log('answersIds : ', answersIds);
+    // console.log('answersIds : ', answersIds);
 
     // ^_^// 추출한 answers들로 키워드들 가져옴
     const linkAnswerKeywords = await linkAnswerKeywordDB.getKeywordsWithAnswerIdList(client, answersIds);
-    console.log('linkAnswerKeywords : ', linkAnswerKeywords);
+    // console.log('linkAnswerKeywords : ', linkAnswerKeywords);
 
     // ^_^// 추출한 answers들에 keywords를 넣어주기 위해 가공 -> answer id로 그룹화 해준다
     const answersTofind = answers.reduce((acc, x) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
     }, {});
-    console.log('answersTofind', answersTofind);
+    // console.log('answersTofind', answersTofind);
 
     // ^_^// answerId로 그룹화 해준 answers들에 keywords를 넣어준다..
     linkAnswerKeywords.map((o) => {
       answersTofind[o.answerId].keywords.push(o);
       return o;
     });
-    console.log('answersTofind : ', answersTofind);
+    // console.log('answersTofind : ', answersTofind);
 
     // ^_^// 그룹핑해둔 값들을 풀어준다
     const formDetailAnswer = Object.entries(answersTofind).map(([answerId, data]) => ({ ...data }));
-    console.log('issueDetailAnswer', formDetailAnswer);
+    // console.log('issueDetailAnswer', formDetailAnswer);
 
     // const answerCount = formDetailAnswer.length;
     const data = { answerCount, answer: formDetailAnswer };
