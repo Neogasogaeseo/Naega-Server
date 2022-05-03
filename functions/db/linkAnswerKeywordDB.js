@@ -31,6 +31,7 @@ const getKeywordsWithAnswerIdList = async (client, answerIds) => {
 };
 
 const getKeywordsWithAnswerIdListForFormDetail = async (client, answerIds) => {
+  if (answerIds.length === 0) return [];
   const { rows } = await client.query(/*sql*/ `
           SELECT keyword.id,keyword.name,color.code as colorCode,color.font_code as fontColor  
           FROM link_answer_keyword

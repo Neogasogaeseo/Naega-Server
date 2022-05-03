@@ -26,7 +26,7 @@ module.exports = async (req, res) => {
 
     // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
     const answerCount = await answerDB.getAnswerCountByFormIdAndUserId(client, formId, userId);
-    console.log('answerCount : ', answerCount);
+    // console.log('answerCount : ', answerCount);
 
     if (+answerCount === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_FORM_ISSUE, []));
