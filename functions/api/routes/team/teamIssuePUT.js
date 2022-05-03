@@ -29,9 +29,13 @@ module.exports = async (req, res) => {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
 
-    //^_^// 이슈 수정
-    const issueData = await issueDB.updateIssue(client, issueId, categoryId, content, image);
-
+    
+    let issueData;
+    if(!image) { //^_^// 이미지 업데이트 없는 경우 이미지 제외 이슈 수정
+      issueData = await issueDB.updateIssueWithoutImage(client, issueId, categoryId, content);
+    } else { //^_^// 이미지 포함 이슈 수정
+      issueData = await issueDB.updateIssueIncludeImage(client, issueId, categoryId, content, image);
+    }
     const resultData = {
       issue: {
         issueData
