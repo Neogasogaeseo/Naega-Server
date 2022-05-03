@@ -155,17 +155,29 @@ const getUserListByProfileId = async (client, profileId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updateUserInformationById = async (client, userId, profileId, name, image) => {
+const updateUserInformationWithoutImage = async (client, userId, profileId, name) => {
   const { rows } = await client.query(
     `
-        UPDATE "user" u
-        SET profile_id = $2, name = $3, image = $4
-        WHERE id = $1
-        RETURNING *   
+    UPDATE "user"
+    SET profile_id = $2, name = $3, update_at = now()
+    WHERE id = $1
+    RETURNING *
+    `,
+    [userId, profileId, name],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateUserInformationIncludeImage = async (client, userId, profileId, name, image) => {
+  const { rows } = await client.query(
+    `
+    UPDATE "user" u
+    SET profile_id = $2, name = $3, image = $4, updated_at = now()
+    WHERE id = $1
+    RETURNING *   
     `,
     [userId, profileId, name, image],
   );
-  console.log(rows[0]);
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
@@ -193,6 +205,7 @@ module.exports = {
   getUserByAccessToken,
   gettaggedUserProfileId,
   getUserListByProfileId,
-  updateUserInformationById,
+  updateUserInformationWithoutImage,
+  updateUserInformationIncludeImage,
   deleteUser,
 };
