@@ -7,8 +7,10 @@ const { teamDB, memberDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { teamId, teamName, image, description } = req.body;
   const { id: userId } = req.user;
+  const { teamId } = req.params;
+  const { teamName, image, description } = req.body;
+  const imageUrls = req.imageUrls;
 
   if (!userId || !teamId || !teamName || !description) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -23,12 +25,27 @@ module.exports = async (req, res) => {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     }
 
+    console.log("image: ",image);
+    console.log("imageUrls: ", imageUrls);
+
     let teamData;
-    if(!image) { //^_^// 이미지 수정 없는 경우
-      teamData = await teamDB.updateTeamWithoutImage(client, teamId, teamName, description)
-    } else { //^_^// 이미지 수정 있는 경우
-      teamData = await teamDB.updateTeamIncludeImage(client, teamId, teamName, description, image);
-    }
+    console.log(teamData);
+
+    if (imageUrls != undefined) { //^_^// 이미지 파일 업데이트 하는 경우
+      teamData = await teamDB.updateTeamIncludeImage(client, teamId, teamName, description, imageUrls);
+    };
+
+    if (image === undefined) { //^_^// 이미지 변화 없는 경우
+        teamData = await teamDB.updateTeamWithoutImage(client, teamId, teamName, description);
+    } else {
+      if (image.replace(" ","") === "null") { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
+        const nullImage = null;
+        teamData = await teamDB.updateTeamIncludeImage(client, teamId, teamName, description, nullImage);
+      }
+    };
+
+    //^_^// image 값이 잘못되었을 경우
+    if (teamData === undefined) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_IMAGE))
 
     const resultData = {
       team: {
@@ -39,7 +56,7 @@ module.exports = async (req, res) => {
       },
     };
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_USERS_SUCCESS, resultData));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_TEAM, resultData));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
