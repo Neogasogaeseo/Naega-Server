@@ -23,8 +23,12 @@ module.exports = async (req, res) => {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     }
 
-    //^_^// 팀 정보 수정
-    const teamData = await teamDB.updateTeam(client, teamId, teamName, description, image);
+    let teamData;
+    if(!image) { //^_^// 이미지 수정 없는 경우
+      teamData = await teamDB.updateTeamWithoutImage(client, teamId, teamName, description)
+    } else { //^_^// 이미지 수정 있는 경우
+      teamData = await teamDB.updateTeamIncludeImage(client, teamId, teamName, description, image);
+    }
 
     const resultData = {
       team: {
