@@ -7,6 +7,7 @@ const slackAPI = require('../../../lib/slackAPI');
 const { issueDB } = require('../../../db');
 const dayjs = require('dayjs');
 const resizeImage = require('../../../lib/resizeImage');
+const _ = require('lodash');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -20,14 +21,14 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     // ^_^// 이슈 디테일 가져오기
-    const getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
+    let getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
 
     if (!getIssueDetail) {
       return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_ISSUE_ID));
     }
 
     getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
-
+    // console.log('getIssueDetail : ', getIssueDetail);
     // ^_^// 해당 이슈 팀 정보 가져오기
     const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
 
@@ -39,7 +40,10 @@ module.exports = async (req, res) => {
       return arr.findIndex((item) => item.name === feedback.name && item.id === feedback.id) === index;
     });
 
-    const data = { issue: { ...getIssueDetail }, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
+    const user = { id: getIssueDetail.userId, name: getIssueDetail.userName };
+    getIssueDetail = _.omit(getIssueDetail, ['userId', 'userName']);
+
+    const data = { user: user, issue: { ...getIssueDetail }, team: getTeamForIssueDetail, feedbackTagged: feedbackUnique };
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_TEAM_ISSUE_DETAIL_SUCCESS, data));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
