@@ -68,10 +68,12 @@ const getIssueByIssueId = async (client, issueId) => {
 const getIssueDetailByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT i.id, i.image, c.name as category_name, i.created_at, i.content
+    SELECT i.id, i.user_id, u.name as user_name, i.image, c.name as category_name, i.created_at, i.content
     FROM "issue" i 
     JOIN "category" c
     ON i.category_id = c.id
+    JOIN "user" u 
+    ON u.id = i.user_id
     WHERE i.id = ${issueId}
     AND i.is_deleted = false
     `,
@@ -140,11 +142,10 @@ const addIssue = async (client, userId, teamId, categoryId, content, image) => {
 const getTeamForIssueDetailByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT t.image, t.name, u.name as host
+    SELECT t.image, t.name
     FROM issue i
     JOIN "team" t
     ON i.team_id = t.id
-    LEFT JOIN "user" u ON i.user_id = u.id
     WHERE i.id = ${issueId}
     AND i.is_deleted = false
     `,
@@ -181,7 +182,7 @@ const updateIssue = async (client, issueId, categoryId, content, image) => {
 };
 
 const deleteIssue = async (client, issueId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     UPDATE issue
     SET is_deleted = true
