@@ -36,8 +36,10 @@ module.exports = async (req, res) => {
         userData = await userDB.updateUserInformationIncludeImage(client, userId, profileId, name, imageUrls); 
       };
     } else { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
-      const nullImage = null;
-      userData = await userDB.updateUserInformationIncludeImage(client, userId, profileId, name, nullImage);
+      if (image.replace(" ","") === "") { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
+        const nullImage = null;
+        userData = await userDB.updateUserInformationIncludeImage(client, userId, profileId, name, nullImage);  
+      }
     };
 
     //^_^// image 값이 잘못되었을 경우
