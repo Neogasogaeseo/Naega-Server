@@ -50,9 +50,7 @@ module.exports = async (req, res) => {
     if (issueData === undefined) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_IMAGE));
 
     const resultData = {
-      issue: {
-        issueData
-      }
+      issue: issueData
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ISSUE, resultData));
