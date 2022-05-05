@@ -21,13 +21,10 @@ module.exports = async (req, res) => {
       return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
     }
     const userId = userData.id;
-    console.log('userId: ', userId);
 
     const teamKeywordList = await linkFeedbacKeywordDB.getTopKeywordListOnFeedback(client, userId);
-    console.log('teamKeywordList: ', teamKeywordList);
 
     const answerKeywordList = await linkAnswerKeywordDB.getTopKeywordListOnAnswer(client, userId);
-    console.log('answerKeyword: ', answerKeywordList);
 
     const resultData = {
       user: userData,
