@@ -47,7 +47,7 @@ const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
 
 const getTopKeywordListOnFeedback = async (client, userId) => {
   const { rows } = await client.query(/*sql*/ `
-    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code
+    SELECT l.keyword_id, l.count_keyword_id, k.name as keyword_name, k.user_id, k.color_id, c.code as color_code, c.font_code as font_color
     FROM (SELECT keyword_id, COUNT(keyword_id) as count_keyword_id
            FROM link_feedback_keyword
            WHERE is_deleted = false
