@@ -47,7 +47,20 @@ const addTeam = async (client, name, image, description) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updateTeam = async (client, teamId, teamName, description, image) => {
+const updateTeamWithoutImage = async (client, teamId, teamName, description) => {
+  const { rows } = await client.query(
+    `
+    UPDATE team t
+    SET name = $1, description = $2, updated_at = now()
+    WHERE id = $3
+    RETURNING *
+    `,
+    [teamName, description, teamId, ]
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateTeamIncludeImage = async (client, teamId, teamName, description, image) => {
   const { rows } = await client.query(
     `
     UPDATE team t
@@ -158,7 +171,8 @@ module.exports = {
   addTeam, 
   getTeamById, 
   getMemberByTeamId, 
-  updateTeam, 
+  updateTeamWithoutImage,
+  updateTeamIncludeImage, 
   getNewTeamByUserId, 
   getTeamListByProfileId, 
   getIsHost, 

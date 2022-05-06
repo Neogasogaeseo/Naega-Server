@@ -9,7 +9,7 @@ router.put('/issue/:issueId', checkUser, uploadImage('issue'), require('./teamIs
 router.delete('/issue/:issueId', checkUser, require('./teamIssueDELETE'));
 
 router.get('/edit/:teamId', checkUser, require('./teamEditGET'));
-router.put('/edit', checkUser, uploadImage('team'), require('./teamEditPUT'));
+router.put('/edit/:teamId', checkUser, uploadImage('team'), require('./teamEditPUT'));
 router.get('/edit/member/:teamId', checkUser, require('./teamMemberEditGET'));
 router.post('/edit/member', checkUser, require('./teamMemberEditPOST'));
 

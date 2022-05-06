@@ -11,6 +11,7 @@ module.exports = async (req, res) => {
   const user = req.user;
   const { issueId } = req.params;
   const { categoryId, content, image } = req.body;
+  const imageUrls = req.imageUrls;
   
   if (!user || !issueId || !categoryId || !content) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   
@@ -29,13 +30,27 @@ module.exports = async (req, res) => {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
 
-    //^_^// 이슈 수정
-    const issueData = await issueDB.updateIssue(client, issueId, categoryId, content, image);
+    
+    let issueData;
+    //^_^// 이슈 수정 후 issueData에 결과값 담아오기
+    if (image === undefined) {
+      if (imageUrls === undefined) { //^_^// 이미지 변화 없는 경우
+        issueData = await issueDB.updateIssueWithoutImage(client, issueId, categoryId, content);
+      } else { //^_^// 이미지 파일 업데이트 하는 경우
+        issueData = await issueDB.updateIssueIncludeImage(client, issueId, categoryId, content, imageUrls);
+      };
+    } else {
+      if (image.replace(" ","") === "") { //^_^// 공백 제거했을 때 빈문자열인 경우 (삭제하는 경우)
+        const nullImage = null;
+        issueData = await issueDB.updateIssueIncludeImage(client, issueId, categoryId, content, nullImage);
+      };
+    };
+  
+    //^_^// image 값이 잘못되었을 경우
+    if (issueData === undefined) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_IMAGE));
 
     const resultData = {
-      issue: {
-        issueData
-      }
+      issue: issueData
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.UPDATE_ISSUE, resultData));
