@@ -79,7 +79,7 @@ const getPinnedFeedbackByProfileId = async (client, profileId) => {
 };
 
 const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT f.id as feedback_id, t.id as team_id, 
       f.user_id as writer_user_id, u2.name as writer_user_name, 
@@ -105,7 +105,7 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
 };
 
 const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT f.id as feedback_id, t.id as team_id, 
       f.user_id as writer_user_id, u2.name as writer_user_name,
@@ -141,11 +141,14 @@ const deleteFeedback = async (client, feedbackId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { 
-  addFeedback, 
-  getFeedbacks, 
-  toggleIsPinnedFeedback, 
-  getPinnedFeedbackByProfileId, 
+module.exports = {
+  addFeedback,
+  getFeedbacks,
+  toggleIsPinnedFeedback,
+  getPinnedFeedbackByProfileId,
   getAllFeedbackByUserId,
   getFilteredFeedbackByFormId,
-  deleteFeedback,};
+  deleteFeedback,
+  getFeedbackById,
+  editFeedback,
+};
