@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { teamDB } = require('../../../db');
+const { teamDB, memberDB } = require('../../../db');
 const resizeImage = require('../../../lib/resizeImage');
 const slackAPI = require('../../../lib/slackAPI');
 
@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
     if (!team) {
       return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
     }
-    const member = await teamDB.getMemberByTeamId(client, teamId);
+    const member = await memberDB.getMemberByTeamId(client, teamId);
     member.forEach((item) => (item.image = resizeImage(item.image)));
     const data = {
       team,

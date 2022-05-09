@@ -16,23 +16,6 @@ const getTeamById = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getMemberByTeamId = async (client, teamId) => {
-  const { rows } = await client.query(
-    `
-      SELECT u.id, u.profile_id, u.image, u.name, m.is_host
-      FROM "member" m JOIN "user" u
-      ON m.user_id = u.id
-      WHERE m.team_id = $1
-      AND m.is_deleted = false
-      AND u.is_deleted = false
-      ORDER BY m.is_host DESC
-      `,
-    [teamId],
-  );
-
-  return convertSnakeToCamel.keysToCamel(rows);
-};
-
 const addTeam = async (client, name, image, description) => {
   const { rows } = await client.query(
     `
@@ -55,7 +38,7 @@ const updateTeamWithoutImage = async (client, teamId, teamName, description) => 
     WHERE id = $3
     RETURNING *
     `,
-    [teamName, description, teamId, ]
+    [teamName, description, teamId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -152,7 +135,7 @@ const getTeamListByTeamIdList = async (client, teamIdList) => {
 };
 
 const getTeamListByUserId = async (client, userId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT t.id, t.name, t.image, t.is_deleted
     FROM team t
@@ -165,17 +148,17 @@ const getTeamListByUserId = async (client, userId) => {
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
-}
+};
 
-module.exports = { 
-  addTeam, 
-  getTeamById, 
-  getMemberByTeamId, 
+module.exports = {
+  addTeam,
+  getTeamById,
   updateTeamWithoutImage,
-  updateTeamIncludeImage, 
-  getNewTeamByUserId, 
-  getTeamListByProfileId, 
-  getIsHost, 
-  deleteTeam, 
+  updateTeamIncludeImage,
+  getNewTeamByUserId,
+  getTeamListByProfileId,
+  getIsHost,
+  deleteTeam,
   getTeamListByTeamIdList,
-  getTeamListByUserId, };
+  getTeamListByUserId,
+};
