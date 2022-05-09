@@ -20,7 +20,7 @@ module.exports = async (req, res) => {
 
     const isMember = await memberDB.checkMemberTeam(client, userId, teamId);
     if (!isMember) {
-      return res.status(statusCode.UNAUTHORIZED).send(util.success(statusCode.UNAUTHORIZED, responseMessage.NO_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
     }
 
     const member = await memberDB.deleteMember(client, userId, teamId);
