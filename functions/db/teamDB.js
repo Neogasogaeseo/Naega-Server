@@ -150,6 +150,23 @@ const getTeamListByUserId = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getTeamWithInvitation = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.is_deleted
+    FROM team t
+    LEFT OUTER JOIN member m
+    ON m.team_id = t.id
+    WHERE m.user_id = $1
+      AND t.id = $2
+      AND m.is_confirmed = false
+      AND m.is_deleted = false
+    `,
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
   addTeam,
   getTeamById,
@@ -161,4 +178,5 @@ module.exports = {
   deleteTeam,
   getTeamListByTeamIdList,
   getTeamListByUserId,
+  getTeamWithInvitation,
 };

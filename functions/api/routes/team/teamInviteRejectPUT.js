@@ -17,6 +17,15 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    const targetTeam = await teamDB.getTeamById(client, teamId);
+    if (!targetTeam) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_TEAM));
+    }
+    const targetInvitation = await teamDB.getTeamWithInvitation(client, userId, teamId);
+    if (!targetInvitation) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_INVITATION));
+    }
+
     const member = await memberDB.updateMemberReject(client, userId, teamId);
     const team = await memberDB.getAllTeamByUserId(client, userId);
     const invitedTeam = await teamDB.getNewTeamByUserId(client, userId);
