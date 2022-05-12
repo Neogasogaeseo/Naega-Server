@@ -100,7 +100,7 @@ module.exports = {
   READ_FORM_ANSWER_DETAIL_SUCCESS: '폼 디테일 답변 조회 성공 ',
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
-  READ_MY_FORM_LIST: '유저가 생성한 폼 라스트 조회 성공',
+  READ_MY_FORM_LIST: '유저가 생성한 폼 리스트 조회 성공',
   READ_FILTERED_FORM_SUCCESS: '필터링된 폼 조회 성공',
   NO_ANSWER_TO_PICK: '내가 픽할 답변이 없습니다',
   NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
