@@ -42,6 +42,7 @@ module.exports = {
   NO_TEAM: '존재하지 않는 팀입니다',
   UPDATE_TEAM: '팀 정보 수정 성공',
   DELETE_TEAM_SUCCESS: '팀 삭제 성공',
+  READ_MY_TEAM_LIST: '유저가 속해있는 팀 리스트 조회 성공',
 
   // 팀원 정보
   READ_MEMBER: '팀원 정보 조회 성공',

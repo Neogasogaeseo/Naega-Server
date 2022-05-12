@@ -22,12 +22,6 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    //^_^// 가장 상단에 내가 속해있는 팀 가져오기
-    const teamData = await teamDB.getTeamListByUserId(client, userId);
-
-    //^_^// 속한 팀이 없을 경우 204 리턴
-    if (!teamData) return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT));
- 
     let feedbackData;
     if(!teamId) { //^_^// 필터링할 팀아이디가 없는경우 전부 조회
         feedbackData = await feedbackDB.getAllFeedbackByUserId(client, userId, offset, limit);
@@ -66,8 +60,7 @@ module.exports = async (req, res) => {
 
     //^_^// 팀과 북마크한 피드백 리스트가 모두 있는 경우 return 데이터
     const resultData = {
-      team: teamData,
-      feedback: resultFeedbackData,
+      feedback: resultFeedbackData
     };
 
 

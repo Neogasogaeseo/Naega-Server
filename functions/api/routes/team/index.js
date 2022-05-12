@@ -36,5 +36,6 @@ router.delete('/member', checkUser, require('./teamMemberDELETE'));
 router.delete('/', checkUser, require('./teamDELETE'));
 
 router.get('/feedback/pick', checkUser, require('./teamFeedbackPickGET'));
+router.get('/feedback/pick/team', checkUser, require('./teamFeedbackPickTeamListGET'));
 
 module.exports = router;
