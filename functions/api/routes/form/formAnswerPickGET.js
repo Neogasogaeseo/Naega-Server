@@ -31,7 +31,7 @@ module.exports = async (req, res) => {
 
     //^_^// 작성된 답변이 없는 경우 204 리턴
     if (answerData.length === 0) {
-      return res.status(statusCode.OK).send(util.success(statusCode.NO_CONTENT, NO_ANSWER_TO_PICK));
+      return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, NO_ANSWER_TO_PICK));
     }
 
 
@@ -56,8 +56,9 @@ module.exports = async (req, res) => {
     //^_^// key와 value값으로 구분 후 value값만 map함수로 빼내기
     const resultAnswerData = Object.entries(answerListPopId).map(([answerId, data]) => ({ ...data }));
 
+    //^_^// 나에게 작성된 답변들 리턴
     const resultData = {
-      answer:resultAnswerData
+      answer: resultAnswerData
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FILTERED_FORM_SUCCESS, resultData));

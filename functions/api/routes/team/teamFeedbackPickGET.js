@@ -29,12 +29,9 @@ module.exports = async (req, res) => {
         feedbackData = await feedbackDB.getFilteredFeedbackByFormId(client, userId, teamId, offset, limit);
     };
 
-    //^_^// 나에게 작성된 피드백이 없는 경우
+    //^_^// 나에게 작성된 피드백이 없는 경우 204 리턴
     if (feedbackData.length === 0) {
-        const resultData = {
-            team: teamData
-        };
-        return res.status(statusCode.OK).send(util.success(statusCode.OK, NO_FEEDBACK_TO_PICK, resultData));
+      return res.status(statusCode.NO_CONTENT).send(util.success(statusCode.NO_CONTENT, NO_FEEDBACK_TO_PICK));
     };
 
     //^_^// 북마크한 피드백 리스트에서 아이디값 가져오기
@@ -58,7 +55,7 @@ module.exports = async (req, res) => {
     //^_^// key와 value값으로 구분 후 value값만 map함수로 빼내기
     const resultFeedbackData = Object.entries(feedbackListPopId).map(([feedbackId, data]) => ({ ...data }));
 
-    //^_^// 팀과 북마크한 피드백 리스트가 모두 있는 경우 return 데이터
+    //^_^// 피드백 리스트 return
     const resultData = {
       feedback: resultFeedbackData
     };
