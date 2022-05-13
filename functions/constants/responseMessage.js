@@ -112,4 +112,5 @@ module.exports = {
   // 문의하기
   READ_REPORT_CATEGORY_SUCCESS: '문의하기 카테고리 조회 성공',
   NO_REPORT_CATEGORY: '존재하지 않는 종류의 문의입니다',
+  REPORT_CREATE_SUCCESS: '문의 등록 성공',
 };
