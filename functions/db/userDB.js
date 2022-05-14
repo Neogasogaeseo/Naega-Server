@@ -159,7 +159,7 @@ const updateUserInformationWithoutImage = async (client, userId, profileId, name
   const { rows } = await client.query(
     `
     UPDATE "user"
-    SET profile_id = $2, name = $3, update_at = now()
+    SET profile_id = $2, name = $3, updated_at = now()
     WHERE id = $1
     RETURNING *
     `,
