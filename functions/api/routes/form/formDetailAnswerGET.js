@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { answerDB, linkAnswerKeywordDB, linkUserFormDB } = require('../../../db');
+const { answerDB, linkAnswerKeywordDB } = require('../../../db');
 const arrayHandler = require('../../../lib/arrayHandler');
 const dayjs = require('dayjs');
 

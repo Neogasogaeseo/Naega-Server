@@ -9,4 +9,5 @@ module.exports = {
   formDB: require('./formDB'),
   answerDB: require('./answerDB'),
   linkAnswerKeywordDB: require('./linkAnswerKeywordDB'),
+  reportDB: require('./reportDB'),
 };
