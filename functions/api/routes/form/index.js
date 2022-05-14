@@ -16,6 +16,7 @@ router.get('/create/:formId', checkUser, require('./formCreateGET'));
 router.get('/detail/:formId', checkUser, require('./formDetailGET'));
 router.get('/detail/:formId/answer', checkUser, require('./formDetailAnswerGET'));
 router.put('/detail/answer/:answerId/pin', checkUser, require('./formDetailAnswerPinPUT'));
+router.get('/answer/pick/form', checkUser, require('./formAnswerPickFormListGET'));
 router.get('/answer/pick', checkUser, require('./formAnswerPickGET'));
 
 module.exports = router;
