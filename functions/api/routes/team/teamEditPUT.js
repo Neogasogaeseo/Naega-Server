@@ -12,7 +12,7 @@ module.exports = async (req, res) => {
   const { teamName, image, description } = req.body;
   const imageUrls = req.imageUrls;
 
-  if (!userId || !teamId || !teamName || !description) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (!userId || !teamId || !teamName) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
