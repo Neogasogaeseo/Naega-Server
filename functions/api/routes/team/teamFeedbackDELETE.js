@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     }
     //^_^// 유저가 작성자/피드백 받은 사람 중 한명인지 확인
     if (feedback.userId !== user.id && feedback.taggedUserId !== user.id) {
-      return res.status(statusCode.UNAUTHORIZED).send(util.fail(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     }
     // ^_^// 추출한 feedback으로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, [feedbackId]);
