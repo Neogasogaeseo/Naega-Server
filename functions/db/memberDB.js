@@ -126,6 +126,7 @@ const checkMemberTeam = async (client, userId, teamId) => {
     WHERE m.user_id = $1
       AND m.team_id = $2
       AND is_deleted = false
+      AND is_confirmed = true
     `,
 
     [userId, teamId],

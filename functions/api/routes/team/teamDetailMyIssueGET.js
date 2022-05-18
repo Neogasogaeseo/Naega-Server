@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { issueDB } = require('../../../db');
+const { issueDB, memberDB, teamDB } = require('../../../db');
 const resizeImage = require('../../../lib/resizeImage');
 const slackAPI = require('../../../lib/slackAPI');
 
@@ -23,6 +23,12 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const team = await teamDB.getTeamById(client, teamId);
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+
+    const user = await memberDB.checkMemberTeam(client, userId, teamId);
+    if (!user) return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_MEMBER));
 
     //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamIdAndUserId(client, teamId, userId);
