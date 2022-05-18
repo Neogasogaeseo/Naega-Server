@@ -20,11 +20,10 @@ module.exports = async (req, res) => {
     const isHost = await memberDB.checkMemberHost(client, userId, teamId);
     const isMember = await memberDB.checkMemberTeam(client, memberId, teamId);
     if (!isHost) {
-      return res.status(statusCode.UNAUTHORIZED).send(util.success(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     }
-
     if (!isMember) {
-      return res.status(statusCode.UNAUTHORIZED).send(util.success(statusCode.UNAUTHORIZED, responseMessage.NO_MEMBER));
+      return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
     }
 
     const oldHost = await memberDB.updateOldHost(client, userId, teamId);

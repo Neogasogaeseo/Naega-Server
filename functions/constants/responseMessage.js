@@ -42,6 +42,7 @@ module.exports = {
   NO_TEAM: '존재하지 않는 팀입니다',
   UPDATE_TEAM: '팀 정보 수정 성공',
   DELETE_TEAM_SUCCESS: '팀 삭제 성공',
+  READ_MY_TEAM_LIST: '유저가 속해있는 팀 리스트 조회 성공',
 
   // 팀원 정보
   READ_MEMBER: '팀원 정보 조회 성공',
@@ -99,6 +100,7 @@ module.exports = {
   READ_FORM_ANSWER_DETAIL_SUCCESS: '폼 디테일 답변 조회 성공 ',
   ANSWER_IS_PINNED_TOGGLE_SUCCESS: '답변 핀 토글 성공',
   NO_FORM_ISSUE: '팀 폼 답변 없음',
+  READ_MY_FORM_LIST: '유저가 생성한 폼 리스트 조회 성공',
   READ_FILTERED_FORM_SUCCESS: '필터링된 폼 조회 성공',
   NO_ANSWER_TO_PICK: '내가 픽할 답변이 없습니다',
   NO_MORE_ANSWER: '더 이상 답변이 없습니다.',
@@ -107,4 +109,10 @@ module.exports = {
   // 알림
   READ_ALL_NOTICE_SUCCESS: '전체 알림 조회 성공',
   READ_NOTICE_SUCCESS: '알림 존재 여부 조회 성공',
+  NO_INVITATION: '존재하지 않는 초대입니다.',
+
+  // 문의하기
+  READ_REPORT_CATEGORY_SUCCESS: '문의하기 카테고리 조회 성공',
+  NO_REPORT_CATEGORY: '존재하지 않는 종류의 문의입니다',
+  REPORT_CREATE_SUCCESS: '문의 등록 성공',
 };

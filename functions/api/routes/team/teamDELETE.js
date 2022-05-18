@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
       const team = await teamDB.deleteTeam(client, teamId);
       res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_TEAM_SUCCESS, { team }));
     } else {
-      res.status(statusCode.UNAUTHORIZED).send(util.success(statusCode.UNAUTHORIZED, responseMessage.NO_AUTH_MEMBER));
+      res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     }
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);

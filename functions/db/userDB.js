@@ -94,15 +94,28 @@ const getUserById = async (client, userId) => {
 const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, offset, limit) => {
   const { rows } = await client.query(
     `
-    SELECT u.id, u.profile_id, u.name, u.image, m.is_confirmed
-    FROM "user" u
-    LEFT JOIN member m ON m.user_id = u.id
-    WHERE profile_id ILIKE '%' || $1 || '%'
-      AND u.id != $2
-      AND (m.team_id = $3 OR m.team_id IS NULL)
-      AND u.is_deleted = FALSE
-      AND (m.is_deleted = FALSE OR m.is_deleted IS NULL)
-    LIMIT $4 OFFSET $5
+    (
+      SELECT u.id, u.profile_id, u.name, u.image, m.team_id, m.is_confirmed
+      FROM "user" u
+      JOIN member m ON m.user_id = u.id
+      WHERE profile_id ILIKE '%' || $1 || '%'
+          AND u.id != $2
+          AND m.team_id = $3
+          AND u.is_deleted = FALSE
+          AND m.is_deleted = FALSE
+  )
+  UNION
+  (
+      SELECT u.id, profile_id, name, image, null, null
+      FROM "user" u
+      WHERE profile_id ILIKE '%' || $1 || '%'
+          AND u.id != $2
+          AND u.is_deleted = FALSE
+          AND id NOT IN (SELECT user_id
+                      FROM member
+                      WHERE team_id = $3)
+  )
+  OFFSET $5 LIMIT $4;        
     `,
 
     [profileId, userId, teamId, limit, offset],
@@ -159,7 +172,7 @@ const updateUserInformationWithoutImage = async (client, userId, profileId, name
   const { rows } = await client.query(
     `
     UPDATE "user"
-    SET profile_id = $2, name = $3, update_at = now()
+    SET profile_id = $2, name = $3, updated_at = now()
     WHERE id = $1
     RETURNING *
     `,
