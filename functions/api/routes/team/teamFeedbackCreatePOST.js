@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { feedbackDB, linkFeedbacKeywordDB, keywordDB, userDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB, memberDB, userDB, issueDB } = require('../../../db');
 const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
@@ -19,6 +19,12 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const team = await issueDB.getTeamIdByIssueId(client, issueId);
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+
+    const checkUser = await memberDB.checkMemberTeam(client, user.id, team.teamId);
+    if (!checkUser) return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);

@@ -210,8 +210,8 @@ const getTeamIdByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
     SELECT team_id
-    FROM ISSUE
-    WHERE issue_id=$1
+    FROM issue
+    WHERE id=$1
     AND is_deleted=false
     `,
     [issueId],
