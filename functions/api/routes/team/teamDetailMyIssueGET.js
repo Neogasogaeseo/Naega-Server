@@ -42,7 +42,7 @@ module.exports = async (req, res) => {
     for (const issue of myIssue) {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
-    const myTeam = await issueDB.getTeamByIssueId(client, idList);
+    const myTeam = await issueDB.getTeamByIssueIdList(client, idList);
     myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
     //^_^// feedback 당한 사람 가져오기 완료
