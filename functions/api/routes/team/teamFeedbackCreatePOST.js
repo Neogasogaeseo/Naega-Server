@@ -24,7 +24,7 @@ module.exports = async (req, res) => {
     if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
 
     const checkUser = await memberDB.checkMemberTeam(client, user.id, team.teamId);
-    if (!checkUser) return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_MEMBER));
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);

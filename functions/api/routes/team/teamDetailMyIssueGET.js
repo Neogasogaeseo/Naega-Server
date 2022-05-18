@@ -28,7 +28,7 @@ module.exports = async (req, res) => {
     if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
 
     const user = await memberDB.checkMemberTeam(client, userId, teamId);
-    if (!user) return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_MEMBER));
+    if (!user) return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamIdAndUserId(client, teamId, userId);
