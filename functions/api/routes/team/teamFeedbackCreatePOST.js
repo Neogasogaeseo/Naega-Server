@@ -21,10 +21,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const team = await issueDB.getTeamIdByIssueId(client, issueId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
 
     const checkUser = await memberDB.checkMemberTeam(client, user.id, team.teamId);
-    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);

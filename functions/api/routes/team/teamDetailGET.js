@@ -19,10 +19,10 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const team = await teamDB.getTeamById(client, teamId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
 
     const user = await memberDB.checkMemberTeam(client, userId, teamId);
-    if (!user) return res.status(statusCode.FORBIDDEN).send(util.success(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+    if (!user) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     const member = await memberDB.getMemberByTeamId(client, teamId);
     member.forEach((item) => (item.image = resizeImage(item.image)));

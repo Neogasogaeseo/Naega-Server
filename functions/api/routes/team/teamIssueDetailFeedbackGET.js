@@ -5,10 +5,11 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const dayjs = require('dayjs');
-const { feedbackDB, linkFeedbacKeywordDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB, issueDB, memberDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
+  const { id: userId } = req.user;
   const { issueId } = req.params;
 
   if (!issueId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
@@ -17,6 +18,12 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const team = await issueDB.getTeamIdByIssueId(client, issueId);
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+
+    const checkUser = await memberDB.checkMemberTeam(client, userId, team.teamId);
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
     let feedbacks = await feedbackDB.getFeedbacks(client, issueId);

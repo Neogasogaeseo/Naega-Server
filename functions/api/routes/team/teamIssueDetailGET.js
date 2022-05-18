@@ -4,13 +4,13 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { issueDB } = require('../../../db');
+const { issueDB, memberDB } = require('../../../db');
 const dayjs = require('dayjs');
 const resizeImage = require('../../../lib/resizeImage');
 const _ = require('lodash');
 
 module.exports = async (req, res) => {
-  const user = req.user;
+  const { id: userId } = req.user;
   const { issueId } = req.params;
 
   if (!issueId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
@@ -19,6 +19,12 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const team = await issueDB.getTeamIdByIssueId(client, issueId);
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+
+    const checkUser = await memberDB.checkMemberTeam(client, userId, team.teamId);
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// 이슈 디테일 가져오기
     let getIssueDetail = await issueDB.getIssueDetailByIssueId(client, issueId);
