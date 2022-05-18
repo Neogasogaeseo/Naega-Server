@@ -26,6 +26,9 @@ module.exports = async (req, res) => {
     const checkUser = await memberDB.checkMemberTeam(client, user.id, team.teamId);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
+    const checkTaggedUser = await memberDB.checkMemberTeam(client, taggedUserId, team.teamId);
+    if (!checkTaggedUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
     newFeedback.createdAt = dayjs(newFeedback.createdAt).format('YYYY-MM-DD');

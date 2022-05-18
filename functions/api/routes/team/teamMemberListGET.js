@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { memberDB } = require('../../../db');
+const { memberDB, teamDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
@@ -14,6 +14,12 @@ module.exports = async (req, res) => {
   let client;
   try {
     client = await db.connect(req);
+
+    const team = await teamDB.getTeamById(client, teamId);
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+
+    const checkUser = await memberDB.checkMemberTeam(client, user.id, teamId);
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     let teamMember = await memberDB.getAllTeamMemberByTeamId(client, teamId);
 
