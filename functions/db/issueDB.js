@@ -219,6 +219,23 @@ const getTeamIdByIssueId = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getTeamMemberByIssueId = async (client, issueId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.id
+    FROM member m
+    JOIN issue i
+    ON i.team_id = m.team_id
+    WHERE i.id=$1
+    AND i.is_deleted=false
+    AND m.is_deleted=false
+    AND m.is_confirmed=true
+    `,
+    [issueId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getFeedbackIdRecentListByUserId,
   getIssueIdRecentListByTeamId,
@@ -235,4 +252,5 @@ module.exports = {
   updateIssueIncludeImage,
   deleteIssue,
   getTeamIdByIssueId,
+  getTeamMemberByIssueId,
 };

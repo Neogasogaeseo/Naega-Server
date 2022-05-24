@@ -21,10 +21,10 @@ module.exports = async (req, res) => {
     const team = await teamDB.getTeamById(client, teamId);
     if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
 
-    const user = await memberDB.checkMemberTeam(client, userId, teamId);
+    const member = await memberDB.getMemberByTeamId(client, teamId);
+    const user = member.find((m) => m.id == userId);
     if (!user) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
-    const member = await memberDB.getMemberByTeamId(client, teamId);
     member.forEach((item) => (item.image = resizeImage(item.image)));
     const data = {
       team,

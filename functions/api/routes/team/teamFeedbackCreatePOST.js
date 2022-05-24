@@ -20,14 +20,12 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const team = await issueDB.getTeamIdByIssueId(client, issueId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-
-    const checkUser = await memberDB.checkMemberTeam(client, user.id, team.teamId);
+    const member = await issueDB.getTeamMemberByIssueId(client, issueId);
+    if (!member) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+    const checkUser = member.find((m) => m.id == user.id);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
-
-    const checkTaggedUser = await memberDB.checkMemberTeam(client, taggedUserId, team.teamId);
-    if (!checkTaggedUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+    const taggedUser = member.find((m) => m.id == taggedUserId);
+    if (!taggedUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
