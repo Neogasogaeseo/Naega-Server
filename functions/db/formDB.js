@@ -135,7 +135,7 @@ const getFormByFormIdAndUserId = async (client, formId, userId) => {
 
     [formId, userId],
   );
-  return convertSnakeToCamel.keysToCamel(rows);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
 const getFormDetail = async (client, formId, userId) => {
@@ -167,7 +167,7 @@ const getFormByFormIdList = async (client, formIdList, userId) => {
 };
 
 const getCreatedFormListByUserId = async (client, userId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT l.form_id, f.title, f.dark_icon_image, l.is_deleted
     FROM link_user_form l
@@ -182,8 +182,8 @@ const getCreatedFormListByUserId = async (client, userId) => {
 };
 
 const getCreatedFormByUserIdAndFormId = async (client, userId, formId) => {
-  const { rows } = await client.query (
-  `
+  const { rows } = await client.query(
+    `
     SELECT l.id as link_user_form_id, l.created_at,
       l.user_id, u.name, u.image,
       l.form_id, f.title, f.subtitle, f.dark_icon_image
@@ -196,7 +196,7 @@ const getCreatedFormByUserIdAndFormId = async (client, userId, formId) => {
       AND u.is_deleted = false
       AND f.is_deleted = false
   `,
-  [userId, formId],
+    [userId, formId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
