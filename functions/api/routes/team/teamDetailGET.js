@@ -9,6 +9,7 @@ const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
   const { teamId } = req.params;
+  const { id: userId } = req.user;
 
   if (!teamId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
@@ -18,10 +19,13 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     const team = await teamDB.getTeamById(client, teamId);
-    if (!team) {
-      return res.status(statusCode.NOT_FOUND).send(util.success(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
-    }
+    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+
     const member = await memberDB.getMemberByTeamId(client, teamId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+    const user = member.find((m) => m.id == userId);
+    if (!user) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+
     member.forEach((item) => (item.image = resizeImage(item.image)));
     const data = {
       team,

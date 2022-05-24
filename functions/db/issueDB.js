@@ -82,7 +82,7 @@ const getIssueDetailByIssueId = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getTeamByIssueId = async (client, issueId) => {
+const getTeamByIssueIdList = async (client, issueId) => {
   const { rows } = await client.query(
     `
     SELECT i.id as issue_id, t.id, t.name, t.image,
@@ -175,7 +175,7 @@ const updateIssueWithoutImage = async (client, issueId, categoryId, content) => 
     WHERE id = $1
     RETURNING *
     `,
-    [issueId, categoryId, content, ],
+    [issueId, categoryId, content],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
@@ -206,13 +206,43 @@ const deleteIssue = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getTeamIdByIssueId = async (client, issueId) => {
+  const { rows } = await client.query(
+    `
+    SELECT team_id
+    FROM issue
+    WHERE id=$1
+    AND is_deleted=false
+    `,
+    [issueId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const getTeamMemberByIssueId = async (client, issueId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.id
+    FROM member m
+    JOIN issue i
+    ON i.team_id = m.team_id
+    WHERE i.id=$1
+    AND i.is_deleted=false
+    AND m.is_deleted=false
+    AND m.is_confirmed=true
+    `,
+    [issueId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getFeedbackIdRecentListByUserId,
   getIssueIdRecentListByTeamId,
   getIssueIdRecentListByTeamIdAndUserId,
   getIssueByIssueId,
   getIssueDetailByIssueId,
-  getTeamByIssueId,
+  getTeamByIssueIdList,
   getAllFeedbackPersonList,
   getIssueCategoryList,
   addIssue,
@@ -221,4 +251,6 @@ module.exports = {
   updateIssueWithoutImage,
   updateIssueIncludeImage,
   deleteIssue,
+  getTeamIdByIssueId,
+  getTeamMemberByIssueId,
 };

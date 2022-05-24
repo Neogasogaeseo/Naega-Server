@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { feedbackDB, linkFeedbacKeywordDB, keywordDB, userDB } = require('../../../db');
+const { feedbackDB, linkFeedbacKeywordDB, memberDB, userDB, issueDB } = require('../../../db');
 const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
@@ -19,6 +19,13 @@ module.exports = async (req, res) => {
 
   try {
     client = await db.connect(req);
+
+    const member = await issueDB.getTeamMemberByIssueId(client, issueId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+    const checkUser = member.find((m) => m.id == user.id);
+    if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+    const taggedUser = member.find((m) => m.id == taggedUserId);
+    if (!taggedUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
     const newFeedback = await feedbackDB.addFeedback(client, issueId, user.id, taggedUserId, content);
