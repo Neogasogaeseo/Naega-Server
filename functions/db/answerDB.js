@@ -138,6 +138,7 @@ const getAnswerByFormIdListAndUserID = async (client, formIdList, userId) => {
       ON a.link_user_form_id = l.id
       WHERE l.form_id in (${formIdList.join(',')})
       AND l.user_id = $1
+      AND a.is_deleted = false
       ORDER BY l.updated_at
       `,
     [userId],
@@ -197,7 +198,7 @@ const toggleIsPinnedAnswer = async (client, answerId) => {
 };
 
 const getAllAnswerByUserId = async (client, userId, offset, limit) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT a.id as answer_id, l.form_id, f.dark_icon_image, f.title, a.content, a.is_pinned
     FROM link_user_form l
@@ -209,13 +210,13 @@ const getAllAnswerByUserId = async (client, userId, offset, limit) => {
     ORDER BY a.created_at DESC
     LIMIT $3  OFFSET $2   `,
 
-   [userId, offset, limit],
+    [userId, offset, limit],
   );
-  return convertSnakeToCamel.keysToCamel(rows)
-}
+  return convertSnakeToCamel.keysToCamel(rows);
+};
 
 const getFilteredAnswerByFormId = async (client, userId, formId, offset, limit) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT a.id as answer_id, l.form_id, f.dark_icon_image, f.title, a.content, a.is_pinned
     FROM link_user_form l
@@ -245,7 +246,7 @@ const deleteAnswer = async (client, answerId) => {
 };
 
 const getAnswerCount = async (client, linkUserFormId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT count(*) as answer_count
     FROM answer
@@ -253,9 +254,8 @@ const getAnswerCount = async (client, linkUserFormId) => {
       AND is_deleted = false
     `,
   );
-  return convertSnakeToCamel.keysToCamel(rows[0])
+  return convertSnakeToCamel.keysToCamel(rows[0]);
 };
-
 
 module.exports = {
   getRelationship,
