@@ -15,10 +15,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const team = await teamDB.getTeamById(client, teamId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
-
-    const checkUser = await memberDB.checkMemberTeam(client, user.id, teamId);
+    const member = await memberDB.getMemberByTeamId(client, teamId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+    const checkUser = member.find((m) => m.id == user.id);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     let teamMember = await memberDB.getAllTeamMemberByTeamId(client, teamId);

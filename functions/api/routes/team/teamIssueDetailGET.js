@@ -20,10 +20,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const team = await issueDB.getTeamIdByIssueId(client, issueId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-
-    const checkUser = await memberDB.checkMemberTeam(client, userId, team.teamId);
+    const member = await issueDB.getTeamMemberByIssueId(client, issueId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+    const checkUser = member.find((m) => m.id == userId);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// 이슈 디테일 가져오기

@@ -19,10 +19,9 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const team = await issueDB.getTeamIdByIssueId(client, issueId);
-    if (!team) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-
-    const checkUser = await memberDB.checkMemberTeam(client, userId, team.teamId);
+    const member = await issueDB.getTeamMemberByIssueId(client, issueId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
+    const checkUser = member.find((m) => m.id == userId);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
@@ -33,31 +32,25 @@ module.exports = async (req, res) => {
     for (const feedback of feedbacks) {
       feedback.createdAt = dayjs(feedback.createdAt).format('YYYY-MM-DD');
     }
-    // console.log('feedbacks : ', feedbacks);
 
     // ^_^// 가져온 feedbacks들의 id만 추출
     const feedbackIds = arrayHandler.extractValues(feedbacks, 'id');
-    // console.log('feedbackIds : ', feedbackIds);
 
     // ^_^// 추출한 feedbacks들로 키워드들 가져옴
     const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, feedbackIds);
-    // console.log('linkFeedbackKeywords : ', linkFeedbackKeywords);
 
     // ^_^// 추출한 feedbacks
     const feedbacksTofind = feedbacks.reduce((acc, x) => {
       acc[x.id] = { ...x, keywords: [] };
       return acc;
     }, {});
-    // console.log('feedbacksTofind', feedbacksTofind);
 
     linkFeedbackKeywords.map((o) => {
       feedbacksTofind[o.feedbackId].keywords.push(o);
       return o;
     });
-    console.log(feedbacksTofind);
 
     const issueDetailFeedback = Object.entries(feedbacksTofind).map(([feedbackId, data]) => ({ ...data }));
-    // console.log('issueDetailFeedback', issueDetailFeedback);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ISSUE_FEEDBACK_SUCCESS, issueDetailFeedback));
   } catch (error) {
