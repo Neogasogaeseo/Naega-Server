@@ -78,19 +78,6 @@ const getAnswerByFormIdAndUserIdForFormDetailTopKeyword = async (client, formId,
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getNewFormIdListByUserId = async (client, userId) => {
-  const { rows } = await client.query(
-    /*sql*/ `
-    SELECT l.form_id
-    FROM "link_user_form" l
-    WHERE l.user_id = $1
-    ORDER BY l.created_at DESC
-    `,
-    [userId],
-  );
-  return convertSnakeToCamel.keysToCamel(rows);
-};
-
 const getRecentFormIdListByUserId = async (client, userId) => {
   const { rows } = await client.query(
     `
@@ -262,7 +249,6 @@ module.exports = {
   addAnswer,
   getAnswerByFormIdListAndUserID,
   getAnswerUserIdByAnswerId,
-  getNewFormIdListByUserId,
   getRecentFormIdListByUserId,
   getAnswerByFormIdList,
   getAnswerByFormIdAndUserId,
