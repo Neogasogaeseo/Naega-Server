@@ -22,12 +22,16 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    //^_^// formId 최신순 정렬
-    const myFormIdMostList = await answerDB.getMostFormIdListByUserId(client, userId);
-    if (myFormIdMostList.length === 0) {
+    //^_^// formId 답변 유무, 최신순 정렬
+    const myFormIdRecentList = await answerDB.getRecentFormIdListByUserId(client, userId);
+    myFormIdRecentList.sort(function (a, b) {
+      if (b.cnt === '0') return -1;
+    });
+
+    if (myFormIdRecentList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
-    const idUnique = myFormIdMostList.filter((form, index, arr) => {
+    const idUnique = myFormIdRecentList.filter((form, index, arr) => {
       return arr.findIndex((item) => item.formId === form.formId) === index;
     });
     let idList = extractValues(idUnique, 'formId');
