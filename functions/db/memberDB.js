@@ -193,6 +193,7 @@ const getInvitedTeamIdList = async (client, userId, offset, limit) => {
     SELECT m.team_id, m.is_confirmed, m.is_deleted, m.updated_at
     FROM "member" m
     WHERE m.user_id = $1
+    AND m.is_host = false
     ORDER BY updated_at DESC
     LIMIT $3 OFFSET $2
     `,
@@ -208,6 +209,7 @@ const getAllInvitedTeamIdList = async (client, userId) => {
     SELECT m.team_id, m.is_confirmed, m.is_deleted
     FROM "member" m
     WHERE m.user_id = $1
+    AND m.is_host = false
     ORDER BY updated_at DESC
     `,
     [userId],
