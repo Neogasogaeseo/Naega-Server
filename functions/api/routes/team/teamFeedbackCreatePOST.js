@@ -22,9 +22,9 @@ module.exports = async (req, res) => {
 
     const member = await issueDB.getTeamMemberByIssueId(client, issueId);
     if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-    const checkUser = member.find((m) => m.id == user.id);
+    const checkUser = member.find((m) => m.userId == user.id);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
-    const taggedUser = member.find((m) => m.id == taggedUserId);
+    const taggedUser = member.find((m) => m.userId == taggedUserId);
     if (!taggedUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     //^_^// 피드백 추가
