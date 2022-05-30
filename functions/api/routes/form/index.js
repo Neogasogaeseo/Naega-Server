@@ -6,6 +6,7 @@ router.get('/', checkUser, require('./formMyGET'));
 router.get('/all', checkUser, require('./formMyAllGET'));
 router.get('/template/popular', checkUser, require('./formTemplatePopularGET'));
 router.get('/template/recent', checkUser, require('./formTemplateRecentGET'));
+router.get('/template', checkUser, require('./formTemplateGET'));
 router.get('/answer', require('./formAnswerGET'));
 router.post('/answer', require('./formAnswerCreatePOST'));
 router.delete('/answer/:answerId', checkUser, require('./formAnswerDELETE'));

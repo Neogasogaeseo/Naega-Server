@@ -1,6 +1,28 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+const getAllFormByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT f.id, f.title, f.subtitle,
+    f.is_new, f.is_banner, f.dark_icon_image,
+    c.code as color_code
+    FROM "form" f
+    JOIN "color" c
+    ON f.color_id = c.id
+    FULL OUTER JOIN (SELECT * FROM 
+    "link_user_form" l
+    WHERE l.is_deleted = false
+    AND l.user_id = $1) ll
+    ON ll.form_id=f.id
+    WHERE f.is_deleted = false
+    ORDER BY ll.created_at DESC, f.updated_at DESC
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getAllFormRecent = async (client) => {
   const { rows } = await client.query(
     `
@@ -202,6 +224,7 @@ const getCreatedFormByUserIdAndFormId = async (client, userId, formId) => {
 };
 
 module.exports = {
+  getAllFormByUserId,
   getAllFormRecent,
   getFormByFormIdAndUserId,
   getAllFormPopular,
