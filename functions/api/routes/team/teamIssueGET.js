@@ -41,8 +41,10 @@ module.exports = async (req, res) => {
     const myTeam = await issueDB.getTeamByIssueIdList(client, idList);
     myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
+    const validIdList = extractValues(myTeam, 'issueId');
+
     //^_^// feedback 당한 사람 가져오기 완료
-    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
+    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, validIdList);
     myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.issueId === feedback.issueId) === index;
@@ -61,6 +63,7 @@ module.exports = async (req, res) => {
     const resultList = Array.from(map.values());
 
     resultList.forEach((item) => {
+      console.log(item);
       item.feedback.forEach((o) => delete o.issueId);
       delete item.team.issueId;
     });

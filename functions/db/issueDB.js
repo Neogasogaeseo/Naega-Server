@@ -57,8 +57,10 @@ const getIssueByIssueId = async (client, issueId) => {
     SELECT i.id, i.image, c.name as category_name, i.created_at, i.content
     FROM "issue" i JOIN "category" c
     ON i.category_id = c.id
+    JOIN "team" t ON t.id = i.team_id
     WHERE i.id in (${issueId.join(',')})
     AND i.is_deleted = false
+    AND t.is_deleted = false
     `,
   );
 
@@ -93,6 +95,7 @@ const getTeamByIssueIdList = async (client, issueId) => {
     ON i.user_id = u.id
     WHERE t.is_deleted = false
     AND i.id in (${issueId.join(',')})
+    AND i.is_deleted = false
 
     `,
   );
