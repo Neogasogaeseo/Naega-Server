@@ -63,7 +63,6 @@ module.exports = async (req, res) => {
     const resultList = Array.from(map.values());
 
     resultList.forEach((item) => {
-      console.log(item);
       item.feedback.forEach((o) => delete o.issueId);
       delete item.team.issueId;
     });
