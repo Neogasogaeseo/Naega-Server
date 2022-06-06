@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
 
     const member = await issueDB.getTeamMemberByIssueId(client, issueId);
     if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-    const checkUser = member.find((m) => m.id == userId);
+    const checkUser = member.find((m) => m.userId === userId);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// 이슈 디테일 가져오기
@@ -33,7 +33,7 @@ module.exports = async (req, res) => {
     }
 
     getIssueDetail.createdAt = dayjs(getIssueDetail.createdAt).format('YYYY-MM-DD');
-    // console.log('getIssueDetail : ', getIssueDetail);
+    console.log('getIssueDetail : ', getIssueDetail);
     // ^_^// 해당 이슈 팀 정보 가져오기
     const getTeamForIssueDetail = await issueDB.getTeamForIssueDetailByIssueId(client, issueId);
 

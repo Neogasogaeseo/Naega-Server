@@ -222,7 +222,7 @@ const getTeamIdByIssueId = async (client, issueId) => {
 const getTeamMemberByIssueId = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT m.id
+    SELECT m.user_id
     FROM member m
     JOIN issue i
     ON i.team_id = m.team_id

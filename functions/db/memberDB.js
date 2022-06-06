@@ -54,8 +54,9 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
     FROM member m
     JOIN "user" u ON u.id = m.user_id
     WHERE m.team_id = $1
-    AND m.is_deleted = FALSE
-    AND u.is_deleted = FALSE
+    AND m.is_deleted = false
+    AND u.is_deleted = false
+    AND m.is_confirmed = true
     `,
     [teamId],
   );

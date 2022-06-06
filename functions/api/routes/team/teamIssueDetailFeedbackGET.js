@@ -21,7 +21,7 @@ module.exports = async (req, res) => {
 
     const member = await issueDB.getTeamMemberByIssueId(client, issueId);
     if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_ISSUE));
-    const checkUser = member.find((m) => m.id == userId);
+    const checkUser = member.find((m) => m.userId === userId);
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     // ^_^// issueId로 해당 이슈에 해당하는 모든 feedback 가져옴
