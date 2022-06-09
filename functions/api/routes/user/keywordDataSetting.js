@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
 
     // ^_^// groupBy 해준걸 flatten하는 작업을 거쳐 2차 배열 형태로 만들어준다
     const flattenedKeyword = Object.values(flattenObject(regroupedKeyword));
-    console.log('flattenedKeyword : ', flattenedKeyword);
+    // console.log('flattenedKeyword : ', flattenedKeyword);
 
     for (const property in flattenedKeyword) {
       /*
@@ -58,19 +58,20 @@ module.exports = async (req, res) => {
 
       const extractKeyword = arrayHandler.extractValues(flattenedKeyword[property], 'id');
       console.log('extractKeyword : ', extractKeyword);
-      //   const copiedKeyword = copyArray(extractKeyword);
 
-      //   // ^_^// id 배열 중 0번 id의 count 값을 업데이트하고
-      //   const updateKeywordCountForSet = await keywordDB.updateKeywordCountForSet(client, extractKeyword[0], extractKeyword.length);
-      //   copiedKeyword.shift();
-      //   // ^_^// 나머지 id들은 삭제 해준다
-      //   const deleteKeywordsForSet = await keywordDB.deleteKeywordsForSet(client, extractKeyword);
+      const copiedKeyword = copyArray(extractKeyword);
 
-      //   // ^_^// link_answer_keyword, link_feedback_keyword 중에 extractKeyword안에 있는 id가 사용된 row들이 있다면 전부 0번 id로 바꿔준다
-      //   if (copiedKeyword.length != 0) {
-      //     await keywordDB.updateLinkAnswerKeywordsForSet(client, extractKeyword[0], copiedKeyword);
-      //     await keywordDB.updateLinkFeedbackKeywordsForSet(client, extractKeyword[0], copiedKeyword);
-      //   }
+      // ^_^// id 배열 중 0번 id의 count 값을 업데이트하고
+      const updateKeywordCountForSet = await keywordDB.updateKeywordCountForSet(client, extractKeyword[0], extractKeyword.length);
+      copiedKeyword.shift();
+      // ^_^// 나머지 id들은 삭제 해준다
+      const deleteKeywordsForSet = await keywordDB.deleteKeywordsForSet(client, extractKeyword);
+
+      // ^_^// link_answer_keyword, link_feedback_keyword 중에 extractKeyword안에 있는 id가 사용된 row들이 있다면 전부 0번 id로 바꿔준다
+      if (copiedKeyword.length != 0) {
+        await keywordDB.updateLinkAnswerKeywordsForSet(client, extractKeyword[0], copiedKeyword);
+        await keywordDB.updateLinkFeedbackKeywordsForSet(client, extractKeyword[0], copiedKeyword);
+      }
     }
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, '키워드 정리 완료!'));
