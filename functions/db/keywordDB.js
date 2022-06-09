@@ -221,6 +221,71 @@ const deleteKeywordCount = async (client, keywordId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAllKeywordForSet = async (client) => {
+  const { rows } = await client.query(/*sql*/ `
+        SELECT id, name, user_id, count 
+        FROM keyword 
+        WHERE count = 0
+        AND is_deleted = FALSE
+        -- AND user_id = 7777
+        ORDER BY id DESC
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+const updateKeywordCountForSet = async (client, id, count) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+
+        UPDATE keyword 
+        SET count = $1
+        WHERE id = $2
+        RETURNING *
+
+        `,
+    [count, id],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteKeywordsForSet = async (client, idList) => {
+  const ids = '(' + idList.map((o) => o).join(', ') + ')';
+
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE keyword 
+        SET is_deleted = true
+        WHERE id IN ${ids}
+        AND count = 0
+        RETURNING *
+
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const updateLinkAnswerKeywordsForSet = async (client, id, idList) => {
+  const ids = '(' + idList.map((o) => o).join(', ') + ')';
+
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE link_answer_keyword 
+        SET keyword_id = ${id}
+        WHERE keyword_id IN ${ids}
+        AND is_deleted = false
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+const updateLinkFeedbackKeywordsForSet = async (client, id, idList) => {
+  const ids = '(' + idList.map((o) => o).join(', ') + ')';
+
+  const { rows } = await client.query(/*sql*/ `
+        UPDATE link_feedback_keyword 
+        SET keyword_id = ${id}
+        WHERE keyword_id IN ${ids}
+        AND is_deleted = false
+        RETURNING *
+        `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   checkKeyword,
   getKeywordById,
@@ -238,4 +303,9 @@ module.exports = {
   deleteKeywordCount,
   deleteKeyword,
   deleteMyKeyword,
+  getAllKeywordForSet,
+  updateKeywordCountForSet,
+  deleteKeywordsForSet,
+  updateLinkAnswerKeywordsForSet,
+  updateLinkFeedbackKeywordsForSet,
 };
