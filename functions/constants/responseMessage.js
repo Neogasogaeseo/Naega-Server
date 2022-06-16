@@ -85,6 +85,7 @@ module.exports = {
   // 너가소개서
   READ_ALL_FORM_POPULAR_SUCCESS: '전체 폼 인기순 조회 성공',
   READ_ALL_FORM_RECENT_SUCCESS: '전체 폼 최신순 조회 성공',
+  READ_ALL_USER_FORM_SUCCESS: '유저의 전체 폼 조회 성공',
   FORM_CREATE_SUCCESS: '폼 생성 성공',
   READ_FORM_SUCCESS: '폼 정보 조회 성공',
   FORM_CREATE_FAIL: '존재하지 않는 폼입니다',
