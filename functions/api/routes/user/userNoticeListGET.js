@@ -19,6 +19,10 @@ module.exports = async (req, res) => {
 
     const invitedTeamIdList = await memberDB.getInvitedTeamIdList(client, userId, offset, limit);
     const teamIdList = invitedTeamIdList.map((o) => o.teamId);
+    if (teamIdList.length === 0) {
+      const notice = [];
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_NOTICE_SUCCESS, { notice }));
+    }
     const teamList = await teamDB.getTeamListByTeamIdList(client, teamIdList);
 
     const noticeList = teamIdList.map((id) => {
