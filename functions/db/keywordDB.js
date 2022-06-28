@@ -1,3 +1,4 @@
+const { countBy } = require('lodash');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -221,6 +222,16 @@ const deleteKeywordCount = async (client, keywordId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getUserKeywordListCount = async (client, userId) => {
+  const { rows } = await client.query(`
+    SELECT count(*)
+    FROM keyword
+    WHERE user_id = ${userId}
+      AND is_deleted = false
+  `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   checkKeyword,
   getKeywordById,
@@ -238,4 +249,5 @@ module.exports = {
   deleteKeywordCount,
   deleteKeyword,
   deleteMyKeyword,
+  getUserKeywordListCount,
 };
