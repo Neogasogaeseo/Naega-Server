@@ -17,8 +17,16 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const invitedTeamIdList = await memberDB.getInvitedTeamIdList(client, userId, offset, limit);
+    const tempTeamIdList = await memberDB.getInvitedTeamIdList(client, userId, offset, limit);
+    const invitedTeamIdList = tempTeamIdList.filter((o) => {
+      if (o.isDeleted === true && o.isConfirmed === true) return false;
+      return true;
+    });
     const teamIdList = invitedTeamIdList.map((o) => o.teamId);
+    if (teamIdList.length === 0) {
+      const notice = [];
+      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_NOTICE_SUCCESS, { notice }));
+    }
     const teamList = await teamDB.getTeamListByTeamIdList(client, teamIdList);
 
     const noticeList = teamIdList.map((id) => {

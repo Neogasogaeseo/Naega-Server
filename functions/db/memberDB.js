@@ -140,7 +140,7 @@ const deleteMember = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true, is_confirmed = false,
+    SET is_deleted = true,
     updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
