@@ -95,7 +95,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, o
   const { rows } = await client.query(
     `
     (
-      SELECT u.id, u.profile_id, u.name, u.image, m.team_id, m.is_confirmed
+      SELECT u.id, u.profile_id, u.name, u.image, m.team_id, m.is_confirmed, m.is_deleted
       FROM "user" u
       JOIN member m ON m.user_id = u.id
       WHERE profile_id ILIKE '%' || $1 || '%'
@@ -106,7 +106,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, o
   )
   UNION
   (
-      SELECT u.id, profile_id, name, image, null, null
+      SELECT u.id, profile_id, name, image, null, null, null
       FROM "user" u
       WHERE profile_id ILIKE '%' || $1 || '%'
           AND u.id != $2

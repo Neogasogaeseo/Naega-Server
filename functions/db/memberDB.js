@@ -85,9 +85,10 @@ const addMember = async (client, teamId, userIdList) => {
     return [];
   }
 
-  const valuesInsertQuery = JSON.parse(userIdList)
+  const valuesInsertQuery = userIdList
     .map((x) => `(${teamId}, ${x})`)
     .join(', ');
+  console.log(valuesInsertQuery);
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member

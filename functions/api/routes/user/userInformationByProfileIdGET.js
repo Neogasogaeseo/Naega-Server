@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { userDB, linkFeedbacKeywordDB, linkAnswerKeywordDB } = require('../../../db');
+const { userDB, linkFeedbacKeywordDB, linkAnswerKeywordDB, keywordDB } = require('../../../db');
 
 module.exports = async (req, res) => {
   const { profileId } = req.params;
@@ -26,10 +26,14 @@ module.exports = async (req, res) => {
 
     const answerKeywordList = await linkAnswerKeywordDB.getTopKeywordListOnAnswer(client, userId);
 
+    const userKeywordCount = await keywordDB.getUserKeywordListCount(client, userId);
+    const keywordCount = userKeywordCount[0].count;
+
     const resultData = {
       user: userData,
       teamKeywordList,
       answerKeywordList,
+      keywordCount,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_USER_SUCCESS, resultData));
