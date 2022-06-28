@@ -27,8 +27,11 @@ module.exports = async (req, res) => {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
     };
 
+    //^_^// userIdList 중복 제거
+    const uniqueUserIdList = [ ... new Set(JSON.parse(userIdList))];
+
     //^_^// 새로운 유저 멤버로 추가
-    const newMemberData = await memberDB.addMember(client, teamId, userIdList);
+    const newMemberData = await memberDB.addMember(client, teamId, uniqueUserIdList);
 
     const resultData = {
         member: newMemberData
