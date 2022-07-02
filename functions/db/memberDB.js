@@ -50,7 +50,7 @@ const updateMemberReject = async (client, userId, teamId) => {
 const getAllTeamMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT u.id, u.name, u.profile_id, u.image, m.is_confirmed
+    SELECT u.id, u.name, u.profile_id, u.image, m.is_confirmed, m.is_host
     FROM member m
     JOIN "user" u ON u.id = m.user_id
     WHERE m.team_id = $1
@@ -85,9 +85,10 @@ const addMember = async (client, teamId, userIdList) => {
     return [];
   }
 
-  const valuesInsertQuery = JSON.parse(userIdList)
+  const valuesInsertQuery = userIdList
     .map((x) => `(${teamId}, ${x})`)
     .join(', ');
+  console.log(valuesInsertQuery);
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -140,7 +141,7 @@ const deleteMember = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true, is_confirmed = false,
+    SET is_deleted = true,
     updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
@@ -194,6 +195,7 @@ const getInvitedTeamIdList = async (client, userId, offset, limit) => {
     SELECT m.team_id, m.is_confirmed, m.is_deleted, m.updated_at
     FROM "member" m
     WHERE m.user_id = $1
+    AND m.is_host = false
     ORDER BY updated_at DESC
     LIMIT $3 OFFSET $2
     `,
@@ -209,6 +211,7 @@ const getAllInvitedTeamIdList = async (client, userId) => {
     SELECT m.team_id, m.is_confirmed, m.is_deleted
     FROM "member" m
     WHERE m.user_id = $1
+    AND m.is_host = false
     ORDER BY updated_at DESC
     `,
     [userId],

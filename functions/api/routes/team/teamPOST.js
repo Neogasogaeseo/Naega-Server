@@ -32,8 +32,11 @@ module.exports = async (req, res) => {
     const hostMemberId = hostUserId;
     const hostMemberData = await memberDB.addHostMember(client, teamId, hostMemberId);
 
+    //^_^// userIdList 중복 제거
+    const uniqueUserIdList = [ ... new Set(JSON.parse(userIdList))];
+
     //^_^// 그 외 member row값 POST
-    const memberData = await memberDB.addMember(client, teamId, userIdList);
+    const memberData = await memberDB.addMember(client, teamId, uniqueUserIdList);
 
     const resultData = {
       team: teamData,

@@ -1,3 +1,4 @@
+const { countBy } = require('lodash');
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
@@ -283,6 +284,15 @@ const updateLinkFeedbackKeywordsForSet = async (client, id, idList) => {
         AND is_deleted = false
         RETURNING *
         `);
+      return convertSnakeToCamel.keysToCamel(rows);
+};
+const getUserKeywordListCount = async (client, userId) => {
+  const { rows } = await client.query(`
+    SELECT count(*)
+    FROM keyword
+    WHERE user_id = ${userId}
+      AND is_deleted = false
+  `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
@@ -308,4 +318,5 @@ module.exports = {
   deleteKeywordsForSet,
   updateLinkAnswerKeywordsForSet,
   updateLinkFeedbackKeywordsForSet,
+  getUserKeywordListCount,
 };
