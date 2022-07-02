@@ -9,11 +9,11 @@ const arrayHandler = require('../../../lib/arrayHandler');
 const dayjs = require('dayjs');
 
 module.exports = async (req, res) => {
-  const { reportCategoryId, title, content } = req.body;
+  const { reportCategoryId, title, content, email } = req.body;
   const imageUrls = req.imageUrls;
   const { id: userId } = req.user;
 
-  if (!reportCategoryId || !userId || !title || !content) {
+  if (!reportCategoryId || !userId || !title || !content || !email) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
@@ -22,7 +22,7 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    await reportDB.addReport(client, reportCategoryId, userId, title, content, imageUrls);
+    await reportDB.addReport(client, reportCategoryId, userId, title, content, email, imageUrls);
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.REPORT_CREATE_SUCCESS));
   } catch (error) {

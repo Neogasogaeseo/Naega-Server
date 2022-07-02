@@ -16,16 +16,16 @@ const getReportCategory = async (client, reportKindId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const addReport = async (client, reporyCategoryId, userId, title, content, image) => {
+const addReport = async (client, reporyCategoryId, userId, title, content, email, image) => {
   const { rows } = await client.query(
     /*sql*/ `
       INSERT INTO report
-      (report_category_id, user_id,  title, content, image)
+      (report_category_id, user_id,  title, content, email, image)
       VALUES 
-      ($1, $2, $3, $4,$5)
+      ($1, $2, $3, $4, $5, $6)
       RETURNING *
           `,
-    [reporyCategoryId, userId, title, content, image],
+    [reporyCategoryId, userId, title, content, email, image],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
