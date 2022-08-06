@@ -113,7 +113,8 @@ const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, o
           AND u.is_deleted = FALSE
           AND id NOT IN (SELECT user_id
                       FROM member
-                      WHERE team_id = $3)
+                      WHERE team_id = $3
+                      AND is_deleted = false)
   )
   OFFSET $5 LIMIT $4;        
     `,
