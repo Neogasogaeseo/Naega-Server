@@ -80,7 +80,7 @@ const addHostMember = async (client, teamId, userId) => {
 
 //^_^// 팀에 멤버를 추가하는 쿼리
 const addMember = async (client, teamId, userIdList) => {
-  if (!userIdList) {
+  if (userIdList.length === 0) {
     return [];
   }
 
