@@ -56,7 +56,6 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
     WHERE m.team_id = $1
     AND m.is_deleted = false
     AND u.is_deleted = false
-    AND m.is_confirmed = true
     `,
     [teamId],
   );
@@ -81,14 +80,13 @@ const addHostMember = async (client, teamId, userId) => {
 
 //^_^// 팀에 멤버를 추가하는 쿼리
 const addMember = async (client, teamId, userIdList) => {
-  if (!userIdList) {
+  if (userIdList.length === 0) {
     return [];
   }
 
   const valuesInsertQuery = userIdList
     .map((x) => `(${teamId}, ${x})`)
     .join(', ');
-  console.log(valuesInsertQuery);
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -238,6 +236,26 @@ const getMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const checkDuplicateMemeber = async (client, teamId, userIdList) => {
+  const valuesInsertQuery = '(' + userIdList
+    .map((x) => `${x}`)
+    .join(', ')
+    + ')';
+
+  const { rows } = await client.query(
+    `
+    SELECT user_id
+    FROM member m
+    WHERE team_id = $1
+      AND user_id in ${valuesInsertQuery}
+      AND is_deleted = false 
+    `,
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllTeamByUserId,
   getAllTeamMemberByTeamId,
@@ -253,4 +271,5 @@ module.exports = {
   getInvitedTeamIdList,
   getAllInvitedTeamIdList,
   getMemberByTeamId,
+  checkDuplicateMemeber,
 };
