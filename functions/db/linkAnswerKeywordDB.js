@@ -58,7 +58,6 @@ const getTopKeywordListOnAnswer = async (client, userId) => {
    ORDER BY l.count_keyword_id DESC
    LIMIT 3
     `);
-  console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
