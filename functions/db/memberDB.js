@@ -87,7 +87,6 @@ const addMember = async (client, teamId, userIdList) => {
   const valuesInsertQuery = userIdList
     .map((x) => `(${teamId}, ${x})`)
     .join(', ');
-  console.log(valuesInsertQuery);
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -237,6 +236,26 @@ const getMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const checkDuplicateMemeber = async (client, teamId, userIdList) => {
+  const valuesInsertQuery = '(' + userIdList
+    .map((x) => `${x}`)
+    .join(', ')
+    + ')';
+
+  const { rows } = await client.query(
+    `
+    SELECT user_id
+    FROM member m
+    WHERE team_id = $1
+      AND user_id in ${valuesInsertQuery}
+      AND is_deleted = false 
+    `,
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllTeamByUserId,
   getAllTeamMemberByTeamId,
@@ -252,4 +271,5 @@ module.exports = {
   getInvitedTeamIdList,
   getAllInvitedTeamIdList,
   getMemberByTeamId,
+  checkDuplicateMemeber,
 };
