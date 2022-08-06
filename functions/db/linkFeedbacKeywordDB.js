@@ -41,6 +41,7 @@ const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
         JOIN color ON keyword.color_id = color.id
         WHERE link_feedback_keyword.feedback_id IN (${feedbackIds.join()})
         AND link_feedback_keyword.is_deleted = false
+        AND keyword.is_deleted = false
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
