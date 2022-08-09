@@ -39,7 +39,6 @@ const uploadImage = (dir) => {
       const filepath = path.join(os.tmpdir(), imageFileName);
       imageToAdd = { imageFileName, filepath, mimetype };
       file.pipe(fs.createWriteStream(filepath));
-      resizeImage(file);
       imagesToUpload.push(imageToAdd);
     });
 
