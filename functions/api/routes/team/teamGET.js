@@ -17,10 +17,19 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const myTeamList = await memberDB.getAllTeamByUserId(client, userId);
-    myTeamList.forEach((item) => (item.image = resizeImage(item.image)));
+    const myIssueList = await memberDB.getAllTeamByUserId(client, userId);
+    const myTeamList = myIssueList.filter((o) => !o.isDeleted);
+    const myTeamUniqueList = myTeamList.filter((team, index, arr) => {
+      return arr.findIndex((item) => item.id === team.id && item.name === team.name) === index;
+    });
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_TEAM_SUCCESS, myTeamList));
+    myTeamUniqueList.forEach((item) => {
+      delete item.createdAt;
+      delete item.isDeleted;
+      item.image = resizeImage(item.image);
+    });
+
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_ALL_TEAM_SUCCESS, myTeamUniqueList));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
