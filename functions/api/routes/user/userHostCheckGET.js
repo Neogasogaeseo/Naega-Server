@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
 
     const teamList = await memberDB.checkUserIsHost(client, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.USER_HOST_CHECK_SUCCESS, teamList));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.USER_HOST_CHECK_SUCCESS, { teamList }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);
