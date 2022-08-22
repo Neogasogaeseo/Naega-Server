@@ -29,7 +29,7 @@ const getIssueIdRecentListByTeamId = async (client, teamId) => {
     FROM "issue" i 
     WHERE i.team_id = $1 
     AND i.is_deleted = false
-    ORDER BY i.updated_at DESC
+    ORDER BY i.created_at DESC
     `,
 
     [teamId],
