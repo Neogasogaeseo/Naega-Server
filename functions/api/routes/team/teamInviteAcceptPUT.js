@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { memberDB, teamDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
+const resizeImage = require('../../../lib/resizeImage');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
@@ -27,10 +28,20 @@ module.exports = async (req, res) => {
     }
 
     const member = await memberDB.updateMemberAccept(client, userId, teamId);
-    const team = await memberDB.getAllTeamByUserId(client, userId);
+    const myIssueList = await memberDB.getAllTeamByUserId(client, userId);
+    const myTeamList = myIssueList.filter((o) => !o.isDeleted);
+    const myTeamUniqueList = myTeamList.filter((team, index, arr) => {
+      return arr.findIndex((item) => item.id === team.id && item.name === team.name) === index;
+    });
+
+    myTeamUniqueList.forEach((item) => {
+      delete item.createdAt;
+      delete item.isDeleted;
+      item.image = resizeImage(item.image);
+    });
     const invitedTeam = await teamDB.getNewTeamByUserId(client, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team, invitedTeam }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team: myTeamUniqueList, invitedTeam }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

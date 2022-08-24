@@ -17,6 +17,7 @@ router.get('/myKeyword', checkUser, require('./myKeywordListGET'));
 router.get('/notice/bar', checkUser, require('./userNoticeBarGET'));
 router.get('/notice', checkUser, require('./userNoticeListGET'));
 router.get('/', checkUser, require('./userInformationByTokenGET'));
+router.get('/host', checkUser, require('./userHostCheckGET'));
 router.get('/:profileId', require('./userInformationByProfileIdGET'));
 router.get('/:profileId/answer', require('./userPinnedAnswerGET'));
 router.get('/:profileId/team', require('./userPinnedTeamGET'));

@@ -57,7 +57,8 @@ module.exports = async (req, res) => {
 
     //^_^// 합치기 완료
     const map = new Map();
-    myIssue.forEach((item) => map.set(item.id, item));
+    idList.forEach((item) => map.set(item, item));
+    myIssue.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myFeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());

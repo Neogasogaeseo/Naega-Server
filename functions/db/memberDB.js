@@ -4,14 +4,16 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const getAllTeamByUserId = async (client, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT t.id, t.name, t.image
-    FROM "team" t, (SELECT team_id
-        FROM "member" m
-        WHERE user_id = $1 and is_confirmed = true
-        AND is_deleted = false) m
-    WHERE t.id = m.team_id
-    AND t.is_deleted = false
-    ORDER BY t.updated_at DESC
+    SELECT t.id, t.name, t.image, i.created_at, i.is_deleted
+    FROM "team" t
+    JOIN "member" m ON t.id = m.team_id
+    LEFT OUTER JOIN "issue" i ON t.id = i.team_id 
+    WHERE m.user_id = $1
+        AND m.is_confirmed = true
+        AND m.is_deleted = false
+        -- AND i.is_deleted = false
+        AND t.is_deleted = false
+    ORDER BY i.created_at is null ASC, i.created_at DESC
     `,
     [userId],
   );
@@ -84,9 +86,7 @@ const addMember = async (client, teamId, userIdList) => {
     return [];
   }
 
-  const valuesInsertQuery = userIdList
-    .map((x) => `(${teamId}, ${x})`)
-    .join(', ');
+  const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -236,11 +236,8 @@ const getMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const checkDuplicateMemeber = async (client, teamId, userIdList) => {
-  const valuesInsertQuery = '(' + userIdList
-    .map((x) => `${x}`)
-    .join(', ')
-    + ')';
+const checkDuplicateMember = async (client, teamId, userIdList) => {
+  const valuesInsertQuery = '(' + userIdList.map((x) => `${x}`).join(', ') + ')';
 
   const { rows } = await client.query(
     `
@@ -251,6 +248,26 @@ const checkDuplicateMemeber = async (client, teamId, userIdList) => {
       AND is_deleted = false 
     `,
     [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const checkUserIsHost = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT t.id, t.name, t.image
+      FROM "member" m
+      JOIN "team" t
+      ON m.team_id = t.id
+      WHERE m.user_id = $1
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND m.is_host = true
+      AND t.is_deleted = false
+      ORDER BY t.created_at DESC
+      `,
+    [userId],
   );
 
   return convertSnakeToCamel.keysToCamel(rows);
@@ -271,5 +288,6 @@ module.exports = {
   getInvitedTeamIdList,
   getAllInvitedTeamIdList,
   getMemberByTeamId,
-  checkDuplicateMemeber,
+  checkDuplicateMember,
+  checkUserIsHost,
 };
