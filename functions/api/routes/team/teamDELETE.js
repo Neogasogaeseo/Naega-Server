@@ -52,6 +52,9 @@ module.exports = async (req, res) => {
       const deletedIssueList = await issueDB.deleteIssueList(client, teamIssueIdList);
     }
 
+    //^_^// 해당 팀에 포함된 멤버들 전부 삭제
+    const deletedMemberList = await memberDB.deleteAllMemberByTeamId(client, teamId);
+
     //^_^// 팀 삭제
     const team = await teamDB.deleteTeam(client, teamId);
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_TEAM_SUCCESS, { team }));

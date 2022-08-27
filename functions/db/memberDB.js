@@ -273,6 +273,22 @@ const checkUserIsHost = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const deleteAllMemberByTeamId = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_deleted = true,
+    updated_at = NOW()
+    WHERE team_id = $1
+    RETURNING *
+    `,
+
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllTeamByUserId,
   getAllTeamMemberByTeamId,
@@ -290,4 +306,5 @@ module.exports = {
   getMemberByTeamId,
   checkDuplicateMember,
   checkUserIsHost,
+  deleteAllMemberByTeamId,
 };
