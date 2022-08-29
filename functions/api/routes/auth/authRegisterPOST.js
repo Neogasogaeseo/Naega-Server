@@ -8,24 +8,15 @@ const jwtHandlers = require('../../../lib/jwtHandlers');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
-  const { profileId, name, provider, accesstoken, refreshtoken } = req.body;
+  const { id: userId } = req.user;
+  const { profileId, name, provider } = req.body;
   const imageUrls = req.imageUrls;
   let client;
   let kakao_profile = '';
-  if (!profileId || !name || !provider || !accesstoken || !refreshtoken) {
+  if (!profileId || !name || !provider) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
-  try {
-    kakao_profile = await axios.get('https://kapi.kakao.com/v2/user/me', {
-      headers: {
-        Authorization: 'Bearer ' + accesstoken,
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (error) {
-    return res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.WRONG_TOKEN));
-  }
   try {
     client = await db.connect();
     const check = await userDB.checkUserProfileId(client, profileId);
