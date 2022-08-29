@@ -6,6 +6,7 @@ module.exports = {
   // 회원가입
   CREATED_USER: '회원 가입 성공',
   NEED_REGISTER: '회원 가입 필요',
+  REGISTERED_USER: '이미 유저 정보를 입력한 유저입니다.',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
