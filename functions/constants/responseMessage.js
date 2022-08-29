@@ -19,6 +19,7 @@ module.exports = {
   TOKEN_EXPIRED: '만료된 토큰입니다.',
   TOKEN_INVALID: '잘못된 토큰입니다.',
   DUPLICATE_USER_PROFILE_ID: '*중복된 아이디입니다.',
+  TOKEN_REFRESH_SUCCESS: '토큰 리프레시 성공',
 
   // 유저
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
