@@ -12,27 +12,29 @@ module.exports = async (req, res) => {
   const { profileId, name, provider } = req.body;
   const imageUrls = req.imageUrls;
   let client;
-  let kakao_profile = '';
   if (!profileId || !name || !provider) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
 
   try {
     client = await db.connect();
-    if (userProfileId) {
+    if (userId && userProfileId) {
       return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.REGISTERED_USER));
     }
-    const check = await userDB.checkUserProfileId(client, profileId);
-    if (check) {
+    const checkUser = await userDB.checkUserProfileId(client, profileId);
+    if (checkUser && checkUser.id != userId) {
       return res.status(statusCode.NO_CONTENT).send(util.fail(statusCode.NO_CONTENT, responseMessage.DUPLICATE_USER_PROFILE_ID));
     }
 
-    const tempUser = await userDB.addUser(client, profileId, name, kakao_profile.data.id, provider, imageUrls);
+    let tempUser;
+    if (imageUrls) tempUser = await userDB.updateUserInformationIncludeImage(client, userId, profileId, name, imageUrls);
+    else tempUser = await userDB.updateUserInformationWithoutImage(client, userId, profileId, name);
+
     const accesstoken = jwtHandlers.sign(tempUser);
     const refreshtoken = jwtHandlers.refresh(tempUser);
     const user = await userDB.updateRefreshTokenById(client, tempUser.id, refreshtoken);
 
-    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.CREATED_USER, { user, accesstoken }));
+    return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.REGISTER_USER_SUCCESS, { user, accesstoken }));
   } catch (error) {
     const slackMessage = `[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl} ${req.user ? `uid:${req.user.id}` : 'req.user 없음'}
     ${JSON.stringify(error)}`;
