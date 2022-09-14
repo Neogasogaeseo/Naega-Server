@@ -23,18 +23,20 @@ module.exports = async (req, res) => {
     client = await db.connect(req);
 
     //^_^// formId 답변 유무, 최신순 정렬
-    const myFormIdRecentList = await answerDB.getRecentFormIdListByUserId(client, userId);
+    const myFormIdRecentList = await answerDB.getFormIdListByUserId(client, userId);
     myFormIdRecentList.sort(function (a, b) {
       if (b.cnt === '0') return -1;
+      else if (b.createdAt < a.createdAt) return -1;
     });
 
     if (myFormIdRecentList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
     const idUnique = myFormIdRecentList.filter((form, index, arr) => {
-      return arr.findIndex((item) => item.formId === form.formId) === index;
+      return arr.findIndex((item) => item.id === form.id) === index;
     });
-    let idList = extractValues(idUnique, 'formId');
+
+    let idList = extractValues(idUnique, 'id');
     const count = idList.length;
     if (idList.length > 2) idList = idList.slice(0, 2);
 

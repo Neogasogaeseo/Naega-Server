@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   let kakao_profile;
   let authUser;
   let client;
-  if (!authenticationCode) {
+  if (!provider || !authenticationCode) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
   try {
@@ -34,7 +34,7 @@ module.exports = async (req, res) => {
     });
   } catch (error) {
     console.log(error);
-    return res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.WRONG_AUTH));
+    return res.status(statusCode.BAD_REQUEST).json(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_AUTH));
   }
 
   try {
@@ -45,7 +45,7 @@ module.exports = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(statusCode.NOT_FOUND).json(util.fail(statusCode.NOT_FOUND, responseMessage.WRONG_TOKEN));
+    return res.status(statusCode.BAD_REQUEST).json(util.fail(statusCode.BAD_REQUEST, responseMessage.WRONG_TOKEN));
   }
 
   try {
