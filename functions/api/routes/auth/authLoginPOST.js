@@ -14,7 +14,7 @@ module.exports = async (req, res) => {
   let kakao_profile;
   let authUser;
   let client;
-  if (!authenticationCode) {
+  if (!provider || !authenticationCode) {
     return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
   }
   try {
