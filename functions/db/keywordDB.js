@@ -284,7 +284,7 @@ const updateLinkFeedbackKeywordsForSet = async (client, id, idList) => {
         AND is_deleted = false
         RETURNING *
         `);
-      return convertSnakeToCamel.keysToCamel(rows);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 const getUserKeywordListCount = async (client, userId) => {
   const { rows } = await client.query(`

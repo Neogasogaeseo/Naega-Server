@@ -6,11 +6,18 @@ const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { memberDB } = require('../../../db');
 
+
+const extractValues = (arr, key) => {
+  if (!Array.isArray(arr)) return [arr[key] || null];
+  return [...new Set(arr.map((o) => o[key]).filter(Boolean))];
+};
+
 module.exports = async (req, res) => {
   const user = req.user;
   const { teamId, userIdList } = req.body;
 
-  if (!user || !teamId || !userIdList) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+
+  if (!user || !teamId || userIdList === 0) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 
   let client;
 
@@ -26,8 +33,17 @@ module.exports = async (req, res) => {
     //^_^// userIdList 중복 제거
     const uniqueUserIdList = [...new Set(JSON.parse(userIdList))];
 
+    //^_^// 이미 초대가 날라갔는지 확인
+    const duplicateMember = await memberDB.checkDuplicateMember(client, teamId, uniqueUserIdList);
+
+    const duplicateMemberUserId = extractValues(duplicateMember, 'userId');
+
+    const uniqueDuplicateMember = [...new Set(duplicateMemberUserId)];
+
+    const notInvitedUserId = uniqueUserIdList.filter((x) => x != uniqueDuplicateMember);
+
     //^_^// 새로운 유저 멤버로 추가
-    const newMemberData = await memberDB.addMember(client, teamId, uniqueUserIdList);
+    const newMemberData = await memberDB.addMember(client, teamId, notInvitedUserId);
 
     const resultData = {
       member: newMemberData,

@@ -6,9 +6,15 @@ const getFeedbackIdRecentListByUserId = async (client, userId) => {
     `
     SELECT f.id, f.issue_id
     FROM "feedback" f
+    JOIN "member" m ON m.user_id = f.tagged_user_id
+    JOIN "issue" i ON i.id = f.issue_id
     WHERE f.tagged_user_id = $1
+    AND i.team_id = m.team_id
+    AND m.is_confirmed = true
+    AND m.is_deleted = false
+    AND i.is_deleted = false
     AND f.is_deleted = false
-    ORDER BY updated_at
+    ORDER BY f.created_at DESC
     `,
     [userId],
   );
@@ -23,7 +29,7 @@ const getIssueIdRecentListByTeamId = async (client, teamId) => {
     FROM "issue" i 
     WHERE i.team_id = $1 
     AND i.is_deleted = false
-    ORDER BY i.updated_at DESC
+    ORDER BY i.created_at DESC
     `,
 
     [teamId],
@@ -105,7 +111,7 @@ const getTeamByIssueIdList = async (client, issueId) => {
 const getAllFeedbackPersonList = async (client, issueId) => {
   const { rows } = await client.query(
     `
-    SELECT f.issue_id, uu.id , uu.name, uu.image
+    SELECT f.issue_id, uu.id , uu.name, uu.image, f.created_at
     FROM feedback "f",
     (SELECT u.id, u.name, u.image
     FROM "user" u JOIN "feedback" f
@@ -114,6 +120,7 @@ const getAllFeedbackPersonList = async (client, issueId) => {
     GROUP BY u.id) uu
     WHERE uu.id=f.tagged_user_id
     AND f.issue_id in (${issueId.join(',')})
+    ORDER BY f.created_at DESC
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows);
@@ -239,6 +246,32 @@ const getTeamMemberByIssueId = async (client, issueId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAllIssueIdListByUserIdAndTeamId = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT id
+    FROM issue
+    WHERE user_id = $1
+    AND team_id = $2
+    AND is_deleted=false
+    `,
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteIssueList = async (client, issueIdList) => {
+  const { rows } = await client.query(
+    `
+    UPDATE issue
+    SET is_deleted = true
+    WHERE id IN (${issueIdList.join()})
+    RETURNING *
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getFeedbackIdRecentListByUserId,
   getIssueIdRecentListByTeamId,
@@ -256,4 +289,6 @@ module.exports = {
   deleteIssue,
   getTeamIdByIssueId,
   getTeamMemberByIssueId,
+  getAllIssueIdListByUserIdAndTeamId,
+  deleteIssueList,
 };

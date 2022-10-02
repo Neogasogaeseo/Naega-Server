@@ -6,6 +6,8 @@ module.exports = {
   // 회원가입
   CREATED_USER: '회원 가입 성공',
   NEED_REGISTER: '회원 가입 필요',
+  REGISTERED_USER: '이미 유저 정보를 입력한 유저입니다.',
+  REGISTER_USER_SUCCESS: '유저 정보 입력 성공',
 
   // 로그인
   LOGIN_SUCCESS: '로그인 성공',
@@ -17,6 +19,7 @@ module.exports = {
   TOKEN_EXPIRED: '만료된 토큰입니다.',
   TOKEN_INVALID: '잘못된 토큰입니다.',
   DUPLICATE_USER_PROFILE_ID: '*중복된 아이디입니다.',
+  TOKEN_REFRESH_SUCCESS: '토큰 리프레시 성공',
 
   // 유저
   READ_PROFILE_SUCCESS: '프로필 조회 성공',
@@ -25,6 +28,7 @@ module.exports = {
   NO_USER_SEARCH_LIST: '유저 검색 결과 없음',
   UPDATE_USER: '유저 정보 수정 성공',
   DELETE_USER_SUCCESS: '유저 삭제 성공',
+  USER_HOST_CHECK_SUCCESS: '유저 호스트 여부 확인 성공',
 
   // 키워드
   ALREADY_KEYWORD: '이미 존재하는 키워드입니다',

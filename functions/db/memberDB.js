@@ -4,14 +4,16 @@ const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 const getAllTeamByUserId = async (client, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT t.id, t.name, t.image
-    FROM "team" t, (SELECT team_id
-        FROM "member" m
-        WHERE user_id = $1 and is_confirmed = true
-        AND is_deleted = false) m
-    WHERE t.id = m.team_id
-    AND t.is_deleted = false
-    ORDER BY t.updated_at DESC
+    SELECT t.id, t.name, t.image, i.created_at, i.is_deleted
+    FROM "team" t
+    JOIN "member" m ON t.id = m.team_id
+    LEFT OUTER JOIN "issue" i ON t.id = i.team_id 
+    WHERE m.user_id = $1
+        AND m.is_confirmed = true
+        AND m.is_deleted = false
+        -- AND i.is_deleted = false
+        AND t.is_deleted = false
+    ORDER BY i.created_at is null ASC, i.created_at DESC
     `,
     [userId],
   );
@@ -56,7 +58,6 @@ const getAllTeamMemberByTeamId = async (client, teamId) => {
     WHERE m.team_id = $1
     AND m.is_deleted = false
     AND u.is_deleted = false
-    AND m.is_confirmed = true
     `,
     [teamId],
   );
@@ -81,12 +82,12 @@ const addHostMember = async (client, teamId, userId) => {
 
 //^_^// 팀에 멤버를 추가하는 쿼리
 const addMember = async (client, teamId, userIdList) => {
-  if (!userIdList) {
+  if (userIdList.length === 0) {
     return [];
   }
 
   const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
-  console.log(valuesInsertQuery);
+
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -236,6 +237,59 @@ const getMemberByTeamId = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const checkDuplicateMember = async (client, teamId, userIdList) => {
+  const valuesInsertQuery = '(' + userIdList.map((x) => `${x}`).join(', ') + ')';
+
+  const { rows } = await client.query(
+    `
+    SELECT user_id
+    FROM member m
+    WHERE team_id = $1
+      AND user_id in ${valuesInsertQuery}
+      AND is_deleted = false 
+    `,
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const checkUserIsHost = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT t.id, t.name, t.image
+      FROM "member" m
+      JOIN "team" t
+      ON m.team_id = t.id
+      WHERE m.user_id = $1
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND m.is_host = true
+      AND t.is_deleted = false
+      ORDER BY t.created_at DESC
+      `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteAllMemberByTeamId = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_deleted = true,
+    updated_at = NOW()
+    WHERE team_id = $1
+    RETURNING *
+    `,
+
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllTeamByUserId,
   getAllTeamMemberByTeamId,
@@ -251,4 +305,7 @@ module.exports = {
   getInvitedTeamIdList,
   getAllInvitedTeamIdList,
   getMemberByTeamId,
+  checkDuplicateMember,
+  checkUserIsHost,
+  deleteAllMemberByTeamId,
 };

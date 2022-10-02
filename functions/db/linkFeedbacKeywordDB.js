@@ -41,6 +41,7 @@ const getKeywordsWithFeedbackIdList = async (client, feedbackIds) => {
         JOIN color ON keyword.color_id = color.id
         WHERE link_feedback_keyword.feedback_id IN (${feedbackIds.join()})
         AND link_feedback_keyword.is_deleted = false
+        AND keyword.is_deleted = false
         `);
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -63,4 +64,21 @@ const getTopKeywordListOnFeedback = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-module.exports = { addLinkFeedbackKeyword, deleteLinkFeedbackKeyword, getKeywordsWithFeedbackIdList, getTopKeywordListOnFeedback };
+const deleteLinkFeedbackListKeyword = async (client, feedbackIdList, keywordIds) => {
+  let rows = { rows: null };
+  if (keywordIds.length > 0) {
+    rows = await client.query(/*sql*/ `
+            UPDATE link_feedback_keyword
+            SET is_deleted = true
+            WHERE feedback_id IN (${feedbackIdList.join()})
+            AND is_deleted = false
+            AND link_feedback_keyword.keyword_id IN (${keywordIds.join()})
+            RETURNING *
+
+            `);
+  }
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+module.exports = { addLinkFeedbackKeyword, deleteLinkFeedbackKeyword, getKeywordsWithFeedbackIdList, getTopKeywordListOnFeedback, deleteLinkFeedbackListKeyword };
