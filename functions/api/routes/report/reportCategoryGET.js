@@ -7,35 +7,12 @@ const slackAPI = require('../../../lib/slackAPI');
 const { reportDB } = require('../../../db');
 
 module.exports = async (req, res) => {
-  const { reportKind } = req.params;
-  if (!reportKind) {
-    return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
-  }
-
   let client;
 
-  function checkReportKind(reportKind) {
-    let kindId = 0;
-    switch (reportKind) {
-      case 'customer':
-        kindId = 1;
-        break;
-      case 'team':
-        kindId = 2;
-        break;
-      default:
-    }
-    return kindId;
-  }
   try {
     client = await db.connect(req);
 
-    const reportKindId = checkReportKind(reportKind);
-    // ^_^// 가져온 kind로 해당 카테고리 조회
-    if (reportKindId === 0) {
-      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_REPORT_CATEGORY));
-    }
-    const reportCategory = await reportDB.getReportCategory(client, reportKindId);
+    const reportCategory = await reportDB.getReportCategory(client);
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_REPORT_CATEGORY_SUCCESS, { reportCategory }));
   } catch (error) {

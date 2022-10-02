@@ -85,9 +85,7 @@ const addMember = async (client, teamId, userIdList) => {
     return [];
   }
 
-  const valuesInsertQuery = userIdList
-    .map((x) => `(${teamId}, ${x})`)
-    .join(', ');
+  const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
   console.log(valuesInsertQuery);
   const { rows: resultRows } = await client.query(
     `
@@ -109,13 +107,13 @@ const checkMemberHost = async (client, userId, teamId) => {
     FROM "member" m
     WHERE m.user_id = $1
       AND m.team_id = $2
-      AND is_host = true
-      AND is_deleted = false
+      AND m.is_host = true
+      AND m.is_deleted = false
     `,
 
     [userId, teamId],
   );
-
+  console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
