@@ -22,13 +22,19 @@ module.exports = async (req, res) => {
     }
 
     let newKeyword;
+    // ^_^// 이미 존재하는 키워드인지 검색한뒤
+
     const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
     // console.log('alreadyKeyword', alreadyKeyword);
 
     if (alreadyKeyword) {
+      // ^_^// 이미 존재한다면 해당 키워드의 count를 + 해준다
+
       newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
       // console.log('oldNewKeyword : ', newKeyword);
     } else {
+      // ^_^// 존재하지 않는 키워드라면 키워드를 생성해준다
+
       const colorId = Math.floor(Math.random() * 4) + 1;
       newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
       // console.log('realNewKeyword :', newKeyword);
