@@ -84,7 +84,8 @@ const getAllFeedbackByUserId = async (client, userId, offset, limit) => {
     SELECT f.id as feedback_id, t.id as team_id, 
       f.user_id as writer_user_id, u2.name as writer_user_name, 
       f.tagged_user_id as user_id, u.name as user_name, 
-      f.created_at, f.content, f.is_pinned
+      f.created_at, f.content, f.is_pinned,
+      i.id as issue_id, i.content as issue_content
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
@@ -110,7 +111,8 @@ const getFilteredFeedbackByFormId = async (client, userId, teamId, offset, limit
     SELECT f.id as feedback_id, t.id as team_id, 
       f.user_id as writer_user_id, u2.name as writer_user_name,
       f.tagged_user_id as user_id, u.name as user_name,
-      f.created_at, f.content, f.is_pinned
+      f.created_at, f.content, f.is_pinned,
+      i.id as issue_id, i.content as issue_content
     FROM feedback f
     JOIN "user" u ON u.id = f.tagged_user_id
     JOIN "user" u2 ON u2.id = f.user_id
