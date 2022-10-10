@@ -11,7 +11,7 @@ const getReportCategory = async (client) => {
     ON c.report_kind_id = k.id
     `,
   );
-  console.log(rows);
+  // console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows);
 };
 

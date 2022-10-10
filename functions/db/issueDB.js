@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
+const arrayHandler = require('../lib/arrayHandler');
 
 const getFeedbackIdRecentListByUserId = async (client, userId) => {
   const { rows } = await client.query(
@@ -259,6 +260,22 @@ const getAllIssueIdListByUserIdAndTeamId = async (client, userId, teamId) => {
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
+const getAllIssueIdsByUserIdAndTeamIds = async (client, userId, teamIds) => {
+  const teamIdsForQuery = `(${teamIds.join(',')})`;
+  const { rows } = await client.query(
+    /*sql*/ `
+    SELECT id
+    FROM issue
+    WHERE user_id = $1
+    AND team_id IN ${teamIdsForQuery}
+    AND is_deleted=false
+    `,
+    [userId],
+  );
+  const result = arrayHandler.extractValues(rows, 'id');
+
+  return convertSnakeToCamel.keysToCamel(result);
+};
 
 const deleteIssueList = async (client, issueIdList) => {
   const { rows } = await client.query(
@@ -290,5 +307,6 @@ module.exports = {
   getTeamIdByIssueId,
   getTeamMemberByIssueId,
   getAllIssueIdListByUserIdAndTeamId,
+  getAllIssueIdsByUserIdAndTeamIds,
   deleteIssueList,
 };

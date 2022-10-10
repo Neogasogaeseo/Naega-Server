@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
+const arrayHandler = require('../lib/arrayHandler');
 
 const addFeedback = async (client, issueId, userid, taggedUserId, content) => {
   const { rows } = await client.query(
@@ -180,7 +181,47 @@ const getAllFeedbackByUserIdAndTeamId = async (client, userId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getAllFeedbackByUserIdAndTeamIds = async (client, userId, teamIds) => {
+  const teamIdsForQuery = `(${teamIds.join(',')})`;
+  const { rows } = await client.query(
+    /*sql*/ `
+    SELECT f.id as feedback_id, t.id as team_id, 
+      f.user_id as writer_user_id, u2.name as writer_user_name, 
+      f.tagged_user_id as user_id, u.name as user_name, 
+      f.created_at, f.content, f.is_pinned
+    FROM feedback f
+    JOIN "user" u ON u.id = f.tagged_user_id
+    JOIN "user" u2 ON u2.id = f.user_id
+    JOIN issue i ON f.issue_id = i.id
+    JOIN team t ON i.team_id = t.id
+    WHERE t.id IN ${teamIdsForQuery}
+      AND (f.tagged_user_id = $1
+          OR f.user_id = $1
+          )
+      AND f.is_deleted = false
+      AND u.is_deleted = false
+      AND u2.is_deleted = false
+      AND i.is_deleted = false
+      AND t.is_deleted = falsE
+    `,
+    [userId],
+  );
+
+  const result = arrayHandler.extractValues(rows, 'id');
+  return convertSnakeToCamel.keysToCamel(result);
+};
+
 const getAllFeedbackByIssueIdList = async (client, issueIdList) => {
+  const { rows } = await client.query(/*sql*/ `
+    SELECT f.id
+    FROM feedback f
+    WHERE f.issue_id in (${issueIdList.join()})
+      AND f.is_deleted = false
+    `);
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getAllFeedbackIdsByIssueIdList = async (client, issueIdList) => {
   const { rows } = await client.query(/*sql*/ `
     SELECT f.id
     FROM feedback f
@@ -203,4 +244,6 @@ module.exports = {
   deleteFeedbackList,
   getAllFeedbackByUserIdAndTeamId,
   getAllFeedbackByIssueIdList,
+  getAllFeedbackByUserIdAndTeamIds,
+  getAllFeedbackIdsByIssueIdList,
 };

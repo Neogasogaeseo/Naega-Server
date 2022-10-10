@@ -21,7 +21,6 @@ module.exports = async (req, res) => {
     if (!checkUser) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
 
     let teamMember = await memberDB.getAllTeamMemberByTeamId(client, teamId);
-
     teamMember = teamMember.filter(function (x) {
       if (x.id != user.id) return x;
     });

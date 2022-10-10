@@ -38,8 +38,7 @@
     "passport-kakao": "^1.0.1",
     "path": "^0.12.7",
     "pg": "^8.7.1",
-    "qs": "^6.10.3",
-    "sharp": "^0.30.7"
+    "qs": "^6.10.3"
   },
   "devDependencies": {
     "eslint": "^7.6.0",
