@@ -61,13 +61,13 @@ const getTopKeywordListOnAnswer = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const deleteLinkAnswerKeyword = async (client, answerId, keywordIds) => {
+const deleteLinkAnswerKeyword = async (client, answerIds, keywordIds) => {
   let rows = { rows: null };
   if (keywordIds.length > 0) {
     rows = await client.query(/*sql*/ `
             UPDATE link_answer_keyword
             SET is_deleted = true
-            WHERE answer_id = ${answerId}
+            WHERE answer_id IN (${answerIds.join()})
             AND is_deleted = false
             AND link_answer_keyword.keyword_id IN (${keywordIds.join()})
             RETURNING *

@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
+const arrayHandler = require('../lib/arrayHandler');
 
 const getRelationship = async (client) => {
   const { rows } = await client.query(
@@ -186,7 +187,7 @@ const toggleIsPinnedAnswer = async (client, answerId) => {
 
 const getAllAnswerByUserId = async (client, userId, offset, limit) => {
   const { rows } = await client.query(
-    `
+    /*sql*/ `
     SELECT a.id as answer_id, l.form_id, f.dark_icon_image, f.title, a.content, a.is_pinned
     FROM link_user_form l
     JOIN answer a ON a.link_user_form_id = l.id
@@ -225,11 +226,11 @@ const deleteAnswer = async (client, answerId) => {
   const { rows } = await client.query(/*sql*/ `
     UPDATE answer
     SET is_deleted = true, updated_at = now()
-    WHERE id = ${answerId}
+    WHERE id IN (${answerId.join(',')})
     AND is_deleted = false
     RETURNING *
     `);
-  return convertSnakeToCamel.keysToCamel(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const getAnswerCount = async (client, linkUserFormId) => {
@@ -242,6 +243,32 @@ const getAnswerCount = async (client, linkUserFormId) => {
     `,
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const getAllCreatedFormIdsByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+    SELECT l.id
+    FROM link_user_form l
+    WHERE l.user_id = $1
+    AND l.is_deleted = false
+    `,
+    [userId],
+  );
+  const result = arrayHandler.extractValues(rows, 'id');
+
+  return convertSnakeToCamel.keysToCamel(result);
+};
+
+const deleteUserLinkForm = async (client, createdFormIds) => {
+  const { rows } = await client.query(/*sql*/ `
+    UPDATE link_user_form
+    SET is_deleted = true, updated_at = now()
+    WHERE id IN (${createdFormIds.join(',')})
+    AND is_deleted = false
+    RETURNING *
+    `);
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 module.exports = {
@@ -259,5 +286,7 @@ module.exports = {
   getAllAnswerByUserId,
   getFilteredAnswerByFormId,
   deleteAnswer,
+  deleteUserLinkForm,
   getAnswerCount,
+  getAllCreatedFormIdsByUserId,
 };
