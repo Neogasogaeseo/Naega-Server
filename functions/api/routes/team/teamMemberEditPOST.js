@@ -6,6 +6,7 @@ const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const { memberDB } = require('../../../db');
 
+
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
   return [...new Set(arr.map((o) => o[key]).filter(Boolean))];
@@ -14,6 +15,7 @@ const extractValues = (arr, key) => {
 module.exports = async (req, res) => {
   const user = req.user;
   const { teamId, userIdList } = req.body;
+
 
   if (!user || !teamId || userIdList === 0) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
 

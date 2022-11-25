@@ -9,11 +9,11 @@ const { firebaseConfig } = require('../config/firebaseClient');
 const util = require('../lib/util');
 const statusCode = require('../constants/statusCode');
 const responseMessage = require('../constants/responseMessage');
-const sharp = require('sharp');
+// const sharp = require('sharp');
 
-const resizeImage = async (input) => {
-  return sharp(input).rotate().resize(300).toBuffer();
-};
+// const resizeImage = async (input) => {
+//   return sharp(input).rotate().resize(300).toBuffer();
+// };
 
 const uploadImage = (dir) => {
   return function (req, res, next) {
