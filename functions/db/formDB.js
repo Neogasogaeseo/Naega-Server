@@ -28,7 +28,7 @@ const getAllFormRecent = async (client) => {
     `
     SELECT f.id, f.title, f.subtitle,
     f.is_new, f.is_banner, f.dark_icon_image,
-    c.code as color_code
+    c.font_code as color_code
     FROM "form" f
     JOIN "color" c
     ON f.color_id = c.id
@@ -44,7 +44,7 @@ const getAllFormPopular = async (client) => {
     `
     SELECT f.id, f.title, f.subtitle,
     f.is_new, f.is_banner, f.dark_icon_image,
-    c.code as color_code
+    c.font_code as color_code
     FROM "form" f
     LEFT JOIN (SELECT form_id, COUNT(*) cnt
       FROM "link_user_form"
@@ -118,7 +118,7 @@ const getFormBanner = async (client) => {
     `
     SELECT f.id, f.title, f.subtitle,
     f.is_new, f.is_banner, f.dark_icon_image,
-    c.code as color_code
+    c.font_code as color_code
     FROM "form" f
     JOIN "color" c
     ON f.color_id = c.id
