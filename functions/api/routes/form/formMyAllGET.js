@@ -22,21 +22,28 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    //^_^// formId 최신순 정렬
-    const myFormIdRecentList = await answerDB.getNewFormIdListByUserId(client, userId);
+    //^_^// formId 답변 유무, 최신순 정렬
+    const myFormIdRecentList = await answerDB.getFormIdListByUserId(client, userId);
+    myFormIdRecentList.sort(function (a, b) {
+      if (b.cnt === '0') return -1;
+      else if (b.createdAt < a.createdAt) return -1;
+    });
+
     if (myFormIdRecentList.length === 0) {
       return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.NO_MY_FORM_CONTENT));
     }
     const idUnique = myFormIdRecentList.filter((form, index, arr) => {
-      return arr.findIndex((item) => item.formId === form.formId) === index;
+      return arr.findIndex((item) => item.id === form.id) === index;
     });
-    let idList = extractValues(idUnique, 'formId');
+
+    let idList = extractValues(idUnique, 'id');
     const count = idList.length;
 
     //^_^// form id로 form, answer 정보 가져오기
     const myForm = await formDB.getFormByFormIdList(client, idList, userId);
     for (const form of myForm) {
       form.createdAt = dayjs(form.createdAt).format('YYYY-MM-DD');
+      form.subtitle = form.subtitle.split('\\n').join(' ');
       form.darkIconImage = resizeImage(form.darkIconImage);
       form.answer = [];
     }

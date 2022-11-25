@@ -5,8 +5,10 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
 const dayjs = require('dayjs');
-const { formDB, keywordDB } = require('../../../db');
+const arrayHandler = require('../../../lib/arrayHandler');
+const { formDB, keywordDB, answerDB, linkAnswerKeywordDB } = require('../../../db');
 const { encrypt } = require('../../../lib/crypto');
+const _ = require('lodash');
 
 module.exports = async (req, res) => {
   const user = req.user;
@@ -30,9 +32,26 @@ module.exports = async (req, res) => {
     const q = await encrypt(user.id, formId);
 
     // ^_^// count 내림차순 keyword 조회
-    const topKeyword = await keywordDB.getTopKeyword(client, user.id);
+    // const topKeyword = await keywordDB.getTopKeyword(client, user.id);
 
-    const data = { ...formDetail, q, keyword: topKeyword };
+    // ^_^// formId로 해당 폼에 해당하는 모든 answer 가져옴
+    const answers = await answerDB.getAnswerByFormIdAndUserIdForFormDetailTopKeyword(client, formId, user.id);
+    console.log('answers :', answers);
+
+    // ^_^// 가져온 answers들의 id만 추출
+    const answersIds = arrayHandler.extractValues(answers, 'id');
+    console.log('answersIds : ', answersIds);
+
+    // ^_^// 추출한 answers들로 키워드들 가져옴
+    const linkAnswerKeywords = await linkAnswerKeywordDB.getKeywordsWithAnswerIdListForFormDetail(client, answersIds);
+    const topKeywordsForThisForm = _.uniqBy(linkAnswerKeywords, 'id');
+    // console.log('linkAnswerKeywords : ', _.uniqBy(linkAnswerKeywords, 'id'));
+
+    const data = {
+      form: formDetail,
+      q,
+      keyword: topKeywordsForThisForm,
+    };
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_DETAIL_SUCCESS, data));
   } catch (error) {

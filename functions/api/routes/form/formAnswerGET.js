@@ -4,7 +4,7 @@ const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const slackAPI = require('../../../lib/slackAPI');
-const { answerDB, formDB, userDB } = require('../../../db');
+const { answerDB, formDB } = require('../../../db');
 const { decrypt } = require('../../../lib/crypto');
 const _ = require('lodash');
 
@@ -15,30 +15,42 @@ module.exports = async (req, res) => {
 
   const { userId, formId } = decrypt(q);
 
-  console.log(userId, formId);
-
   let client;
 
   try {
     client = await db.connect(req);
 
-    const relationshipList = await answerDB.getRelationship(client);
+    //^_^// 유저 정보, 폼 정보 가져오기
+    const formData = await formDB.getCreatedFormByUserIdAndFormId(client, userId, formId);
 
-    const userDataList = await userDB.getUserById(client, userId);
-    if (!userDataList) {
-      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_USER));
-    }
-    const userData = _.pick(userDataList, ['id', 'name']);
+    //^_^// 생성된 폼이 없는 경우
+    if (!formData) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_FORM));
 
-    const formData = await formDB.getForm(client, userId, formId);
-    if (!formData) {
-      return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_FORM));
-    }
+    //^_^// 관계 데이터 가져오기
+    const relationshipData = await answerDB.getRelationship(client);
+
+    //^_^// 총 답변자 수 가져오기
+    const answerCountData = await answerDB.getAnswerCount(client, formData.linkUserFormId);
+
+    //^_^// answerCount 타입 int로 변환
+    const answerCount = answerCountData.answerCount * 1;
 
     const resultData = {
-      relationship: relationshipList,
-      form: formData,
-      user: userData,
+      user: {
+        id: formData.userId,
+        name: formData.name,
+        image: formData.image,
+      },
+      answerCount: answerCount,
+      form: {
+        linkFormId: formData.linkUserFormId,
+        formId: formData.formId,
+        title: formData.title,
+        subtitle: formData.subtitle,
+        darkIconImage: formData.darkIconImage,
+        createdAt: formData.createdAt,
+      },
+      relationship: relationshipData,
     };
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_FORM_SUCCESS, resultData));

@@ -7,6 +7,7 @@ const db = require('../../../db/db');
 const { issueDB } = require('../../../db');
 const resizeImage = require('../../../lib/resizeImage');
 const slackAPI = require('../../../lib/slackAPI');
+const { result } = require('lodash');
 
 const extractValues = (arr, key) => {
   if (!Array.isArray(arr)) return [arr[key] || null];
@@ -37,12 +38,15 @@ module.exports = async (req, res) => {
     for (const issue of myIssue) {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
+    console.log(myIssue);
 
-    const myTeam = await issueDB.getTeamByIssueId(client, idList);
+    const myTeam = await issueDB.getTeamByIssueIdList(client, idList);
     myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
+    const validIdList = extractValues(myTeam, 'issueId');
+
     //^_^// feedback 당한 사람 가져오기 완료
-    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
+    const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, validIdList);
     myFeedbackPersonList.forEach((item) => (item.image = resizeImage(item.image)));
     const feedbackUnique = myFeedbackPersonList.filter((feedback, index, arr) => {
       return arr.findIndex((item) => item.name === feedback.name && item.issueId === feedback.issueId) === index;
@@ -55,14 +59,18 @@ module.exports = async (req, res) => {
 
     //^_^// 합치기 완료
     const map = new Map();
-    myIssue.forEach((item) => map.set(item.id, item));
+    idList.forEach((item) => map.set(item, item));
+    myIssue.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myFeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
     myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());
 
+    let i = 0;
     resultList.forEach((item) => {
-      item.feedback.forEach((o) => delete o.issueId);
-      delete item.team.issueId;
+      if (item.feedback) {
+        item.feedback.forEach((o) => delete o.issueId);
+        delete item.team.issueId;
+      }
     });
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.READ_MY_ISSUE_SUCCESS, resultList));

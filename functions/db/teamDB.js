@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const { ClientBase } = require('pg');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
 const getTeamById = async (client, teamId) => {
@@ -15,23 +16,6 @@ const getTeamById = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getMemberByTeamId = async (client, teamId) => {
-  const { rows } = await client.query(
-    `
-      SELECT u.id, u.profile_id, u.image, u.name, m.is_host
-      FROM "member" m JOIN "user" u
-      ON m.user_id = u.id
-      WHERE m.team_id = $1
-      AND m.is_deleted = false
-      AND u.is_deleted = false
-      ORDER BY m.is_host DESC
-      `,
-    [teamId],
-  );
-
-  return convertSnakeToCamel.keysToCamel(rows);
-};
-
 const addTeam = async (client, name, image, description) => {
   const { rows } = await client.query(
     `
@@ -46,7 +30,20 @@ const addTeam = async (client, name, image, description) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const updateTeam = async (client, teamId, teamName, description, image) => {
+const updateTeamWithoutImage = async (client, teamId, teamName, description) => {
+  const { rows } = await client.query(
+    `
+    UPDATE team t
+    SET name = $1, description = $2, updated_at = now()
+    WHERE id = $3
+    RETURNING *
+    `,
+    [teamName, description, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateTeamIncludeImage = async (client, teamId, teamName, description, image) => {
   const { rows } = await client.query(
     `
     UPDATE team t
@@ -126,4 +123,60 @@ const deleteTeam = async (client, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-module.exports = { addTeam, getTeamById, getMemberByTeamId, updateTeam, getNewTeamByUserId, getTeamListByProfileId, getIsHost, deleteTeam };
+const getTeamListByTeamIdList = async (client, teamIdList) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.name, t.image, t.is_deleted
+    FROM "team" t
+    WHERE t.id in (${teamIdList})
+    `,
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getTeamListByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.name, t.image, t.is_deleted
+    FROM team t
+    JOIN member m ON m.team_id = t.id
+    WHERE m.user_id = $1
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND t.is_deleted = false
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getTeamWithInvitation = async (client, userId, teamId) => {
+  const { rows } = await client.query(
+    `
+    SELECT t.id, t.is_deleted
+    FROM team t
+    LEFT OUTER JOIN member m
+    ON m.team_id = t.id
+    WHERE m.user_id = $1
+      AND t.id = $2
+      AND m.is_confirmed = false
+      AND m.is_deleted = false
+    `,
+    [userId, teamId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+module.exports = {
+  addTeam,
+  getTeamById,
+  updateTeamWithoutImage,
+  updateTeamIncludeImage,
+  getNewTeamByUserId,
+  getTeamListByProfileId,
+  getIsHost,
+  deleteTeam,
+  getTeamListByTeamIdList,
+  getTeamListByUserId,
+  getTeamWithInvitation,
+};

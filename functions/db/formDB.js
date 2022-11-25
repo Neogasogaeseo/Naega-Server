@@ -1,11 +1,33 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
 
+const getAllFormByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT f.id, f.title, f.subtitle,
+    f.is_new, f.is_banner, f.dark_icon_image,
+    c.code as color_code
+    FROM "form" f
+    JOIN "color" c
+    ON f.color_id = c.id
+    FULL OUTER JOIN (SELECT * FROM 
+    "link_user_form" l
+    WHERE l.is_deleted = false
+    AND l.user_id = $1) ll
+    ON ll.form_id=f.id
+    WHERE f.is_deleted = false
+    ORDER BY ll.created_at DESC, f.updated_at DESC
+    `,
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 const getAllFormRecent = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     JOIN "color" c
@@ -21,7 +43,7 @@ const getAllFormPopular = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     LEFT JOIN (SELECT form_id, COUNT(*) cnt
@@ -63,22 +85,6 @@ const getFormIsCreatedByUserIdAndFormId = async (client, formId, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getForm = async (client, userId, formId) => {
-  const { rows } = await client.query(
-    `
-    SELECT l.id as link_form_id, f.title, f.subtitle, f.light_icon_image
-    FROM link_user_form l 
-    JOIN form f ON l.form_id = f.id
-    WHERE l.user_id = $1
-      AND l.form_id = $2
-      AND l.is_deleted = false
-      AND f.is_deleted = false
-    `,
-    [userId, formId],
-  );
-  return convertSnakeToCamel.keysToCamel(rows[0]);
-};
-
 const getFormByUserIdAndFormId = async (client, userId, formId) => {
   const { rows } = await client.query(
     `
@@ -111,7 +117,7 @@ const getFormBanner = async (client) => {
   const { rows } = await client.query(
     `
     SELECT f.id, f.title, f.subtitle,
-    f.is_new, f.is_banner, f.light_icon_image,
+    f.is_new, f.is_banner, f.dark_icon_image,
     c.code as color_code
     FROM "form" f
     JOIN "color" c
@@ -148,6 +154,7 @@ const getFormByFormIdAndUserId = async (client, formId, userId) => {
     AND f.id = $1
     AND l.user_id = $2
     `,
+
     [formId, userId],
   );
   return convertSnakeToCamel.keysToCamel(rows[0]);
@@ -168,20 +175,58 @@ const getFormDetail = async (client, formId, userId) => {
 const getFormByFormIdList = async (client, formIdList, userId) => {
   const { rows } = await client.query(
     `
-    SELECT f.id, f.title, f.dark_icon_image, f.created_at
+    SELECT f.id, f.title, f.subtitle, f.dark_icon_image, l.created_at
     FROM "form" f
     JOIN "link_user_form" l
     ON l.form_id = f.id
     WHERE f.is_deleted = false
+    AND l.is_deleted = false
     AND l.user_id = $1
     AND f.id in (${formIdList.join(',')})
+    ORDER BY l.created_at DESC
     `,
     [userId],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
+const getCreatedFormListByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.form_id, f.title, f.dark_icon_image, l.is_deleted
+    FROM link_user_form l
+    JOIN "form" f ON l.form_id = f.id
+    WHERE l.user_id = $1
+    AND l.is_deleted = false
+    `,
+
+    [userId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getCreatedFormByUserIdAndFormId = async (client, userId, formId) => {
+  const { rows } = await client.query(
+    `
+    SELECT l.id as link_user_form_id, l.created_at,
+      l.user_id, u.name, u.image,
+      l.form_id, f.title, f.subtitle, f.dark_icon_image
+    FROM link_user_form l
+    JOIN "user" u ON l.user_id = u.id
+    JOIN form f ON l.form_id = f.id
+    WHERE u.id = $1
+      AND f.id = $2
+      AND l.is_deleted = false
+      AND u.is_deleted = false
+      AND f.is_deleted = false
+  `,
+    [userId, formId],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
 module.exports = {
+  getAllFormByUserId,
   getAllFormRecent,
   getFormByFormIdAndUserId,
   getAllFormPopular,
@@ -189,9 +234,10 @@ module.exports = {
   getFormByUserIdAndFormId,
   getFormIsCreatedByUserIdAndFormId,
   addForm,
-  getForm,
   getFormBanner,
   getFormDetail,
   getFormByFormId,
   getFormByFormIdList,
+  getCreatedFormListByUserId,
+  getCreatedFormByUserIdAndFormId,
 };

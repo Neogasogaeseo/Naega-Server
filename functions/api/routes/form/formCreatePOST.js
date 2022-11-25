@@ -12,6 +12,7 @@ module.exports = async (req, res) => {
   const { formId } = req.body;
 
   if (!userId || !formId) return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NULL_VALUE));
+  if (isNaN(formId)) return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.FORM_CREATE_FAIL));
 
   let client;
 

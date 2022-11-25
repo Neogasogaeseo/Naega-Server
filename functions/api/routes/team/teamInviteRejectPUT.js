@@ -5,6 +5,7 @@ const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
 const { memberDB, teamDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
+const resizeImage = require('../../../lib/resizeImage');
 
 module.exports = async (req, res) => {
   const { id: userId } = req.user;
@@ -17,11 +18,30 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    const targetTeam = await teamDB.getTeamById(client, teamId);
+    if (!targetTeam) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_TEAM));
+    }
+    const targetInvitation = await teamDB.getTeamWithInvitation(client, userId, teamId);
+    if (!targetInvitation) {
+      return res.status(statusCode.BAD_REQUEST).send(util.success(statusCode.BAD_REQUEST, responseMessage.NO_INVITATION));
+    }
+
     const member = await memberDB.updateMemberReject(client, userId, teamId);
-    const team = await memberDB.getAllTeamByUserId(client, userId);
+    const myIssueList = await memberDB.getAllTeamByUserId(client, userId);
+    const myTeamList = myIssueList.filter((o) => !o.isDeleted);
+    const myTeamUniqueList = myTeamList.filter((team, index, arr) => {
+      return arr.findIndex((item) => item.id === team.id && item.name === team.name) === index;
+    });
+
+    myTeamUniqueList.forEach((item) => {
+      delete item.createdAt;
+      delete item.isDeleted;
+      item.image = resizeImage(item.image);
+    });
     const invitedTeam = await teamDB.getNewTeamByUserId(client, userId);
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team, invitedTeam }));
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.POST_MEMBER_SUCCESS, { member, team: myTeamUniqueList, invitedTeam }));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

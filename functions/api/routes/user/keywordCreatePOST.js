@@ -3,7 +3,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { keywordDB } = require('../../../db');
+const { keywordDB, userDB } = require('../../../db');
 const slackAPI = require('../../../lib/slackAPI');
 
 module.exports = async (req, res) => {
@@ -15,27 +15,31 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
-    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
+    const checkUser = await userDB.getUserById(client, userId);
 
-    if (alreadyKeyword) {
-      // alreadyKeyword.colorCode = alreadyKeyword.code;
-      // delete alreadyKeyword.code;
-
-      return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ALREADY_KEYWORD, alreadyKeyword));
+    if (!checkUser) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_USER));
     }
 
-    const colorId = Math.floor(Math.random() * 10);
-    const newKeyword = await keywordDB.addKeyword(client, name, userId, colorId);
+    let newKeyword;
+    // ^_^// 이미 존재하는 키워드인지 검색한뒤
 
-    console.log('newKeyword :', newKeyword);
+    const alreadyKeyword = await keywordDB.checkKeyword(client, name, userId);
+    // console.log('alreadyKeyword', alreadyKeyword);
 
-    const returnedKeyword = await keywordDB.checkKeyword(client, name, userId);
-    // returnedKeyword.colorCode = returnedKeyword.code;
-    // delete returnedKeyword.code;
+    if (alreadyKeyword) {
+      // ^_^// 이미 존재한다면 해당 키워드의 count를 + 해준다
 
-    console.log('returnedKeyword :', returnedKeyword);
+      newKeyword = await keywordDB.addKeyword(client, alreadyKeyword.id);
+      // console.log('oldNewKeyword : ', newKeyword);
+    } else {
+      // ^_^// 존재하지 않는 키워드라면 키워드를 생성해준다
 
-    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, returnedKeyword));
+      const colorId = Math.floor(Math.random() * 4) + 1;
+      newKeyword = await keywordDB.addNewKeyword(client, name, userId, colorId);
+      // console.log('realNewKeyword :', newKeyword);
+    }
+    res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ADD_KEYWORD_SUCCESS, newKeyword));
   } catch (error) {
     functions.logger.error(`[ERROR] [${req.method.toUpperCase()}] ${req.originalUrl}`, `[CONTENT] ${error}`);
     console.log(error);

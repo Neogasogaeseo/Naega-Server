@@ -17,6 +17,16 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    //^_^// 해당 피드백 get
+    const feedback = await feedbackDB.getFeedbackById(client, feedbackId);
+    if (!feedback) {
+      return res.status(statusCode.BAD_REQUEST).send(util.fail(statusCode.BAD_REQUEST, responseMessage.NO_ISSUE_FEEDBACK));
+    }
+    //^_^// 유저가 작성자/피드백 받은 사람 중 한명인지 확인
+    if (feedback.userId !== user.id && feedback.taggedUserId !== user.id) {
+      return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_AUTH_MEMBER));
+    }
+
     const toggleIsPinnedFeedback = await feedbackDB.toggleIsPinnedFeedback(client, feedbackId);
 
     console.log('toggleIsPinnedFeedback :', toggleIsPinnedFeedback);

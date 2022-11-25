@@ -5,8 +5,13 @@ const uploadImage = require('../../../middlewares/uploadImage');
 
 router.post('/', checkUser, uploadImage('team'), require('./teamPOST'));
 router.post('/issue', checkUser, uploadImage('issue'), require('./teamIssuePOST'));
+router.put('/issue/:issueId', checkUser, uploadImage('issue'), require('./teamIssuePUT'));
+router.delete('/issue/:issueId', checkUser, require('./teamIssueDELETE'));
 
-router.put('/edit', checkUser, require('./teamPUT'));
+router.get('/edit/:teamId', checkUser, require('./teamEditGET'));
+router.put('/edit/:teamId', checkUser, uploadImage('team'), require('./teamEditPUT'));
+router.get('/edit/member/:teamId', checkUser, require('./teamMemberEditGET'));
+router.post('/edit/member', checkUser, require('./teamMemberEditPOST'));
 
 router.get('/', checkUser, require('./teamGET'));
 router.get('/issue', checkUser, require('./teamIssueGET'));
@@ -19,6 +24,8 @@ router.put('/invite/reject', checkUser, require('./teamInviteRejectPUT'));
 router.get('/issue/category', require('./teamIssueCategoryGET'));
 router.get('/member/:teamId', checkUser, require('./teamMemberListGET'));
 router.post('/feedback', checkUser, require('./teamFeedbackCreatePOST'));
+router.put('/feedback/:feedbackId', checkUser, require('./teamFeedbackPUT'));
+router.delete('/feedback/:feedbackId', checkUser, require('./teamFeedbackDELETE'));
 
 router.get('/issue/:issueId', checkUser, require('./teamIssueDetailGET'));
 router.get('/issue/:issueId/feedback', checkUser, require('./teamIssueDetailFeedbackGET'));
@@ -27,5 +34,8 @@ router.put('/feedback/:feedbackId/pin', checkUser, require('./teamIssueDetailFee
 router.put('/host', checkUser, require('./teamHostPUT'));
 router.delete('/member', checkUser, require('./teamMemberDELETE'));
 router.delete('/', checkUser, require('./teamDELETE'));
+
+router.get('/feedback/pick', checkUser, require('./teamFeedbackPickGET'));
+router.get('/feedback/pick/team', checkUser, require('./teamFeedbackPickTeamListGET'));
 
 module.exports = router;

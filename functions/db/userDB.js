@@ -91,32 +91,35 @@ const getUserById = async (client, userId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
-const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
-  //^_^// 해당 팀에 존재하는 멤버 정보를 가져오는 쿼리
-  const { rows: existMemberRows } = await client.query(
-    `
-    SELECT u.profile_id
-    FROM "user" u JOIN member
-      ON u.id = member.user_id
-    WHERE member.team_id = ${teamId}
-    `,
-  );
-  console.log(existMemberRows);
-
-  const profileIdSet = '(' + existMemberRows.map((o) => `'${o.profile_id}'`).join(', ') + ')';
-  console.log(profileIdSet);
-
-  //^_^// 해당 팀에 존재하지 않고, 삭제되지 않은 유저 검색 결과 가져오는 쿼리
+const getUserListByProfileIdTeamId = async (client, profileId, userId, teamId, offset, limit) => {
   const { rows } = await client.query(
     `
-    SELECT u.id, u.profile_id, u.name, u.image
-    FROM "user" u
-    WHERE profile_id ILIKE '%' || $1 || '%'
-      AND is_deleted = FALSE
-      AND u.profile_id NOT IN ${profileIdSet}
+    (
+      SELECT u.id, u.profile_id, u.name, u.image, m.team_id, m.is_confirmed, m.is_deleted
+      FROM "user" u
+      JOIN member m ON m.user_id = u.id
+      WHERE profile_id ILIKE '%' || $1 || '%'
+          AND u.id != $2
+          AND m.team_id = $3
+          AND u.is_deleted = FALSE
+          AND m.is_deleted = FALSE
+  )
+  UNION
+  (
+      SELECT u.id, profile_id, name, image, null, null, null
+      FROM "user" u
+      WHERE profile_id ILIKE '%' || $1 || '%'
+          AND u.id != $2
+          AND u.is_deleted = FALSE
+          AND id NOT IN (SELECT user_id
+                      FROM member
+                      WHERE team_id = $3
+                      AND is_deleted = false)
+  )
+  OFFSET $5 LIMIT $4;        
     `,
 
-    [profileId],
+    [profileId, userId, teamId, limit, offset],
   );
   if (!rows) {
     return null;
@@ -124,7 +127,7 @@ const getUserListByProfileIdTeamId = async (client, profileId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows);
 };
 
-const getUserListByOnlyProfileId = async (client, profileId, userId) => {
+const getUserListByOnlyProfileId = async (client, profileId, userId, offset, limit) => {
   const { rows } = await client.query(
     `
     SELECT u.id, u.profile_id, u.name, u.image
@@ -132,9 +135,10 @@ const getUserListByOnlyProfileId = async (client, profileId, userId) => {
     WHERE profile_id ILIKE '%' || $1 || '%'
       AND id != $2
       AND is_deleted = FALSE
+    LIMIT $3 OFFSET $4
     `,
 
-    [profileId, userId],
+    [profileId, userId, limit, offset],
   );
   return convertSnakeToCamel.keysToCamel(rows);
 };
@@ -152,7 +156,7 @@ const getUserByAccessToken = async (client, userId) => {
 };
 
 const getUserListByProfileId = async (client, profileId) => {
-  const { rows } = await client.query (
+  const { rows } = await client.query(
     `
     SELECT id, name, profile_id, image
     FROM "user"
@@ -162,6 +166,45 @@ const getUserListByProfileId = async (client, profileId) => {
     [profileId],
   );
   console.log(rows[0]);
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateUserInformationWithoutImage = async (client, userId, profileId, name) => {
+  const { rows } = await client.query(
+    `
+    UPDATE "user"
+    SET profile_id = $2, name = $3, updated_at = now()
+    WHERE id = $1
+    RETURNING *
+    `,
+    [userId, profileId, name],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const updateUserInformationIncludeImage = async (client, userId, profileId, name, image) => {
+  const { rows } = await client.query(
+    `
+    UPDATE "user" u
+    SET profile_id = $2, name = $3, image = $4, updated_at = now()
+    WHERE id = $1
+    RETURNING *   
+    `,
+    [userId, profileId, name, image],
+  );
+  return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteUser = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+        UPDATE "user" u
+        SET is_deleted = true, updated_at = NOW()
+        WHERE id = $1
+        RETURNING *   
+    `,
+    [userId],
+  );
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
@@ -176,4 +219,7 @@ module.exports = {
   getUserByAccessToken,
   gettaggedUserProfileId,
   getUserListByProfileId,
+  updateUserInformationWithoutImage,
+  updateUserInformationIncludeImage,
+  deleteUser,
 };

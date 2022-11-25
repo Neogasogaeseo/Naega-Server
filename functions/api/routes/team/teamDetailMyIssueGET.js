@@ -4,7 +4,7 @@ const util = require('../../../lib/util');
 const statusCode = require('../../../constants/statusCode');
 const responseMessage = require('../../../constants/responseMessage');
 const db = require('../../../db/db');
-const { issueDB } = require('../../../db');
+const { issueDB, memberDB, teamDB } = require('../../../db');
 const resizeImage = require('../../../lib/resizeImage');
 const slackAPI = require('../../../lib/slackAPI');
 
@@ -24,6 +24,11 @@ module.exports = async (req, res) => {
   try {
     client = await db.connect(req);
 
+    const member = await memberDB.getMemberByTeamId(client, teamId);
+    if (member.length < 1) return res.status(statusCode.NOT_FOUND).send(util.fail(statusCode.NOT_FOUND, responseMessage.NO_TEAM));
+    const user = member.find((m) => m.id == userId);
+    if (!user) return res.status(statusCode.FORBIDDEN).send(util.fail(statusCode.FORBIDDEN, responseMessage.NO_MEMBER));
+
     //^_^// issueId 최신순 정렬 완료
     const myIssueIdRecentList = await issueDB.getIssueIdRecentListByTeamIdAndUserId(client, teamId, userId);
     if (myIssueIdRecentList.length === 0) {
@@ -36,8 +41,8 @@ module.exports = async (req, res) => {
     for (const issue of myIssue) {
       issue.createdAt = dayjs(issue.createdAt).format('YYYY-MM-DD');
     }
-    const myTeam = await issueDB.getTeamByIssueId(client, idList);
-    myTeam.forEach((item) => (item.image = resizeImage(item.iamge)));
+    const myTeam = await issueDB.getTeamByIssueIdList(client, idList);
+    myTeam.forEach((item) => (item.image = resizeImage(item.image)));
 
     //^_^// feedback 당한 사람 가져오기 완료
     const myFeedbackPersonList = await issueDB.getAllFeedbackPersonList(client, idList);
@@ -55,11 +60,16 @@ module.exports = async (req, res) => {
     const map = new Map();
     myIssue.forEach((item) => map.set(item.id, item));
     myFeedbackList.forEach((item) => map.set(item.id, { ...map.get(item.id), ...item }));
+    const tempList = Array.from(map.values());
+    tempList.forEach((item) => {
+      if (item.feedback) item.feedback.forEach((o) => delete o.issueId);
+      else item.feedback = [];
+    });
+
     myTeam.forEach((team) => map.set(team.issueId, { ...map.get(team.issueId), team }));
     const resultList = Array.from(map.values());
 
     resultList.forEach((item) => {
-      item.feedback.forEach((o) => delete o.issueId);
       delete item.team.issueId;
     });
 

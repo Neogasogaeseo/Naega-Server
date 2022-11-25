@@ -1,29 +1,49 @@
 const _ = require('lodash');
 const convertSnakeToCamel = require('../lib/convertSnakeToCamel');
+const arrayHandler = require('../lib/arrayHandler');
 
 const getAllTeamByUserId = async (client, userId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT t.id, t.name, t.image
-    FROM "team" t, (SELECT team_id
-        FROM "member" m
-        WHERE user_id = $1 and is_confirmed = true
-        AND is_deleted = false) m
-    WHERE t.id = m.team_id
-    AND t.is_deleted = false
-    ORDER BY t.updated_at DESC
+    SELECT t.id, t.name, t.image, i.created_at, i.is_deleted
+    FROM "team" t
+    JOIN "member" m ON t.id = m.team_id
+    LEFT OUTER JOIN "issue" i ON t.id = i.team_id 
+    WHERE m.user_id = $1
+        AND m.is_confirmed = true
+        AND m.is_deleted = false
+        -- AND i.is_deleted = false
+        AND t.is_deleted = false
+    ORDER BY i.created_at is null ASC, i.created_at DESC
     `,
     [userId],
   );
 
   return convertSnakeToCamel.keysToCamel(rows);
 };
+const getAllTeamIdsByUserId = async (client, userId) => {
+  const { rows } = await client.query(
+    /*sql*/ `
+    SELECT t.id
+    FROM "team" t
+    JOIN "member" m ON t.id = m.team_id
+    WHERE m.user_id = $1
+        AND m.is_confirmed = true
+        AND m.is_deleted = false
+        AND t.is_deleted = false
+    ORDER BY t.id ASC
+    `,
+    [userId],
+  );
+  const result = arrayHandler.extractValues(rows, 'id');
+  return convertSnakeToCamel.keysToCamel(result);
+};
 
 const updateMemberAccept = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_confirmed = true
+    SET is_confirmed = true, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     RETURNING *
@@ -37,7 +57,7 @@ const updateMemberReject = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true
+    SET is_deleted = true, updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
     RETURNING *
@@ -50,12 +70,13 @@ const updateMemberReject = async (client, userId, teamId) => {
 const getAllTeamMemberByTeamId = async (client, teamId) => {
   const { rows } = await client.query(
     /*sql*/ `
-    SELECT u.id, u.name, u.image
+    SELECT u.id, u.name, u.profile_id, u.image, m.is_confirmed, m.is_host
     FROM member m
     JOIN "user" u ON u.id = m.user_id
     WHERE m.team_id = $1
-    AND m.is_deleted = FALSE
-    AND u.is_deleted = FALSE
+    AND m.is_confirmed = true
+    AND m.is_deleted = false
+    AND u.is_deleted = false
     `,
     [teamId],
   );
@@ -80,13 +101,12 @@ const addHostMember = async (client, teamId, userId) => {
 
 //^_^// 팀에 멤버를 추가하는 쿼리
 const addMember = async (client, teamId, userIdList) => {
-  if (!userIdList) {
+  if (userIdList.length === 0) {
     return [];
   }
 
-  const valuesInsertQuery = JSON.parse(userIdList)
-    .map((x) => `(${teamId}, ${x})`)
-    .join(', ');
+  const valuesInsertQuery = userIdList.map((x) => `(${teamId}, ${x})`).join(', ');
+
   const { rows: resultRows } = await client.query(
     `
         INSERT INTO member
@@ -107,13 +127,13 @@ const checkMemberHost = async (client, userId, teamId) => {
     FROM "member" m
     WHERE m.user_id = $1
       AND m.team_id = $2
-      AND is_host = true
-      AND is_deleted = false
+      AND m.is_host = true
+      AND m.is_deleted = false
     `,
 
     [userId, teamId],
   );
-
+  console.log(rows);
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
@@ -126,6 +146,7 @@ const checkMemberTeam = async (client, userId, teamId) => {
     WHERE m.user_id = $1
       AND m.team_id = $2
       AND is_deleted = false
+      AND is_confirmed = true
     `,
 
     [userId, teamId],
@@ -138,7 +159,7 @@ const deleteMember = async (client, userId, teamId) => {
   const { rows } = await client.query(
     `
     UPDATE member
-    SET is_deleted = true, is_confirmed = false,
+    SET is_deleted = true,
     updated_at = NOW()
     WHERE user_id = $1
     AND team_id = $2
@@ -149,6 +170,24 @@ const deleteMember = async (client, userId, teamId) => {
   );
 
   return convertSnakeToCamel.keysToCamel(rows[0]);
+};
+
+const deleteMembersFromAllTeam = async (client, userId, teamIds) => {
+  const teamIdsForQuery = `(${teamIds.join(',')})`;
+
+  const { rows } = await client.query(
+    /*sql*/ `
+    UPDATE member
+    SET is_deleted = true,
+    updated_at = NOW()
+    WHERE user_id = $1
+    AND team_id IN ${teamIdsForQuery}
+    RETURNING *
+    `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
 };
 
 const updateOldHost = async (client, userId, teamId) => {
@@ -186,9 +225,112 @@ const updateNewHost = async (client, memberId, teamId) => {
   return convertSnakeToCamel.keysToCamel(rows[0]);
 };
 
+const getInvitedTeamIdList = async (client, userId, offset, limit) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.team_id, m.is_confirmed, m.is_deleted, m.updated_at
+    FROM "member" m
+    WHERE m.user_id = $1
+    AND m.is_host = false
+    ORDER BY updated_at DESC
+    LIMIT $3 OFFSET $2
+    `,
+    [userId, offset, limit],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getAllInvitedTeamIdList = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+    SELECT m.team_id, m.is_confirmed, m.is_deleted
+    FROM "member" m
+    WHERE m.user_id = $1
+    AND m.is_host = false
+    ORDER BY updated_at DESC
+    `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const getMemberByTeamId = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+      SELECT u.id, u.profile_id, u.image, u.name, m.is_host
+      FROM "member" m JOIN "user" u
+      ON m.user_id = u.id
+      WHERE m.team_id = $1
+      AND m.is_deleted = false
+      AND u.is_deleted = false
+      AND m.is_confirmed = true
+      ORDER BY m.is_host DESC
+      `,
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const checkDuplicateMember = async (client, teamId, userIdList) => {
+  const valuesInsertQuery = '(' + userIdList.map((x) => `${x}`).join(', ') + ')';
+
+  const { rows } = await client.query(
+    `
+    SELECT user_id
+    FROM member m
+    WHERE team_id = $1
+      AND user_id in ${valuesInsertQuery}
+      AND is_deleted = false 
+    `,
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const checkUserIsHost = async (client, userId) => {
+  const { rows } = await client.query(
+    `
+      SELECT t.id, t.name, t.image
+      FROM "member" m
+      JOIN "team" t
+      ON m.team_id = t.id
+      WHERE m.user_id = $1
+      AND m.is_confirmed = true
+      AND m.is_deleted = false
+      AND m.is_host = true
+      AND t.is_deleted = false
+      ORDER BY t.created_at DESC
+      `,
+    [userId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
+const deleteAllMemberByTeamId = async (client, teamId) => {
+  const { rows } = await client.query(
+    `
+    UPDATE member
+    SET is_deleted = true,
+    updated_at = NOW()
+    WHERE team_id = $1
+    RETURNING *
+    `,
+
+    [teamId],
+  );
+
+  return convertSnakeToCamel.keysToCamel(rows);
+};
+
 module.exports = {
   getAllTeamByUserId,
   getAllTeamMemberByTeamId,
+  getAllTeamIdsByUserId,
   addMember,
   checkMemberHost,
   updateMemberAccept,
@@ -196,6 +338,13 @@ module.exports = {
   addHostMember,
   checkMemberTeam,
   deleteMember,
+  deleteMembersFromAllTeam,
   updateOldHost,
   updateNewHost,
+  getInvitedTeamIdList,
+  getAllInvitedTeamIdList,
+  getMemberByTeamId,
+  checkDuplicateMember,
+  checkUserIsHost,
+  deleteAllMemberByTeamId,
 };
