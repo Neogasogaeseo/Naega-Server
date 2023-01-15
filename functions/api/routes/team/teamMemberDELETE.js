@@ -30,9 +30,12 @@ module.exports = async (req, res) => {
     const userIssueList = await issueDB.getAllIssueIdListByUserIdAndTeamId(client, userId, teamId);
     const userIssueIdList = arrayHandler.extractValues(userIssueList, 'id');
 
+    let userIssueFeedbackIdList = [];
     //^_^// 해당 이슈에 포함되는 피드백 아이디 추출
-    const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, userIssueIdList);
-    const userIssueFeedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
+    if (userIssueIdList.length > 0) {
+      const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, userIssueIdList);
+      userIssueFeedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
+    }
 
     //^_^// 해당 팀 멤버가 포함된 또는 쓴 피드백 조회 및 아이디 추출
     const userFeedbackList = await feedbackDB.getAllFeedbackByUserIdAndTeamId(client, userId, teamId);
@@ -42,28 +45,37 @@ module.exports = async (req, res) => {
     const feedbackIdList = [...userIssueFeedbackIdList, ...userFeedbackIdList];
 
     if (feedbackIdList.length > 0) {
+      console.log(2);
       //^_^// 해당 피드백에 포함된 키워드들 추출
       const linkFeedbackKeywords = await linkFeedbacKeywordDB.getKeywordsWithFeedbackIdList(client, feedbackIdList);
 
+      console.log(3);
       //^_^// 삭제한 feedback에 담긴 키워드 삭제
       const keywordIdsBeforeUpdate = arrayHandler.extractValues(linkFeedbackKeywords, 'id');
       if (keywordIdsBeforeUpdate.length > 0) {
+        console.log(4);
         const deleteLinkFeedbackKeyword = await linkFeedbacKeywordDB.deleteLinkFeedbackListKeyword(client, feedbackIdList, keywordIdsBeforeUpdate);
 
+        console.log(5);
         //^_^// 삭제한 keyword count-- 업데이트
         const deleteKeywords = await keywordDB.keywordCountDelete(client, keywordIdsBeforeUpdate);
       }
+      console.log(6);
       //^_^// 쓴 피드백 삭제
       const deletedFeedbackList = await feedbackDB.deleteFeedbackList(client, feedbackIdList);
     }
 
+    console.log(7);
     //^_^// 해당 멤버가 쓴 이슈 삭제
     if (userIssueIdList.length > 0) {
+      console.log(8);
       const deletedIssueList = await issueDB.deleteIssueList(client, userIssueIdList);
     }
 
+    console.log(9);
     //^_^// 해당 멤버 삭제
     const member = await memberDB.deleteMember(client, userId, teamId);
+    console.log(10);
 
     res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.DELETE_MEMBER_SUCCESS, { member }));
   } catch (error) {

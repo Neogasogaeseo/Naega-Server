@@ -31,10 +31,12 @@ module.exports = async (req, res) => {
     const userIssueList = await issueDB.getAllIssueIdListByUserIdAndTeamId(client, userId, teamId);
     const userIssueIdList = arrayHandler.extractValues(userIssueList, 'id');
 
+    let userIssueFeedbackIdList = [];
     //^_^// 해당 이슈에 포함되는 피드백 아이디 추출
-    const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, userIssueIdList);
-    const userIssueFeedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
-
+    if (userIssueIdList.length > 0) {
+      const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, userIssueIdList);
+      userIssueFeedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
+    }
     //^_^// 해당 팀 멤버가 포함된 또는 쓴 피드백 조회 및 아이디 추출
     const userFeedbackList = await feedbackDB.getAllFeedbackByUserIdAndTeamId(client, userId, teamId);
     const userFeedbackIdList = arrayHandler.extractValues(userFeedbackList, 'feedbackId');

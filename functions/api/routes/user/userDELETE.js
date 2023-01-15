@@ -52,9 +52,14 @@ module.exports = async (req, res) => {
     const teamIds = await memberDB.getAllTeamIdsByUserId(client, userId);
     //^_^// 해당 유저가 포함된 팀에서 해당 유저가 생성한 issue id 추출
     const issueIds = await issueDB.getAllIssueIdsByUserIdAndTeamIds(client, userId, teamIds);
+
+    let userIssueFeedbackIds = [];
+
     //^_^// 유저가 생성한 issue에 포함되는 피드백 아이디 추출
-    let userIssueFeedbackIds = await feedbackDB.getAllFeedbackByIssueIdList(client, issueIds);
-    userIssueFeedbackIds = arrayHandler.extractValues(userIssueFeedbackIds, 'id');
+    if (issueIds.length > 0) {
+      let userIssueFeedbackIds = await feedbackDB.getAllFeedbackByIssueIdList(client, issueIds);
+      userIssueFeedbackIds = arrayHandler.extractValues(userIssueFeedbackIds, 'id');
+    }
     //^_^// 해당 팀 멤버가 포함된 또는 쓴 피드백 조회 및 아이디 추출
     const userFeedbackIds = await feedbackDB.getAllFeedbackByUserIdAndTeamIds(client, userId, teamIds);
     //^_^// 위의 이슈에 포함된 피드백 아이디 + 해당 멤버가 포함되거나 쓴 피드백 아이디

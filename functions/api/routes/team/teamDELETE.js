@@ -28,9 +28,12 @@ module.exports = async (req, res) => {
     const teamIssueList = await issueDB.getIssueIdRecentListByTeamId(client, teamId);
     const teamIssueIdList = arrayHandler.extractValues(teamIssueList, 'id');
 
-    //^_^// 해당 이슈에 포함된 피드백 아이디 추출
-    const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, teamIssueIdList);
-    const feedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
+    let feedbackIdList = [];
+    //^_^// 해당 이슈에 포함되는 피드백 아이디 추출
+    if (teamIssueIdList.length > 0) {
+      const userIssueFeedbackList = await feedbackDB.getAllFeedbackByIssueIdList(client, teamIssueIdList);
+      feedbackIdList = arrayHandler.extractValues(userIssueFeedbackList, 'id');
+    }
 
     if (feedbackIdList.length > 0) {
       //^_^// 해당 피드백에 포함된 키워드들 추출
