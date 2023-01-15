@@ -42,14 +42,14 @@ module.exports = async (req, res) => {
 
     // ^_^// 삭제한 answer에 담긴 키워드 삭제 (answer-keywordDB)
     const keywordIdsForDelete = arrayHandler.extractValues(linkAnswerKeywords, 'id');
-    const deleteLinkFeedbackKeyword = await linkAnswerKeywordDB.deleteLinkAnswerKeyword(client, answerId, keywordIdsForDelete);
+    const deleteLinkFeedbackKeyword = await linkAnswerKeywordDB.deleteLinkAnswerKeyword(client, [answerId], keywordIdsForDelete);
     console.log('deleteLinkFeedbackKeyword : ', deleteLinkFeedbackKeyword);
 
     // // ^_^// 삭제한 keyword count-- 업데이트
     const deleteKeywords = await keywordDB.keywordCountDelete(client, keywordIdsForDelete);
 
     // // ^_^// answer 삭제 (with answerId)
-    const deleteAnswer = await answerDB.deleteAnswer(client, answerId);
+    const deleteAnswer = await answerDB.deleteAnswer(client, [answerId]);
 
     return res.status(statusCode.OK).send(util.success(statusCode.OK, responseMessage.ANSWER_DELETE_SUCCESS));
   } catch (error) {
