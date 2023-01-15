@@ -74,7 +74,6 @@ const deleteLinkFeedbackListKeyword = async (client, feedbackIdList, keywordIds)
             AND is_deleted = false
             AND link_feedback_keyword.keyword_id IN (${keywordIds.join()})
             RETURNING *
-
             `);
   }
 

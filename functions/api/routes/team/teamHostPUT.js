@@ -48,11 +48,12 @@ module.exports = async (req, res) => {
 
       //^_^// 삭제한 feedback에 담긴 키워드 삭제
       const keywordIdsBeforeUpdate = arrayHandler.extractValues(linkFeedbackKeywords, 'id');
-      const deleteLinkFeedbackKeyword = await linkFeedbacKeywordDB.deleteLinkFeedbackListKeyword(client, feedbackIdList, keywordIdsBeforeUpdate);
+      if (keywordIdsBeforeUpdate.length > 0) {
+        const deleteLinkFeedbackKeyword = await linkFeedbacKeywordDB.deleteLinkFeedbackListKeyword(client, feedbackIdList, keywordIdsBeforeUpdate);
 
-      //^_^// 삭제한 keyword count-- 업데이트
-      const deleteKeywords = await keywordDB.keywordCountDelete(client, keywordIdsBeforeUpdate);
-
+        //^_^// 삭제한 keyword count-- 업데이트
+        const deleteKeywords = await keywordDB.keywordCountDelete(client, keywordIdsBeforeUpdate);
+      }
       //^_^// 쓴 피드백 삭제
       const deletedFeedbackList = await feedbackDB.deleteFeedbackList(client, feedbackIdList);
     }
